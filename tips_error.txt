@@ -509,11 +509,12 @@ Matrix的各种遍历问题，此处用的可以说是某种贪心算法，处�
 
 190. Reverse Bits
 
-arithmetic shift = signed shift : >>>  如果是负数，则补1
-logical shift = unsigned shift: >>   如果是负数，则补0
+arithmetic shift = signed shift : >>  如果是负数，则补1
+logical shift = unsigned shift: >>>   如果是负数，则补0
 
 另一种求解方式带来的思考：
-如果想避免正负数的坑，请尽量使用左移操作。
+如果想避免正负数的坑，请
+尽量使用左移操作。
 
 
 
@@ -652,6 +653,66 @@ v1: 效率更高，减少了额外的存储。
     4. 边缘case参考2，还有一种可能就是最后出现的字符串为数字
 
 
+
+132 Pattern
+
+S1  小
+S2  大
+S3  中
+
+正向找，可以找到S1, S2, 然后当处理S3的时候，发现新来的数据比S2小，但是也比S1小，那么就没法处理
+逆向找，可以看到S1和S3是邻接关系，找一个最大的S2，最大的S3，
+维护这一对数组中能找到的最大，第二大的数据，只需要比较新来的数据
+假如比最大的还要大，那么替换最大的，最大的pop出栈，替换第二大的
+假如比最大的小，但是比第二大的要大，那么继续入栈
+假如比最大的小，比第二大的也小，那么可以返回true
+
+可以见我们需要转为这道题目为顺序查找数据一个比一个大的序列
+
+
+
+295. Find Median from Data Stream
+出错点
+1. 5/2 返回2.0，  5/2.0返回2.5
+2. PriorityQueue当元素为Integer的时候，默认为升序，即：MinHeap， 如果需要MaxHeap，获得降序列，
+   则需要自定义Comparator，其中compare函数的两个形参应该为 public int compare(Integer o1, Integer o2)
+   而不是int。
+3. 比较的函数最好使用compareTo
+
+
+
+
+480. Sliding Window Median
+
+sliding window，减少一个元素，增加一个元素
+1. 使用heap，但是不能使用PriorityQueue，因为需要挪出元素
+2. 使用TreeSet,但是不能放入重复元素，所以需要引入一个类，额外引入id的概念，val相同则对id进行操作
+3. TreeSet默认就是升序列，可以定义Comparator对类进行比较，放入到TreeSet的定义中
+   也可以在类的定义中直接实现compareTo函数
+   同时定义 class Node implements Comparable<Node> {...}
+4. 加节点，减节点时需要先操作节点的插入/移除操作，然后在进行节点总数的计数
+
+5. 求中位数时，当为偶数，为中间两点相加除以2的平均数为double
+   两位数相加需要注意溢出的情况，
+   故不采用 （a+b）/2.0
+   而采用： a/2.0 + b/2.0
+
+6. 同样是溢出问题，在比较器中，定义如下
+   if(this.val == other.value)
+        return this.id - other.id;
+   else
+        return this.val - other.val;
+
+   两个实数相加需要防止溢出，同理两个实数相减也要防止溢出，
+   例如： int a = 2^31 - 1;
+         int b = -a;
+         return a - b;
+   需要修改比较器代码
+
+
+对于这种int的相关加减操作，一定要注意代码的写法，防止溢出。
+或者干脆，对于参数中独处的int数或者数组，在自己的数据结构中作为long来存储，
+这样后续的加减操作也不用担心溢出的问题了。
 
 
 
