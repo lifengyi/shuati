@@ -248,30 +248,33 @@ public class BinaryTreeTraversal {
         if(node == null)
             return;
 
-        Stack<TreeNode> stack = new Stack<>();
-        TreeNode indexNode = node;
-        TreeNode lastVisitNode = null;
-
-        while(indexNode != null || !stack.isEmpty()) {
-            if(indexNode != null) {
-                stack.push(indexNode);
-                lastVisitNode = indexNode;
-                indexNode = indexNode.left;
-            } else if(!stack.isEmpty()) {
-                TreeNode currentTop = stack.pop();
-                if(lastVisitNode == currentTop.right){
-                    System.out.print(currentTop.val + " ");
-                    lastVisitNode = currentTop;
-                } else if(lastVisitNode == currentTop.left){
-                    stack.push(currentTop);
-                    lastVisitNode = currentTop;
-                    indexNode = currentTop.right;
+        LinkedList<TreeNode> stack = new LinkedList<>();
+        stack.push(node);
+        TreeNode prev = null;
+        while(!stack.isEmpty()) {
+            TreeNode cur = stack.peek();
+            if(prev == null || prev.right == cur || prev.left == cur) {
+                if(cur.left != null) {
+                    stack.push(cur.left);
+                } else if(cur.right != null) {
+                    stack.push(cur.right);
                 } else {
-                    System.out.print(currentTop.val + " ");
-                    lastVisitNode = currentTop;
-                    indexNode = currentTop.right;
+                    System.out.print(cur.val + " ");
+                    stack.pop();
                 }
+            } else if(prev == cur.left) {
+                if(cur.right != null) {
+                    stack.push(cur.right);
+                } else {
+                    System.out.print(cur.val + " ");
+                    stack.pop();
+                }
+            } else if(prev == cur.right) {
+                System.out.print(cur.val + " ");
+                stack.pop();
             }
+
+            prev = cur;
         }
     }
 
@@ -431,7 +434,7 @@ public class BinaryTreeTraversal {
         root.right = new TreeNode(3);
         root.left.left = new TreeNode(4);
         root.left.right = new TreeNode(5);
-        root.left.right.left = new TreeNode(8);
+        //root.left.right.left = new TreeNode(8);
         root.left.right.right = new TreeNode(9);
         root.right.left = new TreeNode(6);
         root.right.right = new TreeNode(7);

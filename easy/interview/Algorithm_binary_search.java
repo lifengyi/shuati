@@ -3,13 +3,51 @@ package com.stevenli.interview.easy.interview;
 import java.util.*;
 
 public class Algorithm_binary_search {
-
     /**
-     * 209 Minimum Size Subarray Sum
-     * @param s
-     * @param nums
-     * @return
+     * Find a number
      */
+    public int findNumber() {
+        int[] array = {1, 3, 5, 6};
+        int target = 1;
+
+        int start = 0, end = array.length, mid = 0;
+        while(start < end) {
+            mid = start + (end - start)/2;
+            if(array[mid] == target) {
+                return mid;
+            } else if(array[mid] > target) {
+                end = mid;
+            } else {
+                start = mid + 1;
+            }
+        }
+
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        int[][] array = {
+                {1, 2, 3, 4, 5},
+                {16,41,23,22,6},
+                {15,17,20,21,7},
+                {14,18,19,20,8},
+                {13,12,11,10,9}
+        };
+
+        Algorithm_binary_search processor = new Algorithm_binary_search();
+        //for(int i : processor.findPeakII(array)) {
+        //    System.out.println(i);
+        //}
+    }
+
+
+}
+
+
+/**
+ * 还有双指针解法
+ */
+class L209_Minimum_Size_Subarray_Sum_BinarySearch {
     public int L209_minSubArrayLen(int s, int[] nums) {
         if(nums == null || nums.length == 0) {
             return 0;
@@ -45,38 +83,11 @@ public class Algorithm_binary_search {
 
         return result;
     }
+}
 
 
-    /**
-     * Find a number
-     */
-    public int findNumber() {
-        int[] array = {1, 3, 5, 6};
-        int target = 1;
-
-        int start = 0, end = array.length, mid = 0;
-        while(start < end) {
-            mid = start + (end - start)/2;
-            if(array[mid] == target) {
-                return mid;
-            } else if(array[mid] > target) {
-                end = mid;
-            } else {
-                start = mid + 1;
-            }
-        }
-
-        return -1;
-    }
-
-
-    /**
-     * 162. Find Peak Element
-     *
-     * @param nums
-     * @return
-     */
-    public int L162_findPeakElement(int[] nums) {
+class L162_Find_Peak_Element {
+    public int findPeakElement(int[] nums) {
         if(nums == null || nums.length == 0)
             return -1;
         if(nums.length == 1 || nums[0] > nums[1])
@@ -97,72 +108,9 @@ public class Algorithm_binary_search {
 
         return -1;
     }
+}
 
-
-    /**
-     * 69. Sqrt(x)
-     *
-     * @param x
-     * @return
-     */
-    public int L69_mySqrt(int x) {
-        if(x == 0 || x == 1)
-            return x;
-
-        int res = -1;
-        int left = 1, right = x, middle = 0;
-        while(left < right) {
-            middle = left + (right - left)/2;
-            if(x/middle >= middle) {
-                res = Math.max(res, middle);
-                left = middle + 1;
-            } else {
-                right = middle;
-            }
-        }
-        return res;
-    }
-
-    /**
-     * LintCode: Sqrt(x) II
-     *
-     * @param x
-     * @return
-     */
-    public double LintCode_586_sqrt(double x) {
-        // write your code here
-        if(x == 0 || x == 1) {
-            return x;
-        }
-
-        double res = -1;
-        double esp = 1e-10;
-        double start = 0, end = 0, middle = 0;
-        if(x < 1) {
-            end = 1;
-        }else {
-            end = x;
-        }
-
-        while(start + esp < end) {
-            middle = start + (end - start)/2;
-            if(middle <= x/middle ) {
-                start = middle + esp;
-                res = Math.max(res, middle);
-            } else {
-                end = middle;
-            }
-        }
-
-        return res;
-    }
-
-
-    /**
-     * 278. First Bad Version
-     * @param n
-     * @return
-     */
+class L278_First_Bad_Version {
     public int L278_firstBadVersion(int n) {
         if(n == 1 && isBadVersion(n))
             return n;
@@ -184,16 +132,11 @@ public class Algorithm_binary_search {
     private boolean isBadVersion(int n) {
         return true;
     }
+}
 
 
-    /**
-     * LintCode: WoodCut
-     *
-     * @param L
-     * @param k
-     * @return
-     */
-    public int LintCode_183_woodCut(int[] L, int k) {
+class LintCode_183_Cut_Wood {
+    public int woodCut(int[] L, int k) {
         if(k <= 0) {
             return 0;
         }
@@ -230,14 +173,10 @@ public class Algorithm_binary_search {
         return count;
     }
 
+}
 
-    /**
-     * LintCode : Copy books
-     *
-     * @param pages
-     * @param k
-     * @return
-     */
+
+class LintCode_437_Copy_Books {
     public int Lintcode_437_copyBooks(int[] pages, int k) {
         // write your code here
         if(pages == null || pages.length == 0 || k == 0)
@@ -288,10 +227,9 @@ public class Algorithm_binary_search {
 
         return false;
     }
+}
 
-    /**
-     * Maximum Average Subarray II
-     */
+class L644_Maximum_Average_Subarray_II {
     public double L644_maxAverage(int[] nums, int k) {
         // write your code here
         if(k == 0) {
@@ -338,14 +276,64 @@ public class Algorithm_binary_search {
         }
         return false;
     }
+}
+
+class L69_Sqrt_X {
+    public int L69_mySqrt(int x) {
+        if(x == 0 || x == 1)
+            return x;
+
+        int res = -1;
+        int left = 1, right = x, middle = 0;
+        while(left < right) {
+            middle = left + (right - left)/2;
+            if(x/middle >= middle) {
+                res = Math.max(res, middle);
+                left = middle + 1;
+            } else {
+                right = middle;
+            }
+        }
+        return res;
+    }
+}
+
+class LintCode_Sqrt_X_II {
+    public double LintCode_586_sqrt(double x) {
+        // write your code here
+        if(x == 0 || x == 1) {
+            return x;
+        }
+
+        double res = -1;
+        double esp = 1e-10;
+        double start = 0, end = 0, middle = 0;
+        if(x < 1) {
+            end = 1;
+        }else {
+            end = x;
+        }
+
+        while(start + esp < end) {
+            middle = start + (end - start)/2;
+            if(middle <= x/middle ) {
+                start = middle + esp;
+                res = Math.max(res, middle);
+            } else {
+                end = middle;
+            }
+        }
+
+        return res;
+    }
+}
 
 
-    /**
-     * LintCode 390. Find Peak Element II
-     * O(mlogn) => O(m+n)
-     * @param A
-     * @return
-     */
+
+/**
+ *  O(mlogn) => O(m+n)
+ */
+class LintCode_390_Find_Peak_Element_II {
     public List<Integer> findPeakII(int[][] A) {
         // this is the nlog(n) method
         List<Integer> ret = new ArrayList<>();
@@ -459,21 +447,128 @@ public class Algorithm_binary_search {
 
         return index;
     }
+}
 
-    public static void main(String[] args) {
-        int[][] array = {
-                {1, 2, 3, 4, 5},
-                {16,41,23,22,6},
-                {15,17,20,21,7},
-                {14,18,19,20,8},
-                {13,12,11,10,9}
-        };
 
-        Algorithm_binary_search processor = new Algorithm_binary_search();
-        for(int i : processor.findPeakII(array)) {
-            System.out.println(i);
+/**
+ * binary search: O(nlogn)
+ * 还有DP解法 O(n^2)
+ */
+class L300_Longest_Increasing_Subsequence_BinarySearch {
+    public int lengthOfLIS(int[] nums) {
+        if(nums == null || nums.length == 0) {
+            return 0;
         }
+        if(nums.length == 1) {
+            return 1;
+        }
+
+        int[] seq = new int[nums.length];
+        seq[0] = nums[0];
+        int len = 1;
+        for(int i = 1; i < nums.length; ++i) {
+            if(seq[len - 1] < nums[i]) {
+                seq[len++] = nums[i];
+                continue;
+            } else if(seq[len - 1] == nums[i]) {
+                continue;
+            }
+
+            if(len == 1) {
+                seq[0] = nums[i];
+            } else {
+                int index = binarySearch(seq, len, nums[i]);
+                seq[index] = nums[i];
+            }
+        }
+
+        return len;
     }
 
+    int binarySearch(int[] seq, int len, int target) {
+        int start = 0, end = len, middle = 0;
+        int index = Integer.MAX_VALUE;
+        while(start < end) {
+            middle = start + (end - start)/2;
+            if(seq[middle] >= target) {
+                end = middle;
+                index = Math.min(index, middle);
+            } else {
+                start = middle + 1;
+            }
+        }
+        return index;
+    }
+}
 
+/**
+ *  tips: Arrays.binarySearch 的返回值的意义，以及fromIndex，toIndex的使用
+ */
+class L300_Longest_Increasing_Subsequence_default_BinarySearch {
+    public int lengthOfLIS(int[] nums) {
+        if(nums == null || nums.length == 0) {
+            return 0;
+        }
+        if(nums.length == 1) {
+            return 1;
+        }
+
+        int[] dp = new int[nums.length];
+        dp[0] = nums[0];
+        int len = 1;
+        for(int i = 1; i < nums.length; ++i) {
+            if(nums[i] > dp[len - 1]) {
+                dp[len++] = nums[i];
+            } else if(nums[i] < dp[len - 1]) {
+                int index = Arrays.binarySearch(dp, 0, len - 1, nums[i]);
+                if(index < 0) {
+                    index = -(index) - 1;
+                    dp[index] = nums[i];
+                }
+            }
+        }
+        return len;
+    }
+}
+
+/**
+ *  还有DP 解法： O(n^2)
+ */
+class L354_Russian_Doll_Envelopes_BinarySearch {
+    public int maxEnvelopes(int[][] envelopes) {
+        if(envelopes == null || envelopes.length == 0
+                || envelopes[0] == null || envelopes[0].length == 0) {
+            return 0;
+        }
+
+        int w = 0, h = 1;
+        Comparator<int[]> compl = new Comparator<int[]>(){
+            @Override
+            public int compare(int[] o1, int[] o2){
+                if(o1[w] == o2[w]) {
+                    return o2[h] - o1[h];
+                } else {
+                    return o1[w] - o2[w];
+                }
+            }
+        };
+
+        Arrays.sort(envelopes, compl);
+        int[] dp = new int[envelopes.length];
+        dp[0] = envelopes[0][h];
+        int len = 1;
+        for(int i = 1; i < envelopes.length; ++i) {
+            if(envelopes[i][h] > dp[len - 1]) {
+                dp[len++] = envelopes[i][h];
+            } else if(envelopes[i][h] < dp[len - 1]) {
+                int index = Arrays.binarySearch(dp, 0, len - 1, envelopes[i][h]);
+                if(index < 0) {
+                    index = -index - 1;
+                    dp[index] = envelopes[i][h];
+                }
+            }
+        }
+
+        return len;
+    }
 }

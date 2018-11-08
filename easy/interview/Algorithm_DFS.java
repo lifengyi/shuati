@@ -7,9 +7,10 @@ public class Algorithm_DFS {
 }
 
 /**
- * 要求：
+ * 要求： 求所有子集
  * 1. 结果数据集需要去重
  * 2. 原有数据集中元素只能用1次
+ *
  *
  * 思路：
  * 1. 排序原有数据集
@@ -55,13 +56,12 @@ class L78_SubSets {
     }
 }
 
-
-
 /**
- * 要求：
- * 1. 结果数据集需要去重
- * 2. 原有数据集中元素只能用1次 => 和DFS递归索引相关
- * 3. 原有数据集中元素有重复出现 => 和循环体中重复数据处理相关
+ * 要求： 求所有子集
+ *
+ * 1. 输入数据集有重复数据, 数据只能使用1次
+ * 2. 结果数据集需要去重
+ *
  *
  * 思路：
  * 1. 排序原有数据集
@@ -96,6 +96,81 @@ class L90_Subsets_II {
 }
 
 
+/**
+ * 要求： 求子集中满足特殊条件，即子集和满足特殊值的所有子集
+ *
+ * 1. 输入数据集没有重复项，但是数据集中的数据可以无限次使用
+ * 2. 输出集需要去重，不能有重复方案
+ *
+ * Input: candidates = [2,3,6,7], target = 7,
+ * A solution set is:
+ *  [
+ *      [7],
+ *      [2,2,3]
+ *  ]
+ *
+ * Input: candidates = [2,3,5], target = 8,
+ * A solution set is:
+ *  [
+ *      [2,2,2,2],
+ *      [2,3,3],
+ *      [3,5]
+ *  ]
+ *
+ *
+ */
+class L39_Combination_Sum {
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> result = new ArrayList<>();
+        if(candidates == null || candidates.length == 0) {
+            return result;
+        }
+
+        Arrays.sort(candidates);
+        List<Integer> combination = new ArrayList<>();
+        dfs(candidates, 0, target, combination, result);
+        return result;
+    }
+
+    void dfs(int[] candidates, int start, int remaining, List<Integer> combination, List<List<Integer>> result) {
+        if(remaining == 0) {
+            result.add(new ArrayList(combination));
+            return;
+        } else if(remaining < 0) {
+            return;
+        }
+
+        for(int i = start; i < candidates.length; ++i) {
+            combination.add(candidates[i]);
+            dfs(candidates, i, remaining - candidates[i], combination, result);
+            combination.remove(combination.size() - 1);
+        }
+    }
+}
+
+
+/**
+ * 要求： 求子集中满足特殊条件，即子集和满足特殊值的所有子集
+ *
+ * 1. 输入数据集有重复项，数据集中的数据只使用1次
+ * 2. 输出集需要去重，不能有重复方案
+ *
+ * Input: candidates = [10,1,2,7,6,1,5], target = 8,
+ * A solution set is:
+ *  [
+ *      [1, 7],
+ *      [1, 2, 5],
+ *      [2, 6],
+ *      [1, 1, 6]
+ *  ]
+ *
+ * Input: candidates = [2,5,2,1,2], target = 5,
+ * A solution set is:
+ *  [
+ *      [1,2,2],
+ *      [5]
+ *  ]
+ */
 class L40_Combination_Sum_II {
     public List<List<Integer>> combinationSum2(int[] candidates, int target) {
         List<List<Integer>> result = new ArrayList<>();
@@ -128,7 +203,13 @@ class L40_Combination_Sum_II {
     }
 }
 
-
+/**
+ * 和I类似，输入为1-9，检测条件为两项：
+ * 1. 和为n
+ * 2. 组合中的数字必须为k
+ *
+ * 输入数据集没有重复项，但只能用1次
+ */
 class L216_Combination_Sum_III {
     public List<List<Integer>> combinationSum3(int k, int n) {
         List<List<Integer>> result = new ArrayList<>();
@@ -468,5 +549,30 @@ class L51_N_Queens {
             }
         }
         return true;
+    }
+}
+
+class L332_Reconstruct_Itinerary {
+    public List<String> findItinerary(String[][] tickets) {
+        LinkedList<String> result = new LinkedList<>();
+        Map<String, PriorityQueue<String>> graph = new HashMap<>();
+        for(String[] ticket : tickets) {
+            if(!graph.containsKey(ticket[0])) {
+                graph.put(ticket[0], new PriorityQueue<String>());
+            }
+            graph.get(ticket[0]).offer(ticket[1]);
+        }
+
+        dfs("JFK", graph, result);
+        return (List<String>)result;
+    }
+
+    void dfs(String from, Map<String, PriorityQueue<String>> graph, LinkedList<String> result) {
+        PriorityQueue<String> targets = graph.get(from);
+        while(targets != null && !targets.isEmpty()) {
+            dfs(targets.poll(), graph, result);
+        }
+
+        result.offerFirst(from);
     }
 }

@@ -111,3 +111,107 @@ class L315_CountOfSmallerNumbersAfterSelf {
         return ret;
     }
 }
+
+class L493_Reverse_Pairs {
+    public int reversePairs(int[] nums) {
+        if(nums == null || nums.length == 0) {
+            return 0;
+        }
+
+        int len = nums.length;
+        int[] bit = new int[len + 1];
+
+        long[] copy = init(nums);
+        Arrays.sort(copy);
+
+        int index = 0, sum = 0;
+        for(int num : nums) {
+            index = getIndex(copy, 2L * num);
+            if(index < 0) {
+                index = -index - 1;
+                if(index == 0) {
+                    sum += query(bit, len);
+                } else if(index > 0 && index < len) {
+                    sum += query(bit, len) - query(bit, index);
+                }
+            } else {
+                sum += query(bit, len) - query(bit, index + 1);
+            }
+
+            index = getIndex(copy, (long)num);
+            update(bit, index + 1, 1);
+        }
+
+        return sum;
+    }
+
+    int getIndex(long[] nums, long num) {
+        return Arrays.binarySearch(nums, num);
+    }
+
+    int lowbit(int n) {
+        return n & (-n);
+    }
+
+    int query(int[] bit, int index) {
+        int result = 0;
+        for(int i = index; i > 0; i -= lowbit(i)) {
+            result += bit[i];
+        }
+        return result;
+    }
+
+    void update(int[] bit, int index, int value) {
+        for(int i = index; i < bit.length; i += lowbit(i)) {
+            bit[i] += value;
+        }
+    }
+
+    long[] init(int[] nums) {
+        long[] result = new long[nums.length];
+        for(int i = 0; i < nums.length; ++i) {
+            result[i] = nums[i];
+        }
+        return result;
+    }
+}
+
+class L307_Range_Sum_Query_Mutable {
+    int[] bit;
+    int[] copy;
+
+    public L307_Range_Sum_Query_Mutable(int[] nums) {
+        copy = nums.clone();
+        bit = new int[nums.length + 1];
+        for(int i = 0; i < nums.length; ++i) {
+            add(i + 1, nums[i]);
+        }
+    }
+
+    public void update(int i, int val) {
+        add(i + 1, val - copy[i]);
+        copy[i] = val;
+    }
+
+    public int sumRange(int i, int j) {
+        return query(j + 1) - query(i);
+    }
+
+    private void add(int i, int val) {
+        for(int index = i; index < bit.length; index += lowbit(index)) {
+            bit[index] += val;
+        }
+    }
+
+    private int query(int i) {
+        int sum = 0;
+        for(int index = i; index > 0; index -= lowbit(index)) {
+            sum += bit[index];
+        }
+        return sum;
+    }
+
+    private int lowbit(int n) {
+        return n & (-n);
+    }
+}

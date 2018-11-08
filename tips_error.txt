@@ -19,7 +19,7 @@
 
 
 
-236. Lowest Common Ancestor of a Binary Tree
+236.   Ancestor of a Binary Tree
 v1 代码中的比较 root == p / root == q, 前提假设是p和q都是现有tree中的节点，
 当此假设成立，则代码运行成功，如果这两个节点都是new出来的节点作为参数传入，则测试失败。
 leetcode中的样例也是按照此假设进行测试的。

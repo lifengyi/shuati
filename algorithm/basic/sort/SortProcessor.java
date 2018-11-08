@@ -13,6 +13,7 @@ public class SortProcessor {
     public static int count_1pivot_3way;
     public static int count_1pivot_3way_V2;
     public static int count_2pivot_3way;
+    public static int count_1pivot_3way_V10;
 
     public void sort(int[] input) {
         //quickSort_1Pivot_2WayPartition(input, 0, input.length-1);
@@ -187,6 +188,36 @@ public class SortProcessor {
 
     }
 
+    private void quickSort_1pivot_3way_v10(int[] input, int start, int end) {
+        if(end <= start) {
+            return;
+        }
+
+        count_1pivot_3way_V10++;
+
+        int left = start, middle = start, right = end;
+        int pivot = input[start];
+
+        while(left < right) {
+            while(left < right && input[right] > pivot) {
+                right--;
+            }
+            input[left] = input[right];
+            while(left < right && input[left] <= pivot) {
+                if(input[left] < pivot) {
+                    swap(input, left++, middle++);
+                } else {
+                    left++;
+                }
+            }
+            input[right] = input[left];
+        }
+
+        input[left] = pivot;
+        quickSort_1pivot_3way_v10(input, start, middle - 1);
+        quickSort_1pivot_3way_v10(input, left + 1, end);
+    }
+
     // simple logic
     private void quickSort_1pivot_3way_V2(int[] input, int start, int end) {
 
@@ -343,9 +374,10 @@ public class SortProcessor {
         int[] array = new int[10000];
         Random rand = new Random();
         for(int i = 0; i < 10000; i++) {
-            array[i] = rand.nextInt(1000000) + 1;
+            array[i] = rand.nextInt(1000000)%17 + 1;
         }
 
+        //System.out.println(Arrays.toString(array));
 
         // sort it
         long startTime = 0;
@@ -364,14 +396,16 @@ public class SortProcessor {
         endTime = System.nanoTime();
         System.out.println("1 pivot, 2-way partition,    time=" + (endTime - startTime)
                 + ", loop count = " + count_1pivot_2way);
+        System.out.println(Arrays.toString(array_1pivot_2partition));
 
 
-        int[] array_1pivot_3partition_V2 = array.clone();
+        int[] quickSort_1pivot_3way_v10 = array.clone();
         startTime = System.nanoTime();
-        processor.quickSort_1pivot_3way_V2(array_1pivot_3partition_V2, 0, array.length - 1);
+        processor.quickSort_1pivot_3way_v10(quickSort_1pivot_3way_v10, 0, array.length - 1);
         endTime = System.nanoTime();
-        System.out.println("1 pivot, 3-way partition V2, time=" + (endTime - startTime)
-                + ", loop count = " + count_1pivot_3way_V2);
+        System.out.println("1 pivot, 3-way partition V10, time=" + (endTime - startTime)
+                + ", loop count = " + count_1pivot_3way_V10);
+        //System.out.println(Arrays.toString(quickSort_1pivot_3way_v10));
 
 
         //1 Pivot, 3-way partition quick sort
@@ -404,10 +438,10 @@ public class SortProcessor {
         else
             System.out.println("1pivot-2partion sorted array NOT equals to 1pivot-3partition sorted array.");
 
-        if(Arrays.equals(array_1pivot_2partition, array_1pivot_3partition_V2))
-            System.out.println("1pivot-2partion sorted array equals to 1pivot-3partition_V2 sorted array.");
+        if(Arrays.equals(array_1pivot_2partition, quickSort_1pivot_3way_v10))
+            System.out.println("1pivot-2partion sorted array equals to 1pivot-3partition_V10 sorted array.");
         else
-            System.out.println("1pivot-2partion sorted array NOT equals to 1pivot-3partition_V2 sorted array.");
+            System.out.println("1pivot-2partion sorted array NOT equals to 1pivot-3partition_V10 sorted array.");
 
         if(Arrays.equals(array_1pivot_2partition,array_2pivot_3partition))
             System.out.println("1pivot-2partion sorted array equals to 2pivot-3partition sorted array.");

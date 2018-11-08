@@ -2,22 +2,13 @@ package com.stevenli.interview.easy.interview;
 
 import java.util.*;
 
-class Cell {
-    public int x;
-    public int y;
-    public int height;
 
-    public Cell(int x, int y, int height) {
-        this.x = x;
-        this.y = y;
-        this.height = height;
-    }
-}
 
 public class Algorithm_heap {
+}
 
 
-
+class L407_Trapping_Rain_Water_II {
     /**
      * 407. Trapping Rain Water II
      *
@@ -77,6 +68,18 @@ public class Algorithm_heap {
         }
 
         return maxWater;
+    }
+
+    class Cell {
+        public int x;
+        public int y;
+        public int height;
+
+        public Cell(int x, int y, int height) {
+            this.x = x;
+            this.y = y;
+            this.height = height;
+        }
     }
 }
 
@@ -175,7 +178,7 @@ class L295_MedianFinder {
  *  作为long来存储，并进行后续的相关加减操作，而不用担心溢出的问题了。
  *
  */
-class L480_Solution {
+class  L480_Sliding_Window_Median {
     TreeSet<Node> leftHeap = new TreeSet<>();
     TreeSet<Node> rightHeap = new TreeSet<>();
     int totalNumber = 0;
@@ -231,26 +234,28 @@ class L480_Solution {
         }
         totalNumber += 1;
     }
-}
 
-class Node implements Comparable<Node>{
-    public int id;
-    public int val;
-    public Node(int id, int val) {
-        this.id = id;
-        this.val = val;
-    }
+    class Node implements Comparable<Node>{
+        public int id;
+        public int val;
+        public Node(int id, int val) {
+            this.id = id;
+            this.val = val;
+        }
 
-    public int compareTo(Node other) {
-        if(this.val == other.val)
-            return this.id - other.id;
-        else {
-            if(this.val > 0 && other.val < 0)
-                return 1;
-            else if(this.val < 0 && other.val > 0)
-                return -1;
-            else
-                return this.val - other.val;
+        public int compareTo(Node other) {
+            if(this.val == other.val)
+                return this.id - other.id;
+            else {
+                if(this.val > 0 && other.val < 0)
+                    return 1;
+                else if(this.val < 0 && other.val > 0)
+                    return -1;
+                else
+                    return this.val - other.val;
+            }
         }
     }
 }
+
+
