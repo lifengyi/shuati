@@ -176,42 +176,65 @@ class L493_Reverse_Pairs {
     }
 }
 
+/**
+ *  BIT 注意:
+ *  1. 外部索引和内部索引之间的转换差1
+ *  2. bit操作需要区别是差值还是绝对值
+ *
+ *  鉴于以上两个注意点，推荐：
+ *  1. BIT的add/query单独实现，使用bit索引值
+ *  2. BIT的add传入的为差值，而不是绝对值
+ *
+ *  外部函数update/query单独实现，调用BIT函数需转换成bit索引值，
+ *  同时外部函数update调用BIT::update时需要转成差值，
+ *  绝对值操作的注意点：如果保留数据copy，则update需要同时更新copy
+ *  即：BIT和外部函数分开独立实现；
+ */
 class L307_Range_Sum_Query_Mutable {
-    int[] bit;
-    int[] copy;
+    class Bit {
+        private int[] bit;
 
-    public L307_Range_Sum_Query_Mutable(int[] nums) {
-        copy = nums.clone();
-        bit = new int[nums.length + 1];
-        for(int i = 0; i < nums.length; ++i) {
-            add(i + 1, nums[i]);
+        public Bit(int[] nums) {
+            this.bit = new int[nums.length + 1];
+            for(int i = 0; i < nums.length; ++i) {
+                add(i + 1, nums[i]);
+            }
+        }
+
+        private int lowbit(int n) {
+            return n & (-n);
+        }
+
+        public void add(int index, int diff) {
+            for(int i = index; i < bit.length; i += lowbit(i)) {
+                bit[i] += diff;
+            }
+        }
+
+        public int query(int index) {
+            int ret = 0;
+            for(int i = index; i > 0; i -= lowbit(i)) {
+                ret += bit[i];
+            }
+            return ret;
         }
     }
 
-    public void update(int i, int val) {
-        add(i + 1, val - copy[i]);
-        copy[i] = val;
+    private Bit bit = null;
+    private int[] copy = null;
+
+    public NumArray(int[] nums) {
+        bit = new Bit(nums);
+        copy = nums.clone();
+    }
+
+    public void update(int index, int val) {
+        int diff = val - copy[index];
+        bit.add(index + 1, diff);
+        copy[index] = val;
     }
 
     public int sumRange(int i, int j) {
-        return query(j + 1) - query(i);
-    }
-
-    private void add(int i, int val) {
-        for(int index = i; index < bit.length; index += lowbit(index)) {
-            bit[index] += val;
-        }
-    }
-
-    private int query(int i) {
-        int sum = 0;
-        for(int index = i; index > 0; index -= lowbit(index)) {
-            sum += bit[index];
-        }
-        return sum;
-    }
-
-    private int lowbit(int n) {
-        return n & (-n);
+        return bit.query(j + 1) - bit.query(i);
     }
 }

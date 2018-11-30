@@ -24,7 +24,7 @@ public class Alogorithm_sweep_line {
  * 不同飞机的同时起飞、不同飞机的同时下落、不同飞机的同时起飞/下落 都要区分开来独立计算
  * 和这个天际线正好相反，天际线是要归并处理。
  */
-class Solution {
+class L218_The_Skyline_Problem {
     class Node implements Comparable<Node>{
         int indexValue; //the point which we need to check
         int height;
@@ -95,5 +95,54 @@ class Solution {
         }
 
         return ret;
+    }
+}
+
+class L253_Meeting_Rooms_II_ {
+    public class Interval {
+        int start;
+        int end;
+        Interval() { start = 0; end = 0; }
+        Interval(int s, int e) { start = s; end = e; }
+    }
+
+    class Node implements Comparable<Node> {
+        int id;
+        int type;   //0: start, 1: end
+        int value;
+        public Node(int id, int type, int value) {
+            this.id = id;
+            this.type = type;
+            this.value = value;
+        }
+        public int compareTo(Node other) {
+            if(this.value == other.value) {
+                return other.type - this.type;
+            } else {
+                return this.value - other.value;
+            }
+        }
+    }
+
+    public int minMeetingRooms(Interval[] intervals) {
+        PriorityQueue<Node> queue = new PriorityQueue<>();
+        for(int i = 0; i < intervals.length; ++i){
+            Node node1 = new Node(i, 0, intervals[i].start);
+            Node node2 = new Node(i, 1, intervals[i].end);
+            queue.offer(node1);
+            queue.offer(node2);
+        }
+        Set<Integer> set = new HashSet<>();
+        int maxRooms = 0;
+        while(!queue.isEmpty()) {
+            Node node = queue.poll();
+            if(node.type == 0) {
+                set.add(node.id);
+            } else {
+                set.remove(node.id);
+            }
+            maxRooms = Math.max(maxRooms, set.size());
+        }
+        return maxRooms;
     }
 }

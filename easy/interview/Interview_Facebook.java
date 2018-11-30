@@ -940,54 +940,7 @@ class L253_Meeting_Rooms_II {
 }
 
 
-class L121_Best_Time_to_Buy_and_Sell_Stock {
-    public int maxProfit(int[] prices) {
-        if(prices == null || prices.length == 0) {
-            return 0;
-        }
 
-        int max = prices[0], min = prices[0];
-        int maxProfit = 0;
-        for(int i = 1; i < prices.length; ++i) {
-            if(prices[i] > max) {
-                max = prices[i];
-                maxProfit = Math.max(maxProfit, max - min);
-            } else if(prices[i] < min) {
-                max = prices[i];
-                min = prices[i];
-            }
-        }
-        return maxProfit;
-    }
-
-    public int maxProfit_dp(int[] prices) {
-        if(prices == null || prices.length == 0){
-            return 0;
-        }
-
-        int[] dp = new int[prices.length];
-        dp[0] = 0;
-        int max = prices[0], min = prices[0];
-        for(int i = 1; i < prices.length; ++i) {
-            if(prices[i] > max) {
-                max = prices[i];
-                dp[i] = max - min;
-            } else if (prices[i] <= max && prices[i] >= min) {
-                dp[i] = dp[i - 1];
-            } else {
-                dp[i] = 0;
-                max = prices[i];
-                min = prices[i];
-            }
-        }
-
-        int maxProfit = 0;
-        for(int value : dp) {
-            maxProfit = Math.max(maxProfit, value);
-        }
-        return maxProfit;
-    }
-}
 
 
 /**
@@ -1273,6 +1226,224 @@ class LintCode_L683_Word_Break_III_nn {
 }
 
 
+/**
+ * 121. Best Time to Buy and Sell Stock
+ *      只能一次买一次卖
+ *      思路：遍历一次，每次保存当前最小价格，和目前价格比较：
+ *      1. 如果有获利，则和全局获利比较并保存
+ *      2. 如果获利相同，则获利为0
+ *      3. 如果没有获利，则获利为0，且当前价保存为最小价
+ *
+ * 122. Best Time to Buy and Sell Stock II
+ *      能多次买卖，但是必须买卖相对应
+ *      思路：累加所有上涨的区间
+ *
+ *
+ * 123. Best Time to Buy and Sell Stock III
+ * 188. Best Time to Buy and Sell Stock IV
+ *      最多k（k=2）笔交易
+ *      思路：维护两个dp空间
+ *           dp1[i][j],第i天第j次交易，所能达到的最大盈利：
+ *           dp1[i][j] = Max
+ *               当天不交易：dp1[i-1][j]
+ *               当天交易： dp2[i][j]
+ *
+ *           dp2[i][j],第i天第j次交易，且当天必须交易所能达到的最大盈利
+ *           dp2[i][j] = Max
+ *                今天的股价不计入盈利，今天买今天卖，做第j次交易：     dp1[i-1][j-1]
+ *                今天的股价计入盈利，过去买的都在今天卖，做第j次交易：  dp2[i-1][j] + diff(A[i-1], A[i])
+ *
+ *      思考：本题在选取当前节点后，所采用的求解方法，区别之前遇到的方法：
+ *               1. O(1)情况下获得解
+ *               2. O(n)情况下获得解，即在一个范围内枚举所有可能结果
+ *                  例如，扔鸡蛋的DP不优化求解方案
+ *      区别：
+ *           本题和1类似，区别在于1中的当选择当前情况之后，可以通过前一个dp状态值以及当前取值来直接获得
+ *           本题中，无法直接获得，还需要进行二次dp才能获得该值
+ *
+ *           本题和2的区别在于，2是知道在某一区间范围内，一系列值中的最优解，就是当前最优解，
+ *           本题中，可以想象到也是在一定范围的一些列值的最优解，例如第二次交易中所有价格情况下求最优解，
+ *           但是很难得知这个所谓的一定范围到底取自什么范围；
+ *
+ *      样题比较：
+ *           比如说 689. Maximum Sum of K(K=3) Non-Overlapping Subarrays
+ *           和这两道题的区别就才于此，689可以在O(1)时间内得到当前节点被选中（参与）时的结果
+ *           但是这两道题目当前节点被选中（参与）时的结果不是那么容易得到；
+ *
+ *      类似题：
+ *           Lintcode 42. Maximum Subarray II
+ *           Lintcode 43. Maximum Subarray III
+ *           注意小小区别：股票可以0交易，即保证不亏钱，
+ *           但是42/43有可能为负值出现，如何处理？
+ *
+ *
+ * 714. Best Time to Buy and Sell Stock with Transaction Fee
+ *
+ *
+ */
+class L121_Best_Time_to_Buy_and_Sell_Stock {
+    public int maxProfit(int[] prices) {
+        if(prices == null || prices.length == 0) {
+            return 0;
+        }
+
+        int max = prices[0], min = prices[0];
+        int maxProfit = 0;
+        for(int i = 1; i < prices.length; ++i) {
+            if(prices[i] > max) {
+                max = prices[i];
+                maxProfit = Math.max(maxProfit, max - min);
+            } else if(prices[i] < min) {
+                max = prices[i];
+                min = prices[i];
+            }
+        }
+        return maxProfit;
+    }
+
+    public int maxProfit_dp(int[] prices) {
+        if(prices == null || prices.length == 0){
+            return 0;
+        }
+
+        int[] dp = new int[prices.length];
+        dp[0] = 0;
+        int max = prices[0], min = prices[0];
+        for(int i = 1; i < prices.length; ++i) {
+            if(prices[i] > max) {
+                max = prices[i];
+                dp[i] = max - min;
+            } else if (prices[i] <= max && prices[i] >= min) {
+                dp[i] = dp[i - 1];
+            } else {
+                dp[i] = 0;
+                max = prices[i];
+                min = prices[i];
+            }
+        }
+
+        int maxProfit = 0;
+        for(int value : dp) {
+            maxProfit = Math.max(maxProfit, value);
+        }
+        return maxProfit;
+    }
+}
+
+
+class L122_Best_Time_to_Buy_and_Sell_Stock_II {
+    public int maxProfit(int[] prices) {
+        int maxProfit = 0;
+        for(int i = 0; i < prices.length - 1; i++) {
+            if(prices[i+1] > prices[i])
+                maxProfit += prices[i+1] - prices[i];
+        }
+
+        return maxProfit;
+    }
+}
+
+
+class L123_Best_Time_to_Buy_and_Sell_Stock_III {
+
+    public int maxProfit(int[] prices) {
+        int n = 3;
+        int[] dp1 = new int[n];
+        int[] dp2 = new int[n];
+
+        for(int i = 1; i < prices.length; ++i) {
+            for(int j = n - 1; j > 0; --j) {
+                dp2[j] = Math.max(dp2[j] + prices[i] - prices[i - 1], dp1[j - 1]);
+                dp1[j] = Math.max(dp1[j], dp2[j]);
+            }
+        }
+        return dp1[n - 1];
+    }
+}
+
+class L188_Best_Time_to_Buy_and_Sell_Stock_IV {
+    public int maxProfit(int k, int[] prices) {
+        if(k > prices.length) {
+            return getMaxProfit(prices);
+        }
+
+        int[] dp1 = new int[k + 1];
+        int[] dp2 = new int[k + 1];
+        for(int i = 1; i < prices.length; ++i) {
+            for(int j = k; j > 0; --j) {
+                dp2[j] = Math.max(dp2[j] + prices[i] - prices[i - 1], dp1[j - 1]);
+                dp1[j] = Math.max(dp1[j], dp2[j]);
+            }
+        }
+        return dp1[k];
+    }
+
+    int getMaxProfit(int[] prices) {
+        int profit = 0;
+        for(int i = 1; i < prices.length; ++i) {
+            profit += Math.max(0, prices[i] - prices[i - 1]);
+        }
+        return profit;
+    }
+}
+
+
+/**
+ * 维护两个DP空间，买卖股票下"当前最大盈利"
+ * （持有情况已经包含其中，如果上一次买，买dp当前为持有；
+ * 如果上一次卖，卖dp当前为持有）
+ *
+ * sold[i]有两个状态:
+ *      第i-1的时候卖了股票： sell[i - 1]  没有股票可卖
+ *      第i-1的时候买了股票： prices[i] + buy[i - 1] - fee
+ *                        上次买股票后的总体盈利加上现在的价格即当前卖出后的盈利
+ *
+ *
+ * 初始化为扣除当前买入价，即使先扣除买股票的成本，代表当前buy股票后的总体盈利
+ * buy[i]也有两个状态:
+ *      第i-1的时候卖了股票： sell[i-1] - prices[i] 必须买入股票持有
+ *      第i-1的时候买了股票： buy[i - 1]            继续持有
+ *
+ */
+class L714_Best_Time_to_Buy_and_Sell_Stock_with_Transaction_Fee {
+    public int maxProfit(int[] prices, int fee) {
+        int n = prices.length;
+        int[] sell = new int[n];
+        int[] buy = new int[n];
+        buy[0] = -prices[0];
+        for(int i = 1; i < prices.length; ++i) {
+            sell[i] = Math.max(sell[i - 1], prices[i] + buy[i - 1] - fee);
+            buy[i] = Math.max(buy[i - 1], sell[i - 1] - prices[i]);
+        }
+        return sell[n - 1];
+    }
+}
+
+/**
+ *  维护两个dp空间
+ */
+class L309_Best_Time_to_Buy_and_Sell_Stock_with_Cooldown {
+    public int maxProfit(int[] prices) {
+        if(prices == null || prices.length < 2) {
+            return 0;
+        }
+
+        int n = prices.length;
+        int[] sell = new int[n];
+        int[] buy = new int[n];
+        buy[0] = -prices[0];
+        sell[1] = Math.max(0, prices[1] - prices[0]);
+        buy[1] = Math.max(-prices[0], -prices[1]);
+        for(int i = 2; i < prices.length; ++i) {
+            sell[i] = Math.max(sell[i - 1], prices[i] + buy[i - 1]);
+            buy[i] = Math.max(buy[i - 1], sell[i - 2] - prices[i]);
+        }
+        return sell[n - 1];
+    }
+}
+
+
+
 class L689_Maximum_Sum_of_3_Non_Overlapping_Subarrays {
     public int[] maxSumOfThreeSubarrays(int[] nums, int k) {
         int[] preSum = getPreSum(nums, k);
@@ -1314,6 +1485,125 @@ class L689_Maximum_Sum_of_3_Non_Overlapping_Subarrays {
                 preSum[i + 1] = sum;
                 sum -= nums[i - k + 1];
             }
+        }
+        return preSum;
+    }
+}
+
+
+/**
+ *
+ *   代码思想类同： L188_Best_Time_to_Buy_and_Sell_Stock_IV
+ *   思想： 需要维护2个dp空间
+ *
+ *   代码写法类同： L689_Maximum_Sum_of_3_Non_Overlapping_Subarrays
+ *   即：保证pick的序列数和当前pick的起始数字的序列是匹配的；
+ *
+ */
+class Lintcode_42_Maximum_Subarray_II {
+
+    public int maxTwoSubArrays(List<Integer> nums) {
+        int[] preSum = getPreSum(nums);
+        int k = 2;
+        int n = nums.size();
+        int[][] dp1 = new int[2][n + 1];
+        int[][] dp2 = new int[2][n + 1];
+        for(int i = 1; i <= k; ++i) {
+            dp1[i%2][i] = preSum[i];
+            dp2[i%2][i] = preSum[i];
+            for(int j = i + 1; j <= n; ++j) {
+                dp2[i%2][j] = Math.max(dp2[i%2][j - 1], dp1[(i - 1)%2][j - 1]) + nums.get(j - 1);
+                dp1[i%2][j] = Math.max(dp2[i%2][j], dp1[i%2][j - 1]);
+            }
+        }
+        return dp1[k%2][n];
+    }
+
+    int[] getPreSum(List<Integer> nums) {
+        int[] preSum = new int[nums.size() + 1];
+        for(int i = 1; i <= nums.size(); ++i) {
+            preSum[i] = preSum[i - 1] + nums.get(i - 1);
+        }
+
+        return preSum;
+    }
+}
+
+/**
+ *  代码思想以及写法类同： L188_Best_Time_to_Buy_and_Sell_Stock_IV
+ *
+ *  比照上面的写法，可以发现是考虑横纵坐标的选取
+ *
+ *  上面写法：本能选取ith pick， jth number，所以只能使用二维数组/滚动数组优化实现
+ *  这个写法：DP中出现的选于不选的问题，导致当前数字存在取和不取的情况，可以做为横轴
+ *          ith number， jth pick
+ *
+ */
+class Lintcode_42_Maximum_Subarray_II_v2 {
+    public int maxTwoSubArrays(List<Integer> nums) {
+        int[] preSum = getPreSum(nums);
+
+        int n = nums.size();
+        int k = 2;
+        int[] dp1 = new int[k + 1];
+        int[] dp2 = new int[k + 1];
+
+        for(int i = 1; i <= n; ++i) {
+            for(int j = k; j > 0; --j) {
+                if(j > i) {
+                    continue;
+                } else if(j == i) {
+                    dp1[j] = preSum[i];
+                    dp2[j] = preSum[i];
+                } else {
+                    dp2[j] = Math.max(dp2[j], dp1[j - 1]) + nums.get(i - 1);
+                    dp1[j] = Math.max(dp2[j], dp1[j]);
+                }
+            }
+        }
+
+        return dp1[k];
+    }
+
+    int[] getPreSum(List<Integer> nums) {
+        int[] preSum = new int[nums.size() + 1];
+        for(int i = 1; i < preSum.length; ++i) {
+            preSum[i] = preSum[i - 1] + nums.get(i - 1);
+        }
+        return preSum;
+    }
+}
+
+
+class Lintcode_43_Maximum_Subarray_III {
+    public int maxSubArray(int[] nums, int k) {
+        int[] preSum = getPreSum(nums);
+
+        int n = nums.length;
+        int[] dp1 = new int[k + 1];
+        int[] dp2 = new int[k + 1];
+
+        for(int i = 1; i <= n; ++i) {
+            for(int j = k; j > 0; --j) {
+                if(j > i) {
+                    continue;
+                } else if(j == i) {
+                    dp1[j] = preSum[i];
+                    dp2[j] = preSum[i];
+                } else {
+                    dp2[j] = Math.max(dp2[j], dp1[j - 1]) + nums[i - 1];
+                    dp1[j] = Math.max(dp2[j], dp1[j]);
+                }
+            }
+        }
+
+        return dp1[k];
+    }
+
+    int[] getPreSum(int[] nums) {
+        int[] preSum = new int[nums.length + 1];
+        for(int i = 1; i < preSum.length; ++i) {
+            preSum[i] = preSum[i - 1] + nums[i - 1];
         }
         return preSum;
     }
