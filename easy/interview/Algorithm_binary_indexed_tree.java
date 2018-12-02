@@ -223,7 +223,7 @@ class L307_Range_Sum_Query_Mutable {
     private Bit bit = null;
     private int[] copy = null;
 
-    public NumArray(int[] nums) {
+    public L307_Range_Sum_Query_Mutable(int[] nums) {
         bit = new Bit(nums);
         copy = nums.clone();
     }
