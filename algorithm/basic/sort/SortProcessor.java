@@ -1,4 +1,4 @@
-package com.stevenli.interview.algorithm.basic.sort;
+package basic.sort;
 
 import java.util.Arrays;
 import java.util.Random;

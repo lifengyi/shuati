@@ -1,35 +1,9 @@
-package com.stevenli.interview.easy.interview;
+package interview;
 
-import org.junit.Test;
 
 import java.util.*;
 
 public class Algorithm_template {
-
-    @Test
-    public void test() {
-        TreeNode root = new TreeNode(1);
-        root.left = new TreeNode(2);
-        root.right = new TreeNode(3);
-        root.left.left = new TreeNode(4);
-        root.left.right = new TreeNode(5);
-        //root.left.right.left = new TreeNode(8);
-        root.left.right.right = new TreeNode(9);
-        root.right.left = new TreeNode(6);
-        root.right.right = new TreeNode(7);
-
-        Binary_Tree_Inorder_Traversal proc = new Binary_Tree_Inorder_Traversal();
-        proc.traverse(root);
-        System.out.print("\n\n");
-
-        Binary_Tree_Preorder_Traversal proc2 = new Binary_Tree_Preorder_Traversal();
-        proc2.traverse(root);
-        System.out.print("\n\n");
-
-        Binary_Tree_Postorder_Traversal proc3 = new Binary_Tree_Postorder_Traversal();
-        proc3.traverse(root);
-        System.out.print("\n\n");
-    }
 
 }
 

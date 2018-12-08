@@ -1,7 +1,6 @@
-package basic.BinaryTree;
+package interview;
 
 public class TreeLinkNode {
-
     public int val;
     public TreeLinkNode left;
     public TreeLinkNode right;

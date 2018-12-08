@@ -1,4 +1,4 @@
-package com.stevenli.interview.easy.interview;
+package interview;
 
 public class Algorithm_Mathematics {
 

@@ -1,4 +1,4 @@
-package com.stevenli.interview.algorithm.basic.BinaryTree;
+package basic.BinaryTree;
 
 import java.util.Arrays;
 

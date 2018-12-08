@@ -1,6 +1,5 @@
-package com.stevenli.interview.easy.interview;
+package interview;
 
-import com.stevenli.interview.algorithm.basic.BinaryTree.TreeNode;
 
 import java.util.*;
 

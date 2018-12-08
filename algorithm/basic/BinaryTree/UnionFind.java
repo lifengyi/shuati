@@ -1,4 +1,4 @@
-package com.stevenli.interview.algorithm.basic.BinaryTree;
+package basic.BinaryTree;
 
 /**
  * Weighted Quick-Union LeetCode_Tree With Path Compression

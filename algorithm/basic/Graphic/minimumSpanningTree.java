@@ -1,4 +1,4 @@
-package com.stevenli.interview.algorithm.basic.Graphic;
+package basic.Graphic;
 
 public class minimumSpanningTree {
 }

@@ -1,4 +1,4 @@
-package com.stevenli.interview.easy.interview;
+package interview;
 
 import java.util.*;
 
@@ -6,13 +6,6 @@ import java.util.*;
  * 找每个元素左边或者右边第一个比它自身小/大的元素
  * 用单调栈来维护
  */
-
-class TreeNode {
-    int val;
-    TreeNode left;
-    TreeNode right;
-    TreeNode(int val) {this.val = val;}
-}
 
 public class Algorithm_stack_monotonous_stack {
 
