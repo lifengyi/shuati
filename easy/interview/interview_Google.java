@@ -264,3 +264,153 @@ class L252_Meeting_Rooms {
 
 }
 
+
+
+class L340_Longest_Substring_with_At_Most_K_Distinct_Characters {
+    public int lengthOfLongestSubstringKDistinct(String s, int k) {
+        int count = 0, maxLen = 0;
+        int[] map = new int[256];
+        int len = s.length();
+        int i = 0, j = 0, index = 0;
+        for(; i < len; ++i) {
+            while(j < len && validate(map, (int)(s.charAt(j)), count, k)) {
+                index = (int)s.charAt(j);
+                if(map[index] == 0) {
+                    map[index] = 1;
+                    count++;
+                } else {
+                    map[index] += 1;
+                }
+                maxLen = Math.max(j - i + 1, maxLen);
+                j++;
+            }
+            if(j == len) {
+                return maxLen;
+            }
+            index = (int)s.charAt(i);
+            map[index] -= 1;
+            if(map[index] == 0) {
+                count--;
+            }
+        }
+
+        return maxLen;
+    }
+
+    private boolean validate(int[] map, int index, int count, int k) {
+        if(map[index] == 0) {
+            return count + 1 > k ? false : true;
+        }
+        return true;
+    }
+
+}
+
+
+class L395_Longest_Substring_with_At_Least_K_Repeating_Characters {
+    public int longestSubstring(String s, int k) {
+        int[] map = new int[26];
+        for(int i = 0; i < s.length(); ++i) {
+            map[s.charAt(i) - 'a'] += 1;
+        }
+
+        StringBuilder sb = new StringBuilder(s);
+        for(int i = 0; i < s.length(); ++i) {
+            if(map[s.charAt(i) - 'a'] < k) {
+                sb.setCharAt(i, ',');
+            }
+        }
+
+
+        String[] strings = sb.toString().split(",");
+        if(strings.length == 1) {
+            return strings[0].length();
+        }
+
+        int maxLen = 0;
+        for(String string : strings) {
+            maxLen = Math.max(maxLen, longestSubstring(string, k));
+        }
+        return maxLen;
+    }
+}
+
+
+/**
+ * 思路上首先要理解善用timestamp，推此即彼；
+ *
+ * 问题有点类似于LRU，都是哈希表的使用，快速的访问元素是否存在
+ * 不同在于LRU关注最后一次访问，而这里关注的是第一次访问；
+ *
+ * 增加了需要查询在一定的时间范围内是否存在数据，timestamp成为
+ * 最好的突破口
+ *
+ * disadvantage: 内存会越来越大，且低频词将会永久的存在于内存中
+ * 解决：定期清理哈希表
+ *
+ * 改进：额外维护每个时间点的关键词列表；
+ */
+class L359_Logger_Rate_Limiter {
+    int diff = 10;
+    Map<String, Integer> map = null;
+
+    /** Initialize your data structure here. */
+    public L359_Logger_Rate_Limiter() {
+        map = new HashMap<>();
+    }
+
+    /** Returns true if the message should be printed in the given timestamp, otherwise returns false.
+     If this method returns false, the message will not be printed.
+     The timestamp is in seconds granularity. */
+    public boolean shouldPrintMessage(int timestamp, String message) {
+        if(!map.containsKey(message)) {
+            map.put(message, timestamp);
+            return true;
+        }
+
+        int oldTimestamp = map.get(message);
+        if(timestamp - oldTimestamp >= diff) {
+            map.put(message, timestamp);
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+class L359_Logger_Rate_Limiter_v2 {
+    class Tuple {
+        public int t;
+        public String s;
+        public Tuple(int t, String s) {
+            this.t = t;
+            this.s = s;
+        }
+    }
+
+    Queue<Tuple> queue = null;
+    Set<String> set = null;
+
+    public L359_Logger_Rate_Limiter_v2() {
+        queue = new LinkedList<Tuple>();
+        set = new HashSet<String>();
+    }
+
+    public boolean shouldPrintMessage(int timestamp, String message) {
+        while(!queue.isEmpty() && queue.peek().t <= timestamp - 10) {
+            String s = queue.poll().s;
+            set.remove(s);
+        }
+
+        if(set.contains(message)) {
+            return false;
+        }
+
+        queue.offer(new Tuple(timestamp, message));
+        set.add(message);
+        return true;
+    }
+}
+
+
+
