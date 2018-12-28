@@ -317,7 +317,7 @@ class LintCode_Sqrt_X_II {
         while(start + esp < end) {
             middle = start + (end - start)/2;
             if(middle <= x/middle ) {
-                start = middle + esp;
+                start = middle;
                 res = Math.max(res, middle);
             } else {
                 end = middle;

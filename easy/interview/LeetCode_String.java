@@ -4,12 +4,9 @@ import java.util.*;
 
 public class LeetCode_String {
 
-    /**
-     * 224. Basic Calculator
-     *
-     * @param s
-     * @return
-     */
+}
+
+class L224_Basic_Calculator {
     public int L224_alculate(String s) {
         if(s == null || s.length() == 0)
             return 0;
@@ -89,13 +86,9 @@ public class LeetCode_String {
 
         return ret;
     }
+}
 
-    /**
-     * 91. Decode Ways
-     *
-     * @param s
-     * @return
-     */
+class L91_Decode_Ways {
     public int L91_numDecodings(String s) {
         char[] array = s.toCharArray();
         int fn_1=2, fn_2=1, fn = 0;
@@ -123,26 +116,21 @@ public class LeetCode_String {
         }
         return fn;
     }
+}
 
-    /**
-     * 17. Letter Combinations of a Phone Number
-     *
-     * @param digits
-     * @return
-     */
-    public List<String> L17_letterCombinations(String digits) {
-        List<String> list = new ArrayList<>();
-        if(digits == null || digits.length() == 0)
-            return list;
-
-        String[] letterCache = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
-        list.add("");
-        for(int i = 0; i < digits.length(); ++i) {
-            String letters = letterCache[digits.charAt(i)-'0'];
-            list = letterComb(letters, list);
-        }
+class L17_Letter_Combinations_of_a_Phone_Number {public List<String> L17_letterCombinations(String digits) {
+    List<String> list = new ArrayList<>();
+    if(digits == null || digits.length() == 0)
         return list;
+
+    String[] letterCache = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+    list.add("");
+    for(int i = 0; i < digits.length(); ++i) {
+        String letters = letterCache[digits.charAt(i)-'0'];
+        list = letterComb(letters, list);
     }
+    return list;
+}
 
     private List<String> letterComb(String letters, List<String> list) {
         List<String>  ret = new ArrayList<>();
@@ -152,11 +140,9 @@ public class LeetCode_String {
             }
         }
         return ret;
-    }
+    }}
 
-    /**
-     * 8. String to Integer (atoi)
-     */
+class L8_String_to_Integer {
     enum Type {BEGIN, SIGN_FOUND, NUM_FOUND};
     public int L8_myAtoi(String str) {
         int start=0, end=0, flag=1, i=0;
@@ -240,13 +226,9 @@ public class LeetCode_String {
             return true;
         }
     }
+}
 
-    /**
-     * 387. First Unique Character in a String
-     *
-     * @param s
-     * @return
-     */
+class L387_First_Unique_Character_in_a_String {
     public int L387_firstUniqChar(String s) {
         if(s == null || s.length() == 0)
             return -1;
@@ -264,13 +246,9 @@ public class LeetCode_String {
         }
         return -1;
     }
+}
 
-    /**
-     * 38. Count and Say
-     *
-     * @param n
-     * @return
-     */
+class L38_Count_and_Say {
     public String L38_countAndSay(int n){
         String ret = "1";
         for(int i = 1; i < n; ++i){
@@ -306,14 +284,9 @@ public class LeetCode_String {
         }
         return sb.toString();
     }
+}
 
-    /**
-     * 28. Implement strStr()
-     *
-     * @param haystack
-     * @param needle
-     * @return
-     */
+class L28_Implement_strStr {
     public int L28_strStr(String haystack, String needle) {
         if(haystack == null || needle == null)
             return -1;
@@ -344,14 +317,9 @@ public class LeetCode_String {
 
         return ret;
     }
+}
 
-    /**
-     * 20. Valid Parentheses
-     *
-     * @param s
-     * @return
-     */
-
+class L20_Valid_Parentheses {
     public boolean L20_isValid(String s) {
         LinkedList<Character> stack = new LinkedList<>();
         for(char c : s.toCharArray()) {
@@ -392,13 +360,10 @@ public class LeetCode_String {
         else
             return true;
     }
+}
 
-    /**
-     * 14. Longest Common Prefix
-     *
-     * @param strs
-     * @return
-     */
+
+class L14_Longest_Common_Prefix {
     public String L14_longestCommonPrefix(String[] strs) {
         if(strs == null || strs.length == 0)
             return "";
@@ -412,19 +377,16 @@ public class LeetCode_String {
 
         return prefix;
     }
+}
 
+
+class L12_Integer_to_Roman {
 
     public String[][] table = {{"I","V","X"},
             {"X","L","C"},
             {"C","D","M"},
             {"M", null, null}};
 
-    /**
-     * 12. Integer to Roman
-     *
-     * @param num
-     * @return
-     */
     public String L12_intToRoman(int num) {
         if(num > 3999)
             return null;
@@ -483,13 +445,9 @@ public class LeetCode_String {
         }
         return sb.toString();
     }
+}
 
-    /**
-     * 13. Roman to Integer
-     *
-     * @param s
-     * @return
-     */
+class L13_Roman_to_Integer {
     public int L13_romanToInt(String s) {
         Map<Character, Integer> cache = new HashMap<>();
         cache.put('I', 1);
@@ -511,28 +469,5 @@ public class LeetCode_String {
 
         return num;
     }
-
-
-    /**
-     * 3. Longest Substring Without Repeating Characters
-     *
-     * @param s
-     * @return
-     */
-    public int lengthOfLongestSubstring(String s) {
-        int i = 0, j = 0, max = 0, count = 0;
-        Set<Character> cache = new HashSet<>();
-        while(j < s.length()) {
-            if(!cache.contains(s.charAt(j))){
-                cache.add(s.charAt(j++));
-                count++;
-                max = Math.max(max, count);
-            } else {
-                cache.remove(s.charAt(i++));
-                count--;
-            }
-        }
-        return max;
-    }
-
 }
+

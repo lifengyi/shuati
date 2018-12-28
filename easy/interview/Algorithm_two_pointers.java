@@ -458,3 +458,23 @@ class L76_Minimum_Window_Substring_v2 {
         return false;
     }
 }
+
+class L287_Find_the_Duplicate_Number {
+    public int findDuplicate(int[] nums) {
+        int slow = nums[0];
+        int quick = nums[0];
+
+        do{
+            slow = nums[slow];
+            quick = nums[nums[quick]];
+        } while(slow != quick);
+
+        quick = nums[0];
+        while(slow != quick) {
+            slow = nums[slow];
+            quick = nums[quick];
+        }
+
+        return slow;
+    }
+}

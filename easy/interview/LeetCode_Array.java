@@ -5,118 +5,14 @@ import java.util.*;
 
 public class LeetCode_Array {
 
-    /**
-     * TODO: 1. Two Sum
-     *
-     * @param nums
-     * @param target
-     * @return
-     */
-    public int[] L1_twoSum(int[] nums, int target) {
-        int[] ret = new int[2];
-        Map<Integer, Integer> cache = new HashMap<>();
-        for(int i = 0; i < nums.length; i++)
-            cache.put(nums[i], i);
+    public static void main(String[]  args) {
+        int[] array = {1,2, 3, 4, 5, 6};
 
-        for(int i = 0; i< nums.length; i++){
-            int key = target - nums[i];
-            if(cache.containsKey(key)) {
-                ret[0] = i;
-                ret[1] = cache.get(key);
-                break;
-            }
-        }
-
-        return ret;
     }
 
+}
 
-    public double findMedianSortedArrays(int[] nums1, int[] nums2) {
-        double ret = 0;
-        int len = nums1.length + nums2.length;
-        if(!isEven(len)) {
-            int median = (len+1)/2;
-            for(int i=0,j=0, counter=1;;counter++)
-            {
-                if(i < nums1.length && j < nums2.length) {
-                    if(counter == median) {
-                        return Math.min(nums1[i], nums2[j]);
-                    } else {
-                        if(nums1[i] < nums2[j])
-                            i++;
-                        else
-                            j++;
-                    }
-                } else if (i < nums1.length) {
-                    if(counter == median) return nums1[i];
-                    else i++;
-                } else if (j < nums2.length) {
-                    if(counter == median) return nums2[j];
-                    else j++;
-                }
-            }
-        } else {
-            int median1 = (len - 1)/2;
-            int median2 = (len - 1)/2 + 1;
-            double ret1=0, ret2=0;
-
-            for(int i=0,j=0, counter=0;;counter++)
-            {
-                if(i < nums1.length && j < nums2.length) {
-                    if(counter == median1) {
-                        if(nums1[i] < nums2[j]) {
-                            ret1 = nums1[i];
-                            i++;
-                        } else {
-                            ret1 = nums2[j];
-                            j++;
-                        }
-                    } else if (counter == median2) {
-                        ret2 = Math.min(nums1[i], nums2[j]);
-                        return (ret1+ret2)/2;
-                    }else {
-                        if(nums1[i] < nums2[j]) i++;
-                        else j++;
-                    }
-                } else if (i < nums1.length) {
-                    if(counter == median1) {
-                        ret1 = nums1[i];
-                        i++;
-                    }
-                    else if(counter == median2) {
-                        ret2 = nums1[i];
-                        return (ret1 + ret2)/2;
-                    }
-                    else
-                        i++;
-                } else if (j < nums2.length) {
-                    if(counter == median1) {
-                        ret1 = nums2[j];
-                        j++;
-                    }
-                    else if(counter == median2) {
-                        ret2 = nums2[j];
-                        return (ret1 + ret2)/2;
-                    }
-                    else
-                        j++;
-                }
-            }
-        }
-    }
-
-    private boolean isEven(int num) {
-        if((num&1) == 0) return true;
-        return false;
-    }
-
-    /**
-     * TODO: 33. Search in Rotated Sorted Array
-     *
-     * @param nums
-     * @param target
-     * @return
-     */
+class L33_Search_in_Rotated_Sorted_Array {
     public int L33_search(int[] nums, int target) {
         int begin = 0;
         int end = nums.length - 1;
@@ -144,10 +40,9 @@ public class LeetCode_Array {
 
         return -1;
     }
+}
 
-    /**
-     * TODO: 34. Search for a Range
-     */
+class L34_Search_for_a_Range {
     public int[] L34_searchRange(int[] nums, int target) {
         int begin = 0;
         int end = nums.length - 1;
@@ -189,160 +84,44 @@ public class LeetCode_Array {
 
         return ret;
     }
+}
 
+class L41_First_Missing_Positive {public int L41_firstMissingPositive(int[] nums) {
+    int index = 0;
+    while(index < nums.length) {
+        if(nums[index] == index + 1 || nums[index] <= 0 || nums[index] > nums.length) {
+            index++;
+        } else if(nums[index] != index + 1 && nums[index] != nums[nums[index] - 1]){
+            //错误2， 在这个else if判断中遗漏了第二个判断项目，即当前节点
+            //和所要交换的目标节点拥有相同的值，也就是对方节点已经满足条件了，不需要再换了
+            //加入第二限制向，以及加else分支。
 
-    /**
-     * TODO: 41. First Missing Positive
-     *
-     * @param nums
-     * @return
-     */
-    public int L41_firstMissingPositive(int[] nums) {
-        int index = 0;
-        while(index < nums.length) {
-            if(nums[index] == index + 1 || nums[index] <= 0 || nums[index] > nums.length) {
-                index++;
-            } else if(nums[index] != index + 1 && nums[index] != nums[nums[index] - 1]){
-                //错误2， 在这个else if判断中遗漏了第二个判断项目，即当前节点
-                //和所要交换的目标节点拥有相同的值，也就是对方节点已经满足条件了，不需要再换了
-                //加入第二限制向，以及加else分支。
-
-                int tmp = nums[nums[index] - 1];    //错误3， 如果此处缓存的是nums[index]
-                                                    //那么当： nums[index] = nums[nums[index] - 1]
-                                                    //下一行如此写讲出错： nums[nums[index] - 1]
-                                                    //因为nums[index] 已经改变
-                                                    //可以采用现在的方案，或者nums[tmp-1] = tmp;
-                nums[nums[index] - 1] = nums[index];
-                nums[index] = tmp;
-            } else {
-                index++;
-            }
+            int tmp = nums[nums[index] - 1];    //错误3， 如果此处缓存的是nums[index]
+            //那么当： nums[index] = nums[nums[index] - 1]
+            //下一行如此写讲出错： nums[nums[index] - 1]
+            //因为nums[index] 已经改变
+            //可以采用现在的方案，或者nums[tmp-1] = tmp;
+            nums[nums[index] - 1] = nums[index];
+            nums[index] = tmp;
+        } else {
+            index++;
         }
-
-        index = 0;
-        while(index < nums.length) {
-            if(nums[index] != index + 1)
-                return index + 1;
-            index++;                    //错误1， 白痴错误，一楼该行
-        }
-
-        return index + 1;       //全部满足，需要+1返回正确的下一个正整数
     }
 
-
-    /**
-     * TODO: 49. Group Anagrams
-     *
-     * @param strs
-     * @return
-     */
-    public List<List<String>> L49_groupAnagrams(String[] strs) {
-        List<List<String>> ret = new ArrayList<>();
-        if(strs == null || strs.length == 0)
-            return ret;
-
-        Map<String, List<String>> anagramCache = new HashMap<>();
-        for(String str : strs) {
-            char[] charArray = str.toCharArray();
-            Arrays.sort(charArray);
-            String pattern = new String(charArray);
-
-            if(anagramCache.containsKey(pattern)) {
-                List<String> value = anagramCache.get(pattern);
-                value.add(str);
-            } else {
-                List<String> value = new ArrayList<>();
-                value.add(str);
-                anagramCache.put(pattern, value);
-            }
-        }
-
-        //collect the return value
-        //for(String key : anagramCache.keySet()) {
-        //    ret.add(anagramCache.get(key));
-        //}
-        ret = (ArrayList<List<String>>) anagramCache.values();
-
-        return ret;
+    index = 0;
+    while(index < nums.length) {
+        if(nums[index] != index + 1)
+            return index + 1;
+        index++;                    //错误1， 白痴错误，一楼该行
     }
 
+    return index + 1;       //全部满足，需要+1返回正确的下一个正整数
+}
 
-    public List<List<String>> L49_groupAnagrams_v2(String[] strs) {
-        List<List<String>> ret = new ArrayList<>();
-        if(strs == null || strs.length == 0)
-            return ret;
-
-        Map<String, List<String>> anagramCache = new HashMap<>();
-        for(String str : strs) {
-            String pattern = getAnagramPattern(str);
-            if(anagramCache.containsKey(pattern)) {
-                List<String> value = anagramCache.get(pattern);
-                value.add(str);
-            } else {
-                List<String> value = new ArrayList<>();
-                value.add(str);
-                anagramCache.put(pattern, value);
-            }
-        }
-
-        //collect the return value
-        for(String key : anagramCache.keySet()) {
-            ret.add(anagramCache.get(key));
-        }
-
-        return ret;
-    }
-
-    //Only support the following cases:
-    //1. All the characters in string is lower case
-    //2. String length < 999
-    //3. No other special characters
-    private String getAnagramPattern(String str) {
-        int[] cache = new int[26];
-        byte[] stringBytes = str.getBytes();
-        for(byte element : stringBytes) {
-            cache[element-97] += 1;
-        }
-        StringBuilder sb = new StringBuilder();
-        for(int i = 0; i < 26; i++) {
-            if(cache[i] != 0) {
-                sb.append(String.format("%02d%03d", i, cache[i]));
-            }
-        }
-
-        return sb.toString();
-    }
+}
 
 
-    /**
-     * TODO: 53. Maximum Subarray
-     *
-     * Kadane算法
-     *
-     * @param nums
-     * @return
-     */
-    public int L53_maxSubArray(int[] nums) {
-        if(nums == null || nums.length == 0)
-            return 0;
-
-        int maxSum = Integer.MIN_VALUE;
-        int maxSoFar = 0;
-        for(int i : nums) {
-            maxSoFar = Math.max(i, maxSoFar + i);
-            maxSum = Math.max(maxSum, maxSoFar);
-        }
-
-        return maxSum;
-    }
-
-
-    /**
-     * TODO: 55. Jump Game
-     *
-     * @param nums
-     * @return
-     */
+class L55_Jump_Game {
     public boolean L55_canJump(int[] nums) {
         int maxJump = 0;
         for(int i = 0; i < nums.length - 1; i++) {
@@ -402,144 +181,34 @@ public class LeetCode_Array {
 
         return false;
     }
+}
 
-
-    /**
-     * TODO: 66. Plus One
-     * @param digits
-     * @return
-     */
-    public int[] L66_plusOne(int[] digits) {
-        int extraOne = 1;
-        for(int i = digits.length - 1; i >= 0; i--) {
-            int tmp = digits[i];
-            digits[i] = (tmp + extraOne)%10;
-            extraOne = (tmp + extraOne)/10;
-        }
-
-        if(extraOne == 1){
-            int[] ret = new int[digits.length + 1];
-            ret[0] = 1;
-            return ret;
-        } else {
-            return digits;
-        }
-    }
-
-
-    /**
-     * TODO: 75. Sort Colors
-     *
-     * @param nums
-     */
-    public void L75_sortColors(int[] nums) {
-        if(nums == null || nums.length == 1)
-            return;
-
-        int positionOfZero = 0;
-        int positionOfTwo = nums.length - 1;
-        for(int i = 0; i <= positionOfTwo;) {
-            // Enhancement
-            //while(positionOfTwo >= i && nums[positionOfTwo] == 2) positionOfTwo--;
-            //if(i > positionOfTwo)
-            //    break;
-
-            if(nums[i] == 0) {
-                if(positionOfZero != i) {
-                    int tmp = nums[positionOfZero];
-                    nums[positionOfZero] = nums[i];
-                    nums[i] = tmp;
-                    positionOfZero++;
-                    i++;
-                } else {
-                    positionOfZero++;
-                    i++;
-                }
-            } else if(nums[i] == 2) {
-                int tmp = nums[positionOfTwo];
-                nums[positionOfTwo] = nums[i];
-                nums[i] = tmp;
-                positionOfTwo--;
-            } else {
-                i++;        // 原来i++放在for的条件里，这个if branch可以省略
-                            // 但是为了当num==2时继续操作当前i，就把i++拿出来了
-                            // 犯了一个错误就是，改了设计之后，忘记加这个了。切忌！！！！！
+class L66_Plus_One {
+    public int[] plusOne(int[] digits) {
+        int ret = 0;
+        for(int i = digits.length - 1; i >= 0; --i) {
+            ret = plusOne(digits[i]);
+            digits[i] = ret;
+            if(ret != 0) {
+                return digits;
             }
         }
+
+        int[] nums = new int[digits.length + 1];
+        nums[0] = 1;
+        return nums;
     }
 
-
-    /**
-     * TODO: 121. Best Time to Buy and Sell Stock
-     *
-     * @param prices
-     * @return
-     */
-    public int L121_maxProfit(int[] prices) {
-        int lowestBuy = Integer.MAX_VALUE;
-        int maxProfit = 0;
-        for(int i = 0; i < prices.length; i++) {
-            lowestBuy = Math.min(lowestBuy, prices[i]);
-            maxProfit = Math.max(maxProfit, prices[i] - lowestBuy);
-        }
-
-        return maxProfit;
-    }
-
-    /**
-     * TODO: 122. Best Time to Buy and Sell Stock II
-     *
-     * @param prices
-     * @return
-     */
-    public int L122_maxProfit(int[] prices) {
-        int maxProfit = 0;
-        for(int i = 0; i < prices.length - 1; i++) {
-            if(prices[i+1] > prices[i])
-                maxProfit += prices[i+1] - prices[i];
-        }
-
-        return maxProfit;
-    }
-
-    public int L122_maxProfit_v2(int[] prices) {
-        if(prices == null || prices.length == 0)
+    int plusOne(int num) {
+        if(num  == 9) {
             return 0;
-
-        int maxProfit = 0;
-        int maxProfixOfEachTransaction = 0;
-        int lowestBuyOfEachTransaction = prices[0];
-        int highestSellPricesofEachTransaction = prices[0];
-
-        for(int i = 1; i < prices.length; i++) {
-            if(prices[i] < highestSellPricesofEachTransaction) {
-                maxProfit += maxProfixOfEachTransaction;
-                maxProfixOfEachTransaction = 0;
-                lowestBuyOfEachTransaction = prices[i];
-                highestSellPricesofEachTransaction = prices[i];
-            } else {
-                lowestBuyOfEachTransaction = Math.min(lowestBuyOfEachTransaction, prices[i]);
-                if(prices[i] - lowestBuyOfEachTransaction > maxProfixOfEachTransaction) {
-                    highestSellPricesofEachTransaction = prices[i];
-                    maxProfixOfEachTransaction = prices[i] - lowestBuyOfEachTransaction;
-                }
-            }
-
+        } else {
+            return num + 1;
         }
-
-        if(maxProfixOfEachTransaction != 0)
-            maxProfit += maxProfixOfEachTransaction;
-
-        return maxProfit;
     }
+}
 
-
-    /**
-     * TODO: 128. Longest Consecutive Sequence
-     *
-     * @param nums
-     * @return
-     */
+class L128_Longest_Consecutive_Sequence_ {
     public int L128_longestConsecutive(int[] nums) {
         Set<Integer> cache = new HashSet<>();
         for(int i = 0; i < nums.length; i++) {
@@ -573,14 +242,9 @@ public class LeetCode_Array {
 
         return maxLength;
     }
+}
 
-
-    /**
-     * TODO: 152. Maximum Product Subarray
-     *
-     * @param nums
-     * @return
-     */
+class L152_Maximum_Product_Subarray {
     public int L152_maxProduct(int[] nums) {
         int ret = nums[0];
         int max = ret;
@@ -617,13 +281,9 @@ public class LeetCode_Array {
 
         return maxProduct;
     }
+}
 
-    /**
-     * 198. House Robber
-     *
-     * @param nums
-     * @return
-     */
+class L198_House_Robber_ {
     public int L198_rob(int[] nums) {
         if (nums == null || nums.length == 0)
             return 0;
@@ -721,13 +381,9 @@ public class LeetCode_Array {
 
         return Math.max(ifRobbedPrevious, ifDidntRobPrevious);
     }
+}
 
-    /**
-     * TODO: 213. House Robber II
-     *
-     * @param nums
-     * @return
-     */
+class L213_House_Robber_II_ {
     public int L213_rob(int[] nums) {
         if(nums == null || nums.length == 0)
             return 0;
@@ -755,12 +411,9 @@ public class LeetCode_Array {
 
         return prevMaxRobbed[1];
     }
+}
 
-
-    /**
-     * TODO: 337. House Robber III
-     *
-     */
+class L337_House_Robber_III {
     int maxRobMoney = 0;
 
     public int L337_rob(TreeNode root) {
@@ -782,14 +435,9 @@ public class LeetCode_Array {
         ret[1] = Math.max(left[0], left[1]) + Math.max(right[0], right[1]);
         return ret;
     }
+}
 
-
-    /**
-     * TODO: 628. Maximum Product of Three Numbers
-     *
-     * @param nums
-     * @return
-     */
+class L628_Maximum_Product_of_Three_Numbers {
     public int L628_maximumProduct(int[] nums) {
         int max1 = Integer.MIN_VALUE;
         int max2 = Integer.MIN_VALUE;
@@ -819,13 +467,9 @@ public class LeetCode_Array {
         return Math.max(nums[0] * nums[1] * nums[nums.length - 1],
                 nums[nums.length - 1] * nums[nums.length - 2] * nums[nums.length - 3]);
     }
+}
 
-    /**
-     * TODO: 162. Find Peak Element
-     *
-     * @param nums
-     * @return
-     */
+class L162_Find_Peak_Element_ {
     public int L162_findPeakElement(int[] nums) {
         if(nums.length == 1)
             return 0;
@@ -841,15 +485,9 @@ public class LeetCode_Array {
         }
         return left;
     }
+}
 
-
-    /**
-     * TODO: 169. Majority Element
-     * Boyer–Moore majority vote algorithm
-     *
-     * @param nums
-     * @return
-     */
+class L169_Majority_Element {
     //O(n) + O(1)
     public int L169_majorityElement(int[] nums) {
         int ret = 0;
@@ -891,14 +529,9 @@ public class LeetCode_Array {
         //to verify if the result is the majority element
         return currentNum;
     }
+}
 
-
-    /**
-     * TODO: 229. Majority Element II
-     *
-     * @param nums
-     * @return
-     */
+class L229_majority_Element_II {
     public List<Integer> L229_majorityElement_II(int[] nums) {
         List<Integer> majorityElements = new ArrayList<>();
         if(nums == null || nums.length == 0)
@@ -935,14 +568,9 @@ public class LeetCode_Array {
         if(counter2 > nums.length/3) majorityElements.add(candidate2);
         return majorityElements;
     }
+}
 
-
-    /**
-     * TODO: 189. Rotate Array
-     *
-     * @param nums
-     * @param k
-     */
+class L189_Rotate_Array_ {
     public void L189_rotate(int[] nums, int k) {
         int setNumber = gcd(nums.length, k);
         for(int i = 0; i < setNumber; i++) {
@@ -975,13 +603,9 @@ public class LeetCode_Array {
             nums[i] = buf[i];
         }
     }
+}
 
-    /**
-     * TODO: 238. Product of Array Except Self
-     *
-     * @param nums
-     * @return
-     */
+class L238_Product_of_Array_Except_Self {
     public int[] L238_productExceptSelf(int[] nums) {
         int[] ret = new int[nums.length];
         int total = 1;
@@ -1022,13 +646,9 @@ public class LeetCode_Array {
 
         return ret;
     }
+}
 
-    /**
-     * TODO: 268. Missing Number
-     *
-     * @param nums
-     * @return
-     */
+class L268_Missing_Number {
     public int L268_missingNumber(int[] nums) {
         int ret = 0;
         for(int i = 0; i < nums.length; i++) {
@@ -1056,13 +676,9 @@ public class LeetCode_Array {
 
         return nums.length;
     }
+}
 
-
-    /**
-     * TODO: 283. Move Zeroes
-     *
-     * @param nums
-     */
+class L283_Move_Zeroes {
     public void L283_moveZeroes(int[] nums) {
         int newEndOfArray = 0;
         for(int i = 0; i < nums.length; i++) {
@@ -1077,37 +693,10 @@ public class LeetCode_Array {
             newEndOfArray++;
         }
     }
+}
 
 
-    /**
-     * 287. Find the Duplicate Number
-     *
-     * @param nums
-     * @return
-     */
-    public int L287_findDuplicate(int[] nums) {
-        int i = nums[0];
-        int j = nums[0];
-        do{
-            i = nums[i];
-            j = nums[nums[j]];
-        }while(i != j);
-
-        j = nums[0];
-        while(i != j) {
-            i = nums[i];
-            j = nums[j];
-        }
-
-        return i;
-    }
-
-
-    /**
-     * TODO: 289. Game of Life
-     *
-     * @param board
-     */
+class L289_Game_of_Life {
     public void L289_gameOfLife_v3(int[][] board) {
         if(board.length == 0 || (board.length == 1 && board[0].length == 0))
             return;
@@ -1204,11 +793,10 @@ public class LeetCode_Array {
         }
     }
 
-    /**
-     * 48. Rotate Image
-     *
-     * @param matrix
-     */
+}
+
+class L48_Rotate_Image {
+
     public void L48_rotate(int[][] matrix) {
         //transpose the matrix
         int tmp;
@@ -1239,13 +827,6 @@ public class LeetCode_Array {
         rotateMatrix(matrix, 0, matrix.length - 1);
     }
 
-    /**
-     * 48. Rotate Image
-     *
-     * @param matrix
-     * @param begin
-     * @param end
-     */
     private void rotateMatrix(int[][] matrix, int begin, int end) {
         if(begin >= end)
             return;
@@ -1267,14 +848,9 @@ public class LeetCode_Array {
 
         rotateMatrix(matrix, begin+1, end-1);
     }
+}
 
-
-    /**
-     * 54. Spiral Matrix
-     *
-     * @param matrix
-     * @return
-     */
+class L54_Spiral_Matrix {
     public List<Integer> L54_spiralOrder(int[][] matrix) {
         List<Integer> ret = new ArrayList<>();
 
@@ -1309,33 +885,5 @@ public class LeetCode_Array {
 
         return ret;
     }
-
-    public static void main(String[]  args) {
-        int[] array = {1,2, 3, 4, 5, 6};
-
-        LeetCode_Array processor = new LeetCode_Array();
-
-        //processor.rotate(array, 2);
-
-        /*
-        int[] ret = processor.twoSum(array, 6);
-        for(int i : ret)
-            System.out.println(i);
-
-        int[] array1 = {1,3};
-        int[] array2 = {2};
-        double ret2 = processor.findMedianSortedArrays(array1, array2);
-        System.out.println("ret2 = " + ret2);
-        */
-
-        ///int ret = processor.firstMissingPositive(array);
-        //System.out.println(ret);
-
-        //int ret = processor.maxProfit(array);
-        //System.out.println(ret);
-    }
-
-
-
 }
 

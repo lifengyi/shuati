@@ -3,6 +3,12 @@ package interview;
 import java.util.*;
 
 public class LeetCode_Tree {
+    public static void main(String[] args) {
+
+    }
+}
+
+class L513_Find_Bottom_Left_Tree_Value {
     public int findBottomLeftValue(TreeNode root) {
         if(root == null)
             return 0;
@@ -26,164 +32,14 @@ public class LeetCode_Tree {
         }
         return ret;
     }
+}
 
-    /**
-     * TODO: 108 Convert Sorted Array to Binary Search LeetCode_Tree
-     *
-     * @param root
-     * @return
-     */
-    public TreeNode convertBSTToGreatTree(TreeNode root) {
-        if(root == null)
-            return null;
-
-        convert(root, 0);
-
-        return root;
-    }
-
-    private int convert(TreeNode node, int value) {
-        if(node == null)
-            return 0;
-
-        int rightValue = 0;
-        int leftValue = 0;
-        if(node.right != null) {
-            rightValue = convert(node.right, 0);
-        }
-
-        node.val = node.val + value + rightValue;
-
-        if(node.left != null) {
-            leftValue = convert(node.left, node.val);
-        } else {
-            leftValue = node.val;
-        }
-
-        return leftValue;
-    }
-
-
-    /**
-     * TODO: 94. Binary LeetCode_Tree Inorder Traversal
-     *
-     * @param root
-     * @return
-     */
-    public List<Integer> inorderTraversal(TreeNode root) {
-        List<Integer> nodeList = new ArrayList<>();
-        if(root == null)
-            return nodeList;
-
-        traversal_v2(root, nodeList);
-
-        return nodeList;
-    }
-
-    private void traversal_v2(TreeNode root, List<Integer> list) {
-        if(root == null)
-            return;
-
-        TreeNode currentNode = root;
-        while(currentNode != null) {
-            if(currentNode.left == null) {
-                //no left child tree
-                list.add(currentNode.val);
-                currentNode = currentNode.right;
-            } else {
-                //find predecessor in left child tree
-                TreeNode predecessor = currentNode.left;
-                while(predecessor.right != null && predecessor.right != currentNode)
-                    predecessor = predecessor.right;
-
-                //first time to access the current root
-                if(predecessor.right == null) {
-                    predecessor.right = currentNode;
-                    currentNode = currentNode.left;
-                } else {
-                    //seconde time to access the current root
-                    predecessor.right = null;
-                    list.add(currentNode.val);
-                    currentNode = currentNode.right;
-                }
-            }
-        }
-    }
-
-    private void traversal(TreeNode root, List<Integer> list) {
-        if(root == null)
-            return;
-
-        if(root.left != null) {
-            traversal(root.left, list);
-        }
-
-        list.add(root.val);
-
-        if(root.right != null) {
-            traversal(root.right, list);
-        }
-    }
-
-
-    /**
-     * TODO: 101. Symmetric LeetCode_Tree
-     *
-     * @param root
-     * @return
-     */
+class L101_Symmetric_Tree {
     public boolean isSymmetric(TreeNode root) {
         if(root == null)
             return true;
 
         return isSymmetric(root.left, root.right);
-    }
-
-    private boolean isSymmetric_V2(TreeNode leftNode, TreeNode rightNode) {
-        if(leftNode == null && rightNode == null)
-            return true;
-        if(leftNode == null || rightNode == null)
-            return false;
-
-        LinkedList<TreeNode> leftFifo = new LinkedList<>();
-        LinkedList<TreeNode> rightFifo = new LinkedList<>();
-        leftFifo.push(leftNode);
-        rightFifo.push(rightNode);
-
-        boolean isSymmetricFlag = true;
-        while(!leftFifo.isEmpty() && !rightFifo.isEmpty()) {
-            TreeNode left = leftFifo.removeFirst();
-            TreeNode right = rightFifo.removeFirst();
-
-            //check value
-            if(left.val != right.val) {
-                isSymmetricFlag = false;
-                break;
-            }
-
-            //check structure
-            if((left.left == null && right.right != null)
-                    || (left.left != null && right.right == null)
-                    || (left.right == null && right.left != null)
-                    || (left.right != null && right.left == null)) {
-                isSymmetricFlag = false;
-                break;
-            }
-
-            if(left.right != null && right.left != null) {
-                leftFifo.push(left.right);
-                rightFifo.push(right.left);
-            }
-            if(left.left != null && right.right != null) {
-                leftFifo.push(left.left);
-                rightFifo.push(right.right);
-            }
-        }
-
-        if(!leftFifo.isEmpty() || !rightFifo.isEmpty())
-            isSymmetricFlag = false;
-
-        return isSymmetricFlag;
     }
 
     private boolean isSymmetric(TreeNode left, TreeNode right) {
@@ -199,123 +55,9 @@ public class LeetCode_Tree {
             return false;
         }
     }
+}
 
-
-    /**
-     * TODO: 102. Binary LeetCode_Tree Level Order Traversal
-     *
-     * @param root
-     * @return
-     */
-    public List<List<Integer>> levelOrder(TreeNode root) {
-        List<List<Integer>> ret = new ArrayList<>();
-        if(root == null)
-            return ret;
-
-        LinkedList<TreeNode> fifo1 = new LinkedList<>();
-        LinkedList<TreeNode> fifo2 = new LinkedList<>();
-        fifo1.push(root);
-        while(!fifo1.isEmpty() || !fifo2.isEmpty()) {
-            saveElements(fifo1, fifo2, ret);
-            saveElements(fifo2, fifo1, ret);
-        }
-
-        return ret;
-    }
-
-    private void saveElements(LinkedList<TreeNode> fifoIn, LinkedList<TreeNode> fifoOut, List<List<Integer>> list) {
-        List<Integer> elements = new ArrayList<>();
-        while(!fifoIn.isEmpty()){
-            TreeNode tmp = fifoIn.removeFirst();
-            elements.add(tmp.val);
-            if(tmp.left != null)
-                fifoOut.add(tmp.left);
-            if(tmp.right != null)
-                fifoOut.add(tmp.right);
-        }
-        if(!elements.isEmpty())
-            list.add(elements);
-    }
-
-    public List<List<Integer>> levelOrder_v2(TreeNode root) {
-        List<List<Integer>> ret = new ArrayList<>();
-        if(root == null)
-            return ret;
-
-        LinkedList<TreeNode> fifo = new LinkedList<>();
-        fifo.add(root);
-
-        while(!fifo.isEmpty()) {
-            List<Integer> elements = new ArrayList<>();
-            int counter = fifo.size();
-            while(counter != 0) {
-                //get node
-                TreeNode node = fifo.removeFirst();
-                elements.add(node.val);
-                if(node.left != null) {
-                    fifo.add(node.left);
-                }
-                if(node.right != null) {
-                    fifo.add(node.right);
-                }
-                counter--;
-            }
-            ret.add(elements);
-        }
-
-        return ret;
-    }
-
-
-    /**
-     * TODO: 103. Binary LeetCode_Tree Zigzag Level Order Traversal
-     *
-     * @param root
-     * @return
-     */
-    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
-        List<List<Integer>> ret = new ArrayList<>();
-        if(root == null)
-            return ret;
-
-        LinkedList<TreeNode> fifo = new LinkedList<>();
-        fifo.add(root);
-        int level = 0;
-
-        while(!fifo.isEmpty()) {
-            int counter = fifo.size();
-            List<Integer> nodes = new ArrayList<>();
-
-            while(counter-- != 0) {
-                TreeNode node = null;
-                if(level%2 == 0) {
-                    node = fifo.removeFirst();
-                    nodes.add(node.val);
-                    if(node.left != null)
-                        fifo.add(node.left);
-                    if(node.right != null)
-                        fifo.add(node.right);
-                } else {
-                    node = fifo.removeLast();
-                    nodes.add(node.val);
-                    if(node.right != null)
-                        fifo.push(node.right);
-                    if(node.left != null)
-                        fifo.push(node.left);
-                }
-            }
-            ret.add(nodes);
-            level++;
-        }
-
-        return ret;
-    }
-
-
-    /**
-     * TODO: 105. Construct Binary LeetCode_Tree from Preorder and Inorder Traversal
-     *
-     */
+class L105_Construct_Binary_Tree_from_Preorder_and_Inorder_Traversal {
     int preOrderIndex = 0;
     Map<Integer, Integer> inorderMap = new HashMap<>();
 
@@ -351,12 +93,9 @@ public class LeetCode_Tree {
 
         return root;
     }
+}
 
-
-    /**
-     * TODO: 108. Convert Sorted Array to Binary Search LeetCode_Tree
-     *
-     */
+class L108_Convert_Sorted_Array_to_Binary_Search_Tree {
     public void connect(TreeLinkNode root) {
         if(root == null)
             return;
@@ -394,77 +133,10 @@ public class LeetCode_Tree {
             currentNode = currentNode.left;
         }
     }
+}
 
 
-    /**
-     * TODO: 124. Binary LeetCode_Tree Maximum Path Sum
-     *
-     */
-    int maxPathSumValue = 0;
-    boolean findValue = false;
-
-    public int maxPathSum(TreeNode root) {
-        caculateMaxPathSum(root);
-        return maxPathSumValue;
-    }
-
-    public int caculateMaxPathSum(TreeNode root) {
-        if(root == null)
-            return 0;
-
-        int rootValue = root.val;
-        int leftValue = caculateMaxPathSum(root.left);
-        int rightValue = caculateMaxPathSum(root.right);
-        int returnValue = 0;
-
-        if(leftValue < 0 && rightValue < 0) {
-            returnValue = rootValue;
-            if(findValue)
-                maxPathSumValue = Math.max(maxPathSumValue, returnValue);
-            else {
-                maxPathSumValue = returnValue;
-                findValue = false;
-            }
-        } else {
-            returnValue = rootValue + Math.max(leftValue, rightValue);
-            if(findValue)
-                maxPathSumValue = Math.max(Math.max(returnValue, rootValue + rightValue + leftValue) , maxPathSumValue);
-            else {
-                maxPathSumValue = Math.max(returnValue, rootValue + rightValue + leftValue);
-                findValue = false;
-            }
-
-        }
-
-        return returnValue;
-    }
-
-
-    int maxPathSumValue_V2 = Integer.MIN_VALUE;
-
-    public int maxPathSum_v2(TreeNode root) {
-        caculateMaxPathSum_v2(root);
-        return maxPathSumValue;
-    }
-
-    public int caculateMaxPathSum_v2(TreeNode root) {
-        if(root == null)
-            return 0;
-
-        int rootValue = root.val;
-        int leftValue = Math.max(0, maxPathSum_v2(root.left));
-        int rightValue = Math.max(0, maxPathSum_v2(root.right));
-
-        maxPathSumValue_V2 = Math.max(rootValue + rightValue + leftValue, maxPathSumValue_V2);
-
-        return rootValue + Math.max(leftValue, rightValue);
-    }
-
-
-    /**
-     * TODO: 230. Kth Smallest Element in a BST
-     *
-     */
+class L230_Kth_Smallest_Element_in_a_BST {
     int kthSmallestCounter = 0;
 
     public int kthSmallest(TreeNode root, int k) {
@@ -487,18 +159,10 @@ public class LeetCode_Tree {
         return root.val;
     }
 
-    /**
-     * TODO: 236. Lowest Common Ancestor of a Binary LeetCode_Tree
-     *
-     * v1, both of the two nodes must exist in binary tree.
-     *
-     * V2 failed to pass tests.
-     *
-     * @param root
-     * @param p
-     * @param q
-     * @return
-     */
+}
+
+
+class L236_Lowest_Common_Ancestor_of_a_Binary_Tree {
 
     /**
      * Condition:
@@ -583,12 +247,9 @@ public class LeetCode_Tree {
 
         return firstNode;
     }
+}
 
-
-    /**
-     * TODO: 297. Serialize and Deserialize Binary LeetCode_Tree
-     */
-
+class L297_Serialize_and_Deserialize_Binary_Tree {
     private String NULL_STRING = "NULL";
     private String SPLITER = ",";
 
@@ -637,15 +298,11 @@ public class LeetCode_Tree {
 
         return root;
     }
+}
 
-
-    /**
-     * TODO: 98. Validate Binary Search LeetCode_Tree
-     *
-     * @param root
-     * @return
-     */
+class L98_Validate_Binary_Search_Tree {
     public boolean isValidBST(TreeNode root) {
+
         return isValidBST(root, null, null);
     }
 
@@ -676,96 +333,5 @@ public class LeetCode_Tree {
         }
 
         return leftValue && rightValue;
-    }
-
-    public static void main(String[] args) {
-        /*
-        TreeNode root = new TreeNode(10);
-        root.left = new TreeNode(-2);
-        root.right = new TreeNode(13);
-        root.left.left = new TreeNode(40);
-        root.left.right = new TreeNode(-5);
-        root.left.right.left = new TreeNode(18);
-        root.left.right.right = new TreeNode(9);
-        root.right.left = new TreeNode(12);
-        root.right.right = new TreeNode(7);
-
-        LeetCode_Tree tree = new LeetCode_Tree();
-        int leftNodeVal = tree.findBottomLeftValue(root);
-        System.out.println("The leftmost value in last row is " + leftNodeVal);
-
-        System.out.println("Level order the original tree:");
-        BinaryTreeTraversal.levelOrder_df(root);
-
-
-        BinaryTreeRelated processor = new BinaryTreeRelated();
-        processor.revertBinaryTreeToBST(root);
-        System.out.println("Level order the original BST:");
-        BinaryTreeTraversal.levelOrder_df(root);
-
-        tree.convertBSTToGreatTree(root);
-        System.out.println("Convert BST to great tree:");
-        BinaryTreeTraversal.levelOrder_df(root);
-        */
-
-
-        /*
-        TreeNode root = new TreeNode(37);
-        root.left = new TreeNode(-34);
-        root.left.right = new TreeNode(-100);
-        root.right = new TreeNode(-48);
-        root.right.left = new TreeNode(-100);
-        root.right.right = new TreeNode(48);
-        root.right.right.left = new TreeNode(-54);
-
-        TreeNode testNode = new TreeNode(-71);
-        root.right.right.left.left = testNode;
-        root.right.right.left.right = new TreeNode(-22);
-        root.right.right.left.right.right = new TreeNode(8);
-
-        LeetCode_Tree tree = new LeetCode_Tree();
-
-        TreeNode node = tree.lowestCommonAncestor(root, testNode, new TreeNode(-711));
-        if(node !=null)
-            System.out.println("node val = " + node.val);
-        else
-            System.out.println("return null.");
-         */
-
-        /*
-        TreeNode root = new TreeNode(1);
-        root.left = new TreeNode(2);
-        root.right = new TreeNode(3);
-        root.right.left = new TreeNode(4);
-        root.right.right = new TreeNode(5);
-
-        LeetCode_Tree tree = new LeetCode_Tree();
-        String out = tree.serialize(root);
-        if(out==null || out.trim().length() == 0)
-            System.out.println("string is empty.");
-        else
-            System.out.println("String = " + out);
-
-        tree.deserialize(out);
-        */
-        /*
-        TreeNode root = new TreeNode(10);
-        root.left = new TreeNode(5);
-        root.right = new TreeNode(15);
-        root.right.left = new TreeNode(6);
-        root.right.right = new TreeNode(20);
-        LeetCode_Tree tree = new LeetCode_Tree();
-        if(tree.isValidBST(root)) {
-            System.out.println("bst.");
-        } else {
-            System.out.println("not bst.");
-        }
-        */
-
-        TreeNode root = new TreeNode(5);
-        root.left = new TreeNode(2);
-        //root.right = new TreeNode(15);
-        //root.right.left = new TreeNode(11);
-
     }
 }

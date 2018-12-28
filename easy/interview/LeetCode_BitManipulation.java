@@ -1,12 +1,10 @@
 package interview;
 
 public class LeetCode_BitManipulation {
-    /**
-     * 260. Single Number III
-     *
-     * @param nums
-     * @return
-     */
+
+}
+
+class L260_Single_Number {
     public int[] L260_singleNumber(int[] nums) {
         int flag = 0;
         int[] ret = new int[2];
@@ -24,13 +22,9 @@ public class LeetCode_BitManipulation {
         }
         return ret;
     }
+}
 
-    /**
-     * 137. Single Number II
-     *
-     * @param nums
-     * @return
-     */
+class L137_Single_Number_II {
     public int L137_singleNumber(int[] nums) {
         int ret = 0, count = 0;
         for(int i = 0; i< 32; i++) {
@@ -55,14 +49,9 @@ public class LeetCode_BitManipulation {
 
         return ones;
     }
+}
 
-    /**
-     * 371. Sum of Two Integers
-     *
-     * @param a
-     * @param b
-     * @return
-     */
+class L371_Sum_of_Two_Integers {
     public int L371_getSum(int a, int b) {
         int inc = a & b;
         int valueOfXOR = a ^ b;
@@ -71,13 +60,9 @@ public class LeetCode_BitManipulation {
         else
             return L371_getSum(valueOfXOR, inc<<1);
     }
+}
 
-    /**
-     * 191. Number of 1 Bits
-     *
-     * @param n
-     * @return
-     */
+class L191_Number_of_1_Bits {
     public int L191_hammingWeight(int n) {
         int count = 0, num = n;
         while(num != 0) {
@@ -86,13 +71,9 @@ public class LeetCode_BitManipulation {
         }
         return count;
     }
+}
 
-    /**
-     * 190. Reverse Bits
-     *
-     * @param n
-     * @return
-     */
+class L190_Reverse_Bits {
     // you need treat n as an unsigned value
     public int L190_reverseBits_v1(int n) {
         int res = 0;

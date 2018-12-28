@@ -254,6 +254,53 @@ class L70_Climbing_Stairs {
 
 
 
+/**
+ *  L128 : Longest Consequtive Sequence
+ *         给定一组数字（排序后可变成序列）求子序列的长度
+ *         要求：子序列(排序后)是递增的，排序后也相邻，子序列元素数字相差1
+ *
+ *         dp[i] 取决于排序后序列中前1个元素的状态值
+ *
+ *  L674 : Longest Continuous Increasing Sequence
+ *         求解序列中最长递增子序列的长度
+ *
+ *         输入数组不可变，求最长递增子序列长度
+ *         要求：子序列元素相邻 + 递增
+ *
+ *         dp[i] 取决于原序列中前1个元素的状态值
+ *         O(n)
+ *
+ *
+ *  变种1：
+ *         输入数组不可变，求最长连续子序列长度
+ *         要求：子序列元素不一定相邻，但是递增且数值相差1
+ *         O(n)
+ *
+ *  变种2：
+ *         输入数组不可变，求输出最长连续子序列
+ *         要求：子序列元素不一定相邻，但是递增且数值相差1
+ *         O(n)
+ *
+ *
+ *  变种3： L300 : Longest Increasing Sequence
+ *
+ *         输入数组不可变，求最长递增子序列的长度
+ *         要求：子序列元素不一定相邻，但是递增的
+ *
+ *         dp[i] 取决于原序列中i之前所有元素中最优的状态值，复杂度为O(n^2)
+ *
+ *         other: 二分法解决: O(nlogn)
+ *                sort + LCS，复杂度为O(n^2)
+ *
+ *
+ *  变种4： L398 : Longest Continuous Increasing Sequence II  Matrix
+ *
+ *         输入不再是一维数组，而是二维矩阵，求矩阵中最长递增子序列的长度
+ *         要求：子序列元素相邻 + 递增的
+ *
+ *         search with memorization
+ */
+
 class L128_Longest_Consecutive_Sequence {
     public int longestConsecutive(int[] nums) {
         if(nums == null || nums.length == 0) {
@@ -300,43 +347,107 @@ class L128_Longest_Consecutive_Sequence {
     }
 }
 
-class L128_Longest_Consecutive_Sequence_noDP {
-    public int longestConsecutive(int[] nums) {
-        Set<Integer> cache = new HashSet<>();
-        for(int i = 0; i < nums.length; i++) {
-            if(!cache.contains(nums[i]))
-                cache.add(nums[i]);
+class L674_Longest_Continuous_Increasing_Subsequence {
+    public int findLengthOfLCIS(int[] nums) {
+        if(nums == null || nums.length == 0) {
+            return 0;
+        }
+        if(nums.length == 1) {
+            return 1;
         }
 
-        int maxLength = 0;
-        for(int number : nums) {
-            if(cache.isEmpty())
-                break;
-            if(cache.contains(number)) {
-
-                int length = 1;
-                int successorNumber = number + 1;
-                int predecessorNumber = number - 1;
-                while(cache.contains(successorNumber)) {
-                    cache.remove(successorNumber);
-                    length++;
-                    successorNumber++;
-                }
-                while(cache.contains(predecessorNumber)) {
-                    cache.remove(predecessorNumber);
-                    length++;
-                    predecessorNumber--;
-                }
-                maxLength = Math.max(maxLength, length);
-                cache.remove(number);
+        int[] dp = new int[2];
+        dp[0] = 1;
+        int maxLen = dp[0];
+        for(int i = 1; i < nums.length; ++i) {
+            dp[i%2] = 1;
+            if(nums[i] > nums[i - 1]) {
+                dp[i%2] = dp[(i - 1)%2] + 1;
             }
+            maxLen = Math.max(maxLen, dp[i%2]);
         }
 
-        return maxLength;
+        return maxLen;
     }
 }
 
 
+/**
+ *  Variant 1
+ */
+
+class Longest_Continuous_Increasing_Subsequence_variant1 {
+
+    public int findLenthOfLIS(int[] nums) {
+        if(nums == null || nums.length == 0) {
+            return 0;
+        }
+
+        Map<Integer, Integer> map = new HashMap<>();
+        int[] dp  = new int[nums.length];
+        dp[0] = 1;
+        map.put(nums[0], 0);
+
+        int max = dp[0];
+        int prevNumber = 0;
+        for(int i = 1; i < nums.length; ++i) {
+            prevNumber = nums[i] - 1;
+            if(map.containsKey(prevNumber)) {
+                dp[i] = dp[map.get(prevNumber)] + 1;
+            } else {
+                dp[i] = 1;
+            }
+
+            map.put(nums[i], i);
+            max = Math.max(max, dp[i]);
+        }
+
+        return max;
+    }
+
+
+}
+
+class Longest_Continuous_Increasing_Subsequence_variant2 {
+
+    public int[] printLIS(int[] nums) {
+        if(nums == null || nums.length == 0) {
+            return new int[0];
+        }
+
+        Map<Integer, Integer> map = new HashMap<>();
+        int[] dp  = new int[nums.length];
+        dp[0] = 1;
+        map.put(nums[0], 0);
+
+        int max = dp[0];
+        int index = 0;
+
+        int prevNumber = 0;
+        for(int i = 1; i < nums.length; ++i) {
+            prevNumber = nums[i] - 1;
+            if(map.containsKey(prevNumber)) {
+                dp[i] = dp[map.get(prevNumber)] + 1;
+            } else {
+                dp[i] = 1;
+            }
+
+            map.put(nums[i], i);
+            if(dp[i] > max) {
+                max = dp[i];
+                index = i;
+            }
+        }
+
+        int[] ret = new int[max];
+        for(int i = 0; i < max; ++i) {
+            ret[i] = nums[index] - max + 1 + i;
+        }
+        return ret;
+    }
+
+
+}
 
 
 /**
@@ -348,7 +459,7 @@ class L128_Longest_Consecutive_Sequence_noDP {
  *  还可以：binary search解法: O(nlogn)
  *  还可以：sort + LCS解法：O(nlogn)
  */
-class L300_Longest_Increasing_Subsequence {
+class L300_Longest_Increasing_Subsequence_On2 {
     public int lengthOfLIS(int[] nums) {
         if(nums == null || nums.length == 0) {
             return 0;
@@ -375,59 +486,7 @@ class L300_Longest_Increasing_Subsequence {
     }
 }
 
-class L674_Longest_Continuous_Increasing_Subsequence {
-    public int findLengthOfLCIS(int[] nums) {
-        if(nums == null || nums.length == 0) {
-            return 0;
-        }
-        if(nums.length == 1) {
-            return 1;
-        }
 
-        int[] dp = new int[2];
-        dp[0] = 1;
-        int maxLen = dp[0];
-        for(int i = 1; i < nums.length; ++i) {
-            dp[i%2] = 1;
-            if(nums[i] > nums[i - 1]) {
-                dp[i%2] = dp[(i - 1)%2] + 1;
-            }
-            maxLen = Math.max(maxLen, dp[i%2]);
-        }
-
-        return maxLen;
-    }
-}
-
-/**
- *  L128 : Longest Consequtive Sequence
- *         给定一组数字（排序后可变成序列）求子序列
- *         要求：子序列(排序后)是递增的，子序列元素相邻，且数字相差1
- *
- *         dp[i] 取决于排序后序列中前1个元素的状态值
- *         other: 放入set，遍历找最大长度,或者排序再遍历找
- *
- *  L674 : Longest Continuous Increasing Sequence
- *         求解序列中最长子序列
- *         要求：子序列是递增的，子序列元素相邻且递增关系，且子序列序列必须是和原序列一样（即不允许排序）
- *
- *         dp[i] 取决于原序列中前1个元素的状态值
- *         other: 遍历，并维护最大长度
- *
- *  L300 : Longest Increasing Sequence
- *         674 follow up 1: 相邻变不相邻
- *         求解序列中最长子序列
- *         要求：子序列是递增的，子序列元素是递增关系，且子序列必须是和原序列一样
- *
- *         dp[i] 取决于原序列中i之前所有元素中最优的状态值，复杂度为O(n^2)
- *         other: 二分法解决: O(nlogn)
- *                sort + LCS，复杂度为O(n^2)
- *
- *  L398 : Longest Continuous Increasing Sequence II  Matrix
- *         674 follow up 2: 一维数组转为二维矩阵
- *         求解二维矩阵中最长子序列
- *         要求：子序列是递增的，子序列存在于原矩阵中，子序列元素必须是原矩阵中相邻数字
- */
 
 
 
@@ -987,7 +1046,7 @@ class LintCode_396_Coins_in_a_Line_III {
         }
 
         int result = search(values, 0, len - 1, dp);
-        return result >= total/2 ? true : false;
+        return result >= total/2 ? true : false;            // 最好改成： result >= total - result 比较好 ！！！
     }
 
     int search(int[] values, int i, int j, int[][] dp) {
@@ -1302,6 +1361,9 @@ class L87_Scramble_String {
     }
 }
 
+
+/************************* 匹配型 DP *********************/
+
 class L72_Edit_Distance {
     public int minDistance(String word1, String word2) {
         if(word1 == null || word2 == null) {
@@ -1495,6 +1557,9 @@ class L97_Interleaving_String {
         return false;
     }
 }
+
+
+/*********************  背包 DP ***********************/
 
 class LintCode_92_Backpack {
     public int backPack(int m, int[] A) {

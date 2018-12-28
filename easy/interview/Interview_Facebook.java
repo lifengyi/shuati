@@ -1006,7 +1006,7 @@ class L438_Find_All_anagrams_In_a_String {
  *
  *
  * 再进一步优化：
- *        此处并没有实现，在匹配字符串的过程中，我们使用了startsWith，
+ *        此处并没有实现，在匹配字符串的过程中，我们使用了 startsWith，
  *        还可以考虑如下：
  *        a. 将list转为Set，摒弃重复字符串，以及异常字符串，例如大于目标字符串的串
  *        b. 同时记下当前set中最大的数据长度max
@@ -1021,6 +1021,7 @@ class L438_Find_All_anagrams_In_a_String {
  *
  * DP解法：
  *    参考Word Break III的2种DP
+ *
  */
 class L139_Word_Break {
     public boolean wordBreak(String s, List<String> wordDict) {
@@ -1059,7 +1060,7 @@ class L139_Word_Break {
  *
  * 减少重复计算量，即记录下某个index下可以达到的路径
  *
- * 为了减少每个index记录消耗的存储空间，之存储下一条index，
+ * 为了减少每个index记录消耗的存储空间，只存储下一条index，
  *
  * 并不存储所有全部路径；
  *
@@ -1151,77 +1152,106 @@ class L140_Word_Break_II {
  *  DP2 : O(n*n)
  *  方案的选取取决于数据特点：字符串过长 vs 字典过长
  *
- *  该题目可以和word break I放一起，两种DP方案均可解
+ *  遍历字符串中所有索引的过程中：
+ *  如果发现该索引不可达，则跳过不处理
+ *  如果可达，则采取上述两种方案的一种进行比较；
+ *
+ *  word break I
+ *      dp[i]代表是否可达，dp[0] = 1
+ *
+ *  word break III
+ *      dp[i]代表到达该索引的可行解方案数量，dp[0] = 1;
+ *
+ *  variant： 求解可行解中，长度最大的可行解的长度
+ *      dp[i]代表到达该索引的所有可行解中，长度最大的可行解的长度
+ *
  *
  */
 class LintCode_L683_Word_Break_III_nk {
     public int wordBreak3(String s, Set<String> dict) {
-        // Write your code here
-        if(s == null || dict == null) {
-            return 0;
-        }
-        if(s.length() == 0 && dict.size() == 0) {
-            return 1;
-        }
-        if(s.length() == 0 || dict.size() == 0) {
-            return 0;
-        }
-
-        Set<String> newDict = new HashSet<>();
-        for(String word : dict) {
-            newDict.add(word.toUpperCase());
-        }
-
-        s = s.toUpperCase();
         int[] dp = new int[s.length() + 1];
-        dp[s.length()] = 1;
-        for(int i = s.length() - 1; i >= 0; --i) {
-            int count = 0;
-            for(String word : newDict) {
-                if(i + word.length() <= s.length() && s.startsWith(word, i)) {
-                    count += dp[i + word.length()];
+        dp[0] = 1;
+        s = s.toUpperCase();
+        Set<String> set = new HashSet<>();
+        for(String word : dict) {
+            set.add(word.toUpperCase());
+        }
+
+        for(int i = 0; i < dp.length; ++i) {
+            if(dp[i] == 0) {
+                continue;
+            }
+
+            for(String word : set) {
+                if(word.length() == 0 || i + word.length() >= dp.length) {
+                    continue;
+                }
+
+                if(s.startsWith(word, i)) {
+                    dp[i + word.length()] += dp[i];
                 }
             }
-            dp[i] = count;
         }
 
-        return dp[0];
+
+        return dp[s.length()];
     }
 }
 
 class LintCode_L683_Word_Break_III_nn {
     public int wordBreak3(String s, Set<String> dict) {
-        // Write your code here
-        if(s == null || dict == null) {
-            return 0;
-        }
-        if(s.length() == 0 && dict.size() == 0) {
-            return 1;
-        }
-        if(s.length() == 0 || dict.size() == 0) {
-            return 0;
-        }
-
-        int maxLen = 0;
-        Set<String> newDict = new HashSet<>();
-        for(String word : dict) {
-            newDict.add(word.toUpperCase());
-            maxLen = Math.max(maxLen, word.length());
-        }
-        s = s.toUpperCase();
-
         int[] dp = new int[s.length() + 1];
-        dp[s.length()] = 1;
-        for(int i = s.length() - 1; i >= 0; --i) {
-            int count = 0;
-            for(int j = i + 1; j <= s.length() && j - i <= maxLen; ++j) {
-                if(newDict.contains(s.substring(i, j))) {
-                    count += dp[j];
+        dp[0] = 1;
+
+        s = s.toUpperCase();
+        Set<String> newSet = new HashSet<>();
+        for(String word : dict) {
+            newSet.add(word.toUpperCase());
+        }
+
+        for(int i = 0; i < dp.length; ++i) {
+            if(dp[i] == 0) {
+                continue;
+            }
+
+            for(int j = i + 1; j <= s.length(); ++j) {
+                String tmp = s.substring(i, j);
+                if(newSet.contains(tmp)) {
+                    dp[j] += dp[i];
                 }
             }
-            dp[i] = count;
         }
-        return dp[0];
+        return dp[s.length()];
+    }
+}
+
+/**
+ * 求可行解中长度最大的可行解的长度
+ */
+class Word_Break_variant {
+    public int wordBreak_variant(String s, Set<String> dict) {
+        int[] dp = new int[s.length() + 1];
+        dp[0] = 0;
+
+        s = s.toUpperCase();
+        Set<String> newSet = new HashSet<>();
+        for(String word : dict) {
+            newSet.add(word.toUpperCase());
+        }
+
+        for(int i = 0; i < dp.length; ++i) {
+            if(i != 0 && dp[i] == 0) {
+                continue;
+            }
+
+            for(int j = i + 1; j <= s.length(); ++j) {
+                String tmp = s.substring(i, j);
+                if(newSet.contains(tmp)) {
+                    dp[j] = Math.max(dp[j], dp[i] + 1);
+                }
+            }
+        }
+        return dp[s.length()];
     }
 }
 
@@ -1606,6 +1636,204 @@ class Lintcode_43_Maximum_Subarray_III {
             preSum[i] = preSum[i - 1] + nums[i - 1];
         }
         return preSum;
+    }
+}
+
+
+class L290_Word_Pattern {
+    public boolean wordPattern(String pattern, String str) {
+        if(pattern == null || str == null) {
+            return false;
+        }
+
+        if(pattern.length() == 0 && str.length() == 0) {
+            return true;
+        } else if(pattern.length() == 0 || str.length() == 0) {
+            return false;
+        }
+
+        String[] strings = str.split(" ");
+        if(pattern.length() != strings.length) {
+            return false;
+        }
+
+        int[] m1 = new int[256];
+        Map<String, Integer> m2 = new HashMap<>();
+
+        for(int i = 0; i < pattern.length(); ++i) {
+            char ch = pattern.charAt(i);
+            String key = strings[i];
+            if(m1[ch] == 0 && !m2.containsKey(key)) {
+                m1[ch] = i + 1;
+                m2.put(key, i + 1);
+            } else if (m1[ch] == 0 || !m2.containsKey(key) || m1[ch] != m2.get(key)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+
+
+class L291_Word_Pattern_II {
+    public boolean wordPatternMatch(String pattern, String str) {
+        Map<Character, String> map = new HashMap<>();
+        Set<String> set = new HashSet<>();
+        return dfs(pattern, 0, str, 0, map, set);
+    }
+
+    private boolean dfs(String pattern, int patternIndex, String str, int start, Map<Character, String> map, Set<String> set) {
+        if(patternIndex == pattern.length() && start == str.length()) {
+            return true;
+        } else if(patternIndex == pattern.length() || start == str.length()) {
+            return false;
+        }
+
+        char ch = pattern.charAt(patternIndex);
+        if(map.containsKey(ch)) {
+            String prefix = map.get(ch);
+            if(comparePrefix(str, prefix, start)) {
+                return dfs(pattern, patternIndex + 1, str, start + prefix.length(), map, set);
+            } else {
+                return false;
+            }
+        }
+
+        for(int i = start; i < str.length(); ++i) {
+            String prefix = str.substring(start, i + 1);
+            if(set.contains(prefix)) {
+                continue;
+            }
+
+            set.add(prefix);
+            map.put(ch, prefix);
+            boolean ret = dfs(pattern, patternIndex + 1, str, start + prefix.length(), map, set);
+            if(ret == true) {
+                return true;
+            }
+            set.remove(prefix);
+        }
+
+        map.remove(ch);
+        return false;
+    }
+
+    private boolean comparePrefix(String str, String prefix, int start) {
+        int i = start, j = 0;
+        for(; i < str.length() && j < prefix.length(); ++i, ++j) {
+            if(str.charAt(i) != prefix.charAt(j)) {
+                return false;
+            }
+        }
+        if(j != prefix.length()) {
+            return false;
+        }
+        return true;
+    }
+}
+
+class L791_Custom_Sort_String {
+    public String customSortString(String S, String T) {
+        int[] map = new int[26];
+        for(int i = 0; i < T.length(); ++i) {
+            char ch = T.charAt(i);
+            map[ch - 'a'] += 1;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < S.length(); ++i) {
+            char ch = S.charAt(i);
+            int num = map[ch - 'a'];
+            for(int j = 0; j < num; ++j) {
+                sb.append(ch);
+            }
+            map[ch - 'a'] = 0;
+        }
+
+        for(int i = 0; i < map.length; ++i) {
+            for(int j = 0; j < map[i]; ++j) {
+                sb.append((char)(i + 'a'));
+            }
+        }
+        return sb.toString();
+    }
+}
+
+
+class L958_Check_Completeness_of_a_Binary_Tree {
+    class ANode {
+        TreeNode node = null;
+        int index = 0;
+        public ANode (TreeNode node, int index){
+            this.node = node;
+            this.index = index;
+        }
+    }
+
+    public boolean isCompleteTree(TreeNode root) {
+        List<ANode> list = new ArrayList<>();
+        list.add(new ANode(root, 0));
+        int index = 0;
+        while(index < list.size()) {
+            ANode cur = list.get(index++);
+            TreeNode node = cur.node;
+            int idx = cur.index;
+            if(node.left != null) {
+                list.add(new ANode(node.left, 2 * idx + 1));
+            }
+            if(node.right != null) {
+                list.add(new ANode(node.right, 2 * idx + 2));
+            }
+        }
+
+        return list.size() == list.get(list.size() - 1).index + 1;
+    }
+}
+
+/**
+ * 对树进行层级遍历：
+ *
+ * 还没存在节点丢失情况：
+ *   1. 遇到节点丢失：
+ *      a. 如果是左缺右有，则直接返回失败;
+ *      b. 否则，就标记一下，表示此刻发现第一次缺失节点，缺右边，或同时缺左右两边，
+ *      c. 将可能存在的节点入队列
+ *   2. 将节点入队列；
+ *
+ * 已经存在节点丢失情况：所有队列里的节点都只能是叶子节点，否则就出错；
+ */
+class L958_Check_Completeness_of_a_Binary_Tree_v2 {
+    public boolean isCompleteTree(TreeNode root) {
+        if(root == null) {
+            return true;
+        }
+
+        boolean isEnding = false;
+        LinkedList<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        while(!queue.isEmpty()) {
+            TreeNode node = queue.poll();
+            if(isEnding == true && (node.left != null || node.right != null)) {
+                return false;
+            }
+
+            if(isEnding == false) {
+                if(node.left == null && node.right != null) {
+                    return false;
+                }
+                if(node.left == null || node.right == null) {
+                    isEnding = true;
+                }
+                if(node.left != null) {
+                    queue.offer(node.left);
+                }
+                if(node.right != null) {
+                    queue.offer(node.right);
+                }
+            }
+        }
+        return true;
     }
 }
 

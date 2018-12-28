@@ -2,29 +2,19 @@ package interview;
 
 import java.util.*;
 
-class RandomListNode {
-    int label;
-    RandomListNode next, random;
-    RandomListNode(int x) { this.label = x; }
-}
-
-class ListNode {
-    int val;
-    ListNode next;
-    ListNode(int x) { val = x;};
-}
 
 
 public class LeetCode_LinkList {
 
+}
 
+class L148_Sort_List {
+    class ListNode {
+        int val;
+        ListNode next;
+        ListNode(int x) { val = x;};
+    }
 
-    /**
-     * 148. Sort List
-     *
-     * @param head
-     * @return
-     */
     public ListNode L148_sortList(ListNode head) {
         if(head == null || head.next == null)
             return head;
@@ -81,13 +71,15 @@ public class LeetCode_LinkList {
 
         return dummyHead.next;
     }
+}
 
-    /**
-     * 138. Copy List with Random Pointer
-     *
-     * @param head
-     * @return
-     */
+class L138_Copy_List_with_Random_Pointer {
+    class RandomListNode {
+        int label;
+        RandomListNode next, random;
+        RandomListNode(int x) { this.label = x; }
+    }
+
     public RandomListNode L138_copyRandomList(RandomListNode head) {
         if(head == null)
             return null;
@@ -149,13 +141,16 @@ public class LeetCode_LinkList {
 
         return dummyRandomListHead.next;
     }
+}
 
-    /**
-     * 234. Palindrome Linked List
-     *
-     * @param head
-     * @return
-     */
+class L234_Palindrome_Linked_List {
+
+    class ListNode {
+        int val;
+        ListNode next;
+        ListNode(int x) { val = x;};
+    }
+
     public boolean L234_isPalindrome_withoutSpace(ListNode head) {
         if(head == null || head.next == null)
             return true;
@@ -239,13 +234,16 @@ public class LeetCode_LinkList {
 
         return true;
     }
+}
 
-    /**
-     * 206. Reverse Linked List
-     *
-     * @param head
-     * @return
-     */
+
+class L206_Reverse_Linked_List {
+    class ListNode {
+        int val;
+        ListNode next;
+        ListNode(int x) { val = x;};
+    }
+
     public ListNode L206_reverseList_recur(ListNode head) {
         ListNode newHead = null;
         return L206_reverse(newHead, head);
@@ -280,14 +278,15 @@ public class LeetCode_LinkList {
 
         return prev;
     }
+}
 
-    /**
-     * 160. Intersection of Two Linked Lists
-     *
-     * @param headA
-     * @param headB
-     * @return
-     */
+class L160_Intersection_of_Two_Linked_Lists {
+    class ListNode {
+        int val;
+        ListNode next;
+        ListNode(int x) { val = x;};
+    }
+
     public ListNode L160_getIntersectionNode(ListNode headA, ListNode headB) {
         if(headA == null || headB == null)
             return null;
@@ -329,13 +328,15 @@ public class LeetCode_LinkList {
 
         return nodeOfLongList;
     }
+}
 
-    /**
-     * 23. Merge k Sorted Lists
-     *
-     * @param lists
-     * @return
-     */
+class L23_Merge_k_Sorted_Lists {
+    class ListNode {
+        int val;
+        ListNode next;
+        ListNode(int x) { val = x;};
+    }
+
     public ListNode L23_mergeKLists(ListNode[] lists) {
         if(lists == null || lists.length == 0)
             return null;
@@ -448,5 +449,4 @@ public class LeetCode_LinkList {
         lists[src]  = lists[target];
         lists[target] = tmp;
     }
-
 }
