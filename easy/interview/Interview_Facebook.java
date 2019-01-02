@@ -671,27 +671,28 @@ class L91_Decode_Ways_DP {
 
 class L67_Add_Binary {
     public String addBinary(String a, String b) {
-        char[] array1 = a.toCharArray();
-        char[] array2 = b.toCharArray();
+        StringBuilder sb = new StringBuilder();
+        int i = a.length() - 1, j = b.length() - 1;
+        int carryover = 0, sum = 0;
 
-        char[] ch = {'0', '1'};
-        int carryon = 0, val1 = 0, val2 = 0, newValue = 0;
-        int idx1 = array1.length - 1;
-        int idx2 = array2.length - 1;
-        char[] tmp = idx1 > idx2 ? array1 : array2;
+        while(i >= 0 || j >= 0) {
+            sum = carryover;
+            if(i >= 0) {
+                sum += a.charAt(i) - '0';
+            }
+            if(j >= 0) {
+                sum += b.charAt(j) - '0';
+            }
+            sb.append(sum%2);
+            carryover = sum/2;
+            i--;
+            j--;
+        }
 
-        for(int i = tmp.length - 1; i >= 0; --i) {
-            val1 = idx1 < 0 ? 0 : array1[idx1--] - '0';
-            val2 = idx2 < 0 ? 0 : array2[idx2--] - '0';
-            newValue = val1 + val2 + carryon;
-            carryon = newValue/2;
-            tmp[i] = ch[newValue%2];
+        if(carryover != 0) {
+            sb.append(carryover);
         }
-        if(carryon == 1) {
-            return "1" + new String(tmp);
-        } else {
-            return new String(tmp);
-        }
+        return sb.reverse().toString();
     }
 }
 
@@ -1836,6 +1837,34 @@ class L958_Check_Completeness_of_a_Binary_Tree_v2 {
         return true;
     }
 }
+
+
+class L528_Random_Pick_with_Weight {
+    Random rand = null;
+    int size = 0;
+    int[] sum = null;
+
+    public L528_Random_Pick_with_Weight(int[] w) {
+        sum = new int[w.length];
+        sum[0] = w[0];
+        for(int i = 1; i < w.length; ++i) {
+            sum[i] = sum[i - 1] + w[i];
+        }
+
+        rand = new Random();
+        size = sum[sum.length - 1];
+    }
+
+    public int pickIndex() {
+        int randNum = rand.nextInt(size);
+        int index = Arrays.binarySearch(sum, randNum + 1);
+        if(index < 0) {
+            index = -index-1;
+        }
+        return index;
+    }
+}
+
 
 
 

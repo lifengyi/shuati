@@ -206,7 +206,13 @@ class LintCode_L453_Flatten_Binary_Tree_to_Linked_List {
 
 
 /**
- *  Node A and B must be in the tree
+ *  LCS and its variants:
+ *
+ *  I. Node A and B must be in the tree.
+ *
+ *  II. Node has a pointer points to its parent.
+ *
+ *  III. Node a and B may not exist in the tree.
  */
 class LintCode_L88_Lowest_Common_Ancestor_of_a_Binary_Tree {
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode A, TreeNode B) {
@@ -230,6 +236,9 @@ class LintCode_L88_Lowest_Common_Ancestor_of_a_Binary_Tree {
 }
 
 
+/**
+ * LCS variant 1: Node has a pointer points to its parent
+ */
 class LintCode_L474_Lowest_Common_Ancestor_of_a_Binary_Tree_II {
     class ParentTreeNode {
         public ParentTreeNode parent, left, right;

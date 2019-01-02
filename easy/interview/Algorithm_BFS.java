@@ -753,6 +753,58 @@ class L207_course_Schedule {
     }
 }
 
+class L210_Course_Schedule_II {
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        Map<Integer, Set<Integer>> edges = createDefaultGraph(numCourses);
+        int[] indegree = new int[numCourses];
+        populateGraph(edges, indegree, prerequisites);
+
+        LinkedList<Integer> queue = new LinkedList<>();
+        for(int i = 0; i < indegree.length; ++i) {
+            if(indegree[i] == 0) {
+                queue.offer(i);
+            }
+        }
+
+        int[] ret = new int[numCourses];
+        int count = 0;
+        while(!queue.isEmpty()) {
+            int num = queue.poll();
+            ret[count++] = num;
+
+            for(int next : edges.get(num)) {
+                indegree[next]--;
+                if(indegree[next] == 0) {
+                    queue.offer(next);
+                }
+            }
+        }
+
+        if(count == numCourses) {
+            return ret;
+        }
+        return new int[0];
+    }
+
+    void populateGraph(Map<Integer, Set<Integer>> edges, int[] indegree,
+                       int[][] prerequisites) {
+        for(int[] prerequisite : prerequisites) {
+            int first = prerequisite[1];
+            int second = prerequisite[0];
+            edges.get(first).add(second);
+            indegree[second]++;
+        }
+    }
+
+    Map<Integer, Set<Integer>> createDefaultGraph(int n) {
+        Map<Integer, Set<Integer>> graph = new HashMap<>();
+        for(int i = 0; i < n; ++i) {
+            graph.put(i, new HashSet<Integer>());
+        }
+        return graph;
+    }
+}
+
 class L444_Sequence_Reconstruction {
     public boolean sequenceReconstruction(int[] org, List<List<Integer>> seqs) {
         if(org == null || org.length == 0 || seqs == null || seqs.size() == 0) {

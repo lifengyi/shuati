@@ -645,4 +645,32 @@ class L734_Sentence_Similarity {
     }
 }
 
+/**
+ * 可以使用UnionFind来做，同时也可以使用DFS来做
+ * 思考：以上两种都需要使用额外的空间，都是O(n * m)的空间
+ *      并查集需要保存所有点的状态，DFS需要对所有点做visited的保存
+ *
+ * 如果不适用额外的空间，那么如何操作？
+ * 使用DFS遍历所有元素，同时不设置visited数组，而是直接修改矩阵本身内容
+ * 将访问过的元素由1设置为0，这样保证下次遍历的时候不会再访问到；
+ *
+ */
+class L695_Max_Area_of_Island {
+    public int maxAreaOfIsland(int[][] grid) {
+        int max_area = 0;
+        for(int i = 0; i < grid.length; i++)
+            for(int j = 0; j < grid[0].length; j++)
+                if(grid[i][j] == 1)max_area = Math.max(max_area, AreaOfIsland(grid, i, j));
+        return max_area;
+    }
+
+    public int AreaOfIsland(int[][] grid, int i, int j) {
+        if (i >= 0 && i < grid.length && j >= 0 && j < grid[0].length && grid[i][j] == 1) {
+            grid[i][j] = 0;
+            return 1 + AreaOfIsland(grid, i + 1, j) + AreaOfIsland(grid, i - 1, j) + AreaOfIsland(grid, i, j - 1) + AreaOfIsland(grid, i, j + 1);
+        }
+        return 0;
+    }
+}
+
 
