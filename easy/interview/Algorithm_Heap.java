@@ -4,7 +4,7 @@ import java.util.*;
 
 
 
-public class Algorithm_heap {
+public class Algorithm_Heap {
 }
 
 

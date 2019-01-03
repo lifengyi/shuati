@@ -307,27 +307,57 @@ class L69_Sqrt_X {
         return res;
     }
 
-    public int mySqrt_vlong(int x) {
-        if(x <= 1) {
-            return x;
-        }
 
-        int ret = 0;
-        long target = x, left = 1, right = x, middle = 0;
+    /**
+     * 提前判断head、tail，使用左闭合区间，无重复值求下界
+     * 每次middle小于等于target，移动left时，保存结果值
+     *
+     */
+    public int mySqrt_vLong(int x) {
+        if(x == 0 || x == 1)
+            return x;
+
+        int res = -1;
+        long left = 1, right = x, middle = 0;
+        long target = x;
         while(left < right) {
-            middle = left + (right - left)/2;
-            if(middle * middle == target) {
-                return (int)middle;
-            } else if(middle * middle < target) {
-                ret = (int)middle;
+            middle = left + (right -left)/2;
+            if(middle * middle <= x) {
+                res = (int)middle;
                 left = middle + 1;
             } else {
                 right = middle;
             }
         }
-        return ret;
+
+        return res;
+    }
+
+
+    /**
+     * 可能存在重复值，取上界，左闭合区间
+     * 取重合点即为结果值，可能涉及越界区；
+     */
+    public void BS_Upperbound() {
+        int[] array = {1, 2};
+        int num = 0;
+
+        int left = 0, right = array.length, middle = 0;
+        while(left < right) {
+            middle = left + (right - left)/2;
+            int value = array[middle];
+            if(value <= num) {
+                left = middle + 1;
+            } else {
+                right = middle;
+            }
+        }
+
+        System.out.println("index = " + left);
     }
 }
+
+
 
 class Sqrt_X_varint {
     int sqrt(int x) {
@@ -351,6 +381,8 @@ class Sqrt_X_varint {
         return ret;
     }
 }
+
+
 
 class LintCode_Sqrt_X_II {
     public double LintCode_586_sqrt(double x) {

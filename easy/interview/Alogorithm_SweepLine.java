@@ -2,7 +2,7 @@ package interview;
 
 import java.util.*;
 
-public class Alogorithm_sweep_line {
+public class Alogorithm_SweepLine {
     //dummy
 }
 

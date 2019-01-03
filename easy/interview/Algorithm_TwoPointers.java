@@ -2,7 +2,7 @@ package interview;
 
 import java.util.*;
 
-public class Algorithm_two_pointers {
+public class Algorithm_TwoPointers {
 }
 
 

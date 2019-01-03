@@ -2,7 +2,7 @@ package interview;
 
 import java.util.*;
 
-public class Algorithm_segment_tree {
+public class Algorithm_SegmentTree {
 
     /**
      * LintCode: Interval Minimum Number

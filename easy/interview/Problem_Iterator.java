@@ -2,7 +2,7 @@ package interview;
 
 import java.util.LinkedList;
 
-public class Problem_iterator {
+public class Problem_Iterator {
 }
 
 /**

@@ -2,7 +2,7 @@ package interview;
 
 import java.util.*;
 
-public class Algorithm_union_find {
+public class Algorithm_UnionFind {
     //stub
 
 }
