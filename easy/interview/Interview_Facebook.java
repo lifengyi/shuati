@@ -830,7 +830,7 @@ class L44_Wildcard_Matching {
  *  2. 动态规划空间中无论值是什么，都需要强行写入以覆盖之前的值
  *  3. 注意动态规划空间的索引ij对应到原有数据集中都需要-1操作
  */
-class L41_Wildcard_Matching_OptimizedByRollingArray {
+class L44_Wildcard_Matching_OptimizedByRollingArray {
     public boolean isMatch(String s, String p) {
         if(s == null || p == null) {
             return false;
@@ -1864,6 +1864,87 @@ class L528_Random_Pick_with_Weight {
         return index;
     }
 }
+
+
+class L772_Basic_Calculator_III {
+    public int calculate(String s) {
+        LinkedList<Long> numbers = new LinkedList<>();
+        LinkedList<Character> ops = new LinkedList<>();
+        char[] array = s.toCharArray();
+
+        for(int i = 0; i < array.length; ++i) {
+            char ch = array[i];
+            if(ch == ' ') {
+                continue;
+            } else if(ch >= '0' && ch <= '9') {
+                long num = 0;
+                while(i < array.length
+                        && array[i] >= '0'
+                        && array[i] <= '9') {
+                    num = num * 10 + array[i] - '0';
+                    i++;
+                }
+
+                i--; //recover i;
+                numbers.push(num);
+            } else if(ch == '(') {
+                ops.push(ch);
+            } else if(ch == ')') {
+                while(ops.peek() != '(') {
+                    doCalculation(numbers, ops);
+                }
+                ops.pop();  //pop the '('
+            } else {
+                //ops: + - * / ，
+                // 注意此处判断，当前op没有比之前op高的时候，就需要将之前的进行计算求解
+                // 即：所有+-操作都归一，这个思想和basic calculator I中是类似的
+                while(!ops.isEmpty() && !isHigherThanPrev(ch, ops.peek()) && ops.peek() != '(') {
+                    doCalculation(numbers, ops);
+                }
+                ops.push(ch);
+            }
+        }
+
+        while(numbers.size() > 1 && !ops.isEmpty()) {
+            doCalculation(numbers, ops);
+        }
+
+        return numbers.pop().intValue();
+    }
+
+    void doCalculation(LinkedList<Long> numbers, LinkedList<Character> ops) {
+        char op = ops.pop();
+        long second = numbers.pop();
+        long first = numbers.pop();
+        numbers.push(calculate(first, second, op));
+    }
+
+    long calculate(long first, long second, char op) {
+        if(op == '+') {
+            return first + second;
+        } else if(op == '-') {
+            return first - second;
+        } else if(op == '*') {
+            return first * second;
+        } else if(op == '/') {
+            return first/second;
+        }
+
+        return 0;
+    }
+
+    private boolean isHigherThanPrev(char cur, char prev) {
+        if((prev == '+' || prev == '-')
+                && (cur == '*' || cur == '/')) {
+            return true;
+        }
+
+        return false;
+    }
+}
+
+
+
 
 
 

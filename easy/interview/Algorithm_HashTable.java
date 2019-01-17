@@ -70,3 +70,41 @@ class L49_Group_Anagrams {
         return result;
     }
 }
+
+
+class L734_Sentence_Similarity {
+    public boolean areSentencesSimilar(String[] words1, String[] words2, String[][] pairs) {
+        if(words1 == null && words2 == null) {
+            return true;
+        } else if(words1 == null || words2 == null
+                || words1.length != words2.length) {
+            return false;
+        }
+
+        Map<String, Set<String>> map = new HashMap<>();
+        for(String[] pair : pairs) {
+            if(!map.containsKey(pair[0])) {
+                map.put(pair[0], new HashSet<>());
+            }
+            map.get(pair[0]).add(pair[1]);
+
+            if(!map.containsKey(pair[1])) {
+                map.put(pair[1], new HashSet<>());
+            }
+            map.get(pair[1]).add(pair[0]);
+        }
+        String s1 = null, s2 = null;
+        for(int i = 0; i < words1.length; ++i) {
+            s1 = words1[i];
+            s2 = words2[i];
+            if(s1.equalsIgnoreCase(s2)) {
+                continue;
+            }
+            if(!map.containsKey(s1) || !map.containsKey(s2)
+                    || !map.get(s1).contains(s2)) {
+                return false;
+            }
+        }
+        return true;
+    }
+}

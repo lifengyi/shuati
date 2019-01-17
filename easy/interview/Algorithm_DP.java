@@ -1830,5 +1830,91 @@ class L887_Super_Egg_Drop {
 }
 
 
+/**
+ * 感觉是一个NP-hard问题
+ *
+ * 计算每个人的最终债务问题，忽略0债务的用户，将非0债务都提取出来
+ * 题目就演化成求最少次数将数组中个元素合并归0
+ *
+ *
+ *
+ * 假设当前数据一个挨着一个归并，并统计归并次数，归并完成后，得到统计数
+ * 如果归并完成后，发现最后清0，那么统计数必须将去1，为当前的归并总数，即最终交易次数
+ *
+ * 能清0的对/子集，需要被优先剔除出去，因为就是最优的，能找到互相清0的数据对或者数据集是我们的思想；
+ *
+ * 我们枚举所有的子集，并归并每一个子集，
+ * 1. 当发现归并没有清0，那么当前归并数为当前子集的最终交易次数
+ *    没清0，意味着这当前子集还需要和其他子集归并才能清0；
+ *
+ * 2. 如果当前归并完成后，结果清0，那么当前归并数减去1，作为当前子集的最终交易数（可以举例可得）；
+ *    但这也是一一归并下的最优，当前自己能清0，以为着这是一个原来大问题中的一个子问题，
+ *
+ *    回到了起点：一个数据集能清0，求最优交易数；
+ *    即在当前能清0的子集下，继续寻找可能存在的能清0的数据对/数据集，遍历当前子集的所有组合，使用
+ *    之前求出的dp值
+ */
+class L465_Optimal_Account_Balancing {
+    public int minTransfers(int[][] transactions) {
+        Map<Integer, Integer> accounts = new HashMap<>();
+        populateAccounts(transactions, accounts);
+        int[] debts = getDebts(accounts);
+
+        int numOfSubSets = 1 << debts.length;
+        int[] dp = new int[numOfSubSets];
+
+        for(int i = 1; i < numOfSubSets; ++i) {
+            int sum = 0, numOfTransactions = 0;
+            for(int j = 0; j < debts.length; ++j) {
+                if(((1 << j) & i) != 0) {
+                    sum += debts[j];
+                    numOfTransactions++;
+                }
+            }
+            dp[i] = numOfTransactions;
+            if(sum == 0) {
+                dp[i] -= 1;
+                for(int j = 1; j < i; ++j) {
+                    if( (i & j) == j && dp[j] + dp[i - j] < dp[i]) {
+                        dp[i] = dp[j] + dp[i - j];
+                    }
+                }
+            }
+        }
+        return dp[numOfSubSets - 1];
+    }
+
+    int[] getDebts(Map<Integer, Integer>accounts) {
+        List<Integer> nums = new ArrayList<>();
+        for(int user : accounts.keySet()) {
+            if(accounts.get(user) == 0) {
+                continue;
+            }
+            nums.add(accounts.get(user));
+        }
+        int[] ret = new int[nums.size()];
+        for(int i = 0; i < nums.size(); ++i) {
+            ret[i] = nums.get(i);
+        }
+        return ret;
+    }
+
+    void populateAccounts(int[][] transactions, Map<Integer, Integer> accounts) {
+        for(int[] transaction : transactions) {
+            int from = transaction[0];
+            int to = transaction[1];
+            int amount = transaction[2];
+            if(!accounts.containsKey(from)) {
+                accounts.put(from, 0);
+            }
+            if(!accounts.containsKey(to)) {
+                accounts.put(to, 0);
+            }
+            accounts.put(from, accounts.get(from) - amount);
+            accounts.put(to, accounts.get(to) + amount);
+        }
+    }
+}
+
 
 

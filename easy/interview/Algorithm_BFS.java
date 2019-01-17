@@ -1431,6 +1431,125 @@ class L499_The_Maze_III_ {
 }
 
 
+/**
+ *  有向图拓扑排序判断是否有闭环： 通过判断节点访问的总数是否和图节点总数相同
+ *  无向图DFS判断是否有闭环：    通过访问数组，检测是否访问到一个曾经访问过的节点
+ *
+ *  有向图拓扑排序判断是否有孤岛： 基本不涉及孤岛问题，因为孤岛会被当做indegree为0在第一时间被处理
+ *  无向图DFS判断是否有闭环：    通过判断节点访问的总数是否和图节点总数相同
+ *
+ *
+ *  269的题目我的理解有歧义，我的理解是：基本上是一个邮箱无环图，所有words中出现的字符都是一个节点
+ *  1. 有向图出现闭环，为错
+ *  2. 有向图出现孤岛，为错，以为无法判断孤岛和其他节点的优先顺序
+ *  3. 有多个入度为0的节点，为错，因为无法判断这些点的优先顺序
+ *      a->c  b->c， ab无法判断预先顺序
+ *  4. 出现平行节点，为错，以为无法判断这些点的优先顺序
+ *      a->b  a->c， bc无法判断有限顺序
+ *
+ *  在此题意理解的基础上，证明是否存在一个决定节点顺序的路径，
+ *  只能使用DFS遍历图，只要存在有一条遍历的路径满足一下条件：
+ *  a. DFS过程中遇到visited节点，就是错；(检查条件1)
+ *  b. 遍历判断是否能访问到所有节点，不能就是错（检查条件2、4）
+ *  c. 判断起始的时候入度为0的节点，超过1个，就是错；（检查条件3，这是唯一一个用到入度的地方）
+ *
+ *  在有向图的深度遍历实现中，有一点类似332_Reconstruct_Itinerary
+ *  那道题说明了肯定存在一个路径，同时也给定了起点和终点，
+ *  也同时限定了给定输入中，不存在重复边；所以实现比较容易
+ *  但那时需要cover所有边，本题是需要cover所有点，有些许不同，
+ *
+ *  但是深度遍历的思想以及代码实现上基本是类似的；
+ *
+ *  这道题目中首先不肯定存在这么一条路径，需要去找到；同时起点也需要自己去找
+ *  有向/无向图的深度遍历中，在临接表不再使用set进行存储，
+ *  因为深度遍历需要对邻接表进行挪出/挪进临接点，所以最好使用queue
+ *  332题中，需要在有向图中找到一个字母顺序最小的路径，所以用了PriorityQueue
+ *  如果此题按照我的理解来进行解题的话，则可以使用LinkedList实现Queueu进行操作offer/pull操作
+ *  同时为了排除重复边的问题，首先生成使用set的图，最后图生成完毕之后，再最后转成使用queue的图
+ */
+class L269_Alien_Dictionary {
+    class Solution {
+        public String alienOrder(String[] words) {
+            Map<Character, Set<Character>> graph = new HashMap<>();
+            Map<Character, Integer> indegree = new HashMap<>();
+            boolean ret = populateGraph(words, graph, indegree);
+            if(ret != true) {
+                return "";
+            }
+
+        /*
+        for(char ch : graph.keySet()) {
+            System.out.println(String.format("ch=%c, nexts=%s", ch, graph.get(ch)));
+        }
+        */
+
+            StringBuilder sb = new StringBuilder();
+            Set<Character> visited = new HashSet<>();
+            LinkedList<Character> queue = new LinkedList<>();
+            for(char ch : indegree.keySet()) {
+                if(indegree.get(ch) == 0) {
+                    queue.offer(ch);
+                    visited.add(ch);
+                    sb.append(ch);
+                }
+            }
+            while(!queue.isEmpty()) {
+                char ch = queue.poll();
+                for(char next : graph.get(ch)) {
+                    if(visited.contains(next)) {
+                        return "";
+                    }
+
+                    indegree.put(next, indegree.get(next) - 1);
+                    if(indegree.get(next) == 0) {
+                        visited.add(next);
+                        queue.offer(next);
+                        sb.append(next);
+                    }
+                }
+            }
+            //拓扑排序的闭环检测是通过判断节点访问的个数， 孤岛默认被算入到入度为0的启示节点
+            //dfs的闭环检测是通过访问节点判断，孤岛通过判断节点访问的个数；
+            if(visited.size() != graph.size()) {
+                return "";
+            }
+            return sb.toString();
+        }
+
+        boolean populateGraph(String[] words, Map<Character, Set<Character>> graph, Map<Character, Integer> indegree) {
+            for(String word : words) {
+                for(int i = 0; i < word.length(); ++i) {
+                    graph.put(word.charAt(i), new HashSet<>());
+                    indegree.put(word.charAt(i), 0);
+                }
+            }
+
+            for(int i = 1; i < words.length; ++i) {
+                String w1 = words[i - 1];
+                String w2 = words[i];
+                int len = Math.min(w1.length(), w2.length());
+                int j = 0;
+                for(; j < len; ++j) {
+                    char from = w1.charAt(j), to = w2.charAt(j);
+                    if(from != to) {
+                        //判断重复边，图可以不判断，但是有向图必须判断，否则入度计算有问题
+                        if(!graph.get(from).contains(to)) {
+                            graph.get(from).add(to);
+                            indegree.put(to, indegree.get(to) + 1);
+                        }
+                        break;
+                    }
+                }
+                if(j >= len && w1.length() > len) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+}
+
+
 
 
 

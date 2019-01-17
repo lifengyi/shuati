@@ -72,8 +72,8 @@ class StableSorting_CountingSort {
  *
  *  Please be sure to create "k+1" buckets!!!
  *
- *  Radix Sort使用Bucket实现时，要注意：
- *  1.数据分桶注意： a) range + 1/k， 得到sapce
+ *  Radix Sort使用 Bucket 实现时，要注意：
+ *  1.数据分桶注意：  a) range + 1/k， 得到 sapce
  *                 b) 针对当前key进行分桶，而不是仅仅针对值，
  *                    这是和桶排序的最大区别
  *  2.桶内寻找索引算法需要找到大于目标值的第一个索引，
@@ -84,7 +84,6 @@ class StableSorting_BucketSort {
 
     int binarySearch(LinkedList<Integer> list, int num) {
         int left = 0, right = list.size(), middle = 0;
-        int ret = 0;
         while(left < right) {
             middle = left + (right - left)/2;
             int value = list.get(middle);

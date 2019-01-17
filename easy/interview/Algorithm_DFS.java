@@ -577,73 +577,7 @@ class L332_Reconstruct_Itinerary {
     }
 }
 
-class L418_Sentence_Screen_Fitting {
-    public int wordsTyping(String[] sentence, int rows, int cols) {
-        StringBuilder sb = new StringBuilder();
-        int maxLen = 0;
-        for(String str : sentence) {
-            sb.append(str).append(" ");
-            maxLen = Math.max(maxLen, str.length());
-        }
 
-        if(maxLen > cols) {
-            return 0;
-        }
-
-        // Tips: the string has one more " " at the tail
-        String s = sb.toString();
-        int len = s.length();
-
-        int totalLen = 0, idx = 0;
-        for(int i = 0; i < rows; ++i) {
-            totalLen += cols;
-            while(s.charAt(totalLen%len) != ' ') {
-                totalLen--;
-            }
-            totalLen++;
-        }
-        System.out.println("totalLen = " + totalLen);
-        return totalLen/len;
-    }
-}
-
-
-class L734_Sentence_Similarity {
-    public boolean areSentencesSimilar(String[] words1, String[] words2, String[][] pairs) {
-        if(words1 == null && words2 == null) {
-            return true;
-        } else if(words1 == null || words2 == null
-                || words1.length != words2.length) {
-            return false;
-        }
-
-        Map<String, Set<String>> map = new HashMap<>();
-        for(String[] pair : pairs) {
-            if(!map.containsKey(pair[0])) {
-                map.put(pair[0], new HashSet<>());
-            }
-            map.get(pair[0]).add(pair[1]);
-
-            if(!map.containsKey(pair[1])) {
-                map.put(pair[1], new HashSet<>());
-            }
-            map.get(pair[1]).add(pair[0]);
-        }
-        String s1 = null, s2 = null;
-        for(int i = 0; i < words1.length; ++i) {
-            s1 = words1[i];
-            s2 = words2[i];
-            if(s1.equalsIgnoreCase(s2)) {
-                continue;
-            }
-            if(!map.containsKey(s1) || !map.containsKey(s2)
-                    || !map.get(s1).contains(s2)) {
-                return false;
-            }
-        }
-        return true;
-    }
-}
 
 /**
  * 可以使用UnionFind来做，同时也可以使用DFS来做
@@ -672,5 +606,100 @@ class L695_Max_Area_of_Island {
         return 0;
     }
 }
+
+
+class L17_Letter_Combinations_of_a_Phone_Number {
+    public String[] dict = {"", "", "abc", "def", "ghi",
+            "jkl", "mno", "pqrs", "tuv",
+            "wxyz"};
+    public List<String> letterCombinations(String digits) {
+        List<String> result = new ArrayList<>();
+        if(digits == null || digits.length() == 0) {
+            return result;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        dfs(digits, 0, sb, result);
+        return result;
+    }
+
+    void dfs(String digits, int index, StringBuilder sb, List<String> result) {
+        if(index == digits.length()) {
+            result.add(sb.toString());
+            return;
+        }
+
+        int indexOfDict = digits.charAt(index) - '0';
+        String target = dict[indexOfDict];
+        for(int i = 0; i < target.length(); ++i) {
+            sb.append(target.charAt(i));
+            dfs(digits, index + 1, sb, result);
+            sb.deleteCharAt(sb.length() - 1);
+        }
+    }
+}
+
+
+/**
+ * Input is 147, suppose we have finished 1 + 4 and reach 7
+ * startIndex = 2 (7's index)
+ * curTotalVal = 5;
+ * returnBack(last) = 4;
+ *
+ * Now when we go for multiplication, we need last
+ * value for evaluation as follows:
+ * current val = curTotalVal - last + last * current val
+ *
+ * First we subtract last and then add last * current val for evaluation,
+ * new last is last * current val
+ * current val = 5 - 4 + 4 * 7
+ * last = 4* 7
+ */
+class L282_Expression_Add_Operators {
+    public List<String> addOperators(String num, int target) {
+        List<String> result = new ArrayList<>();
+        if(num == null || num.length() == 0) {
+            return result;
+        }
+
+        dfs(num, 0, 0, 0, target, "", result);
+        return result;
+    }
+
+    void dfs(String num, int startIndex, long curTotalVal, long returnBack,
+             int target, String expr, List<String> result) {
+        if(startIndex == num.length()) {
+            if(curTotalVal == (long)target) {
+                result.add(expr);
+            }
+            return;
+        }
+
+        for(int i = startIndex; i < num.length(); ++i) {
+            if(i != startIndex && num.charAt(startIndex) == '0') {
+                break;   //a number starts with 0
+            }
+
+            long curVal = Long.parseLong(num.substring(startIndex, i + 1));
+
+            if(startIndex == 0) {
+                dfs(num, i + 1, curTotalVal + curVal, curVal,
+                        target, "" + curVal, result);
+            } else {
+                dfs(num, i + 1, curTotalVal + curVal, curVal,
+                        target, expr + "+" + curVal, result);
+                dfs(num, i + 1, curTotalVal - curVal, -curVal,
+                        target, expr + "-" + curVal, result);
+                dfs(num, i + 1, curTotalVal - returnBack + returnBack * curVal,
+                        returnBack * curVal, target, expr + "*" + curVal, result);
+            }
+        }
+    }
+}
+
+
+
+
+
 
 

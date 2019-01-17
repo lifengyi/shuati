@@ -36,29 +36,6 @@ class L91_Decode_Ways {
     }
 }
 
-class L17_Letter_Combinations_of_a_Phone_Number {public List<String> L17_letterCombinations(String digits) {
-    List<String> list = new ArrayList<>();
-    if(digits == null || digits.length() == 0)
-        return list;
-
-    String[] letterCache = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
-    list.add("");
-    for(int i = 0; i < digits.length(); ++i) {
-        String letters = letterCache[digits.charAt(i)-'0'];
-        list = letterComb(letters, list);
-    }
-    return list;
-}
-
-    private List<String> letterComb(String letters, List<String> list) {
-        List<String>  ret = new ArrayList<>();
-        for(String element : list) {
-            for(int i = 0; i < letters.length(); ++i) {
-                ret.add(element + letters.charAt(i));
-            }
-        }
-        return ret;
-    }}
 
 class L8_String_to_Integer {
     enum Type {BEGIN, SIGN_FOUND, NUM_FOUND};
