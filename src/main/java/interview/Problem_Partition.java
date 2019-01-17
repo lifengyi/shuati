@@ -75,17 +75,17 @@ class L215_Kth_Largest_Element_in_an_Array_v2 {
 
 /**
  * Given an array of n objects with k different colors
- * (numbered from 1 to k), sort them so that objects of
+ * (numbered from 1 to k), Basic.sort them so that objects of
  * the same color are adjacent, with the colors in the
  * order 1, 2, ... k.
  *
  * Example
  * Given colors=[3, 2, 2, 1, 4], k=4, your code should
- * sort colors in-place to [1, 2, 2, 3, 4].
+ * Basic.sort colors in-place to [1, 2, 2, 3, 4].
  *
  * Challenge
  * A rather straight forward solution is a two-pass
- * algorithm using counting sort. That will cost O(k)
+ * algorithm using counting Basic.sort. That will cost O(k)
  * extra memory. Can you do it without using extra memory?
  */
 class LintCode_143_Sort_Colors {

@@ -433,14 +433,14 @@ class L399_Evaluate_Division_vGraph {
             String s1 = equations[i][0];
             String s2 = equations[i][1];
             if(!graph.containsKey(s1)) {
-                Map<String, Double> nexts = new HashMap<>();
+                Map<String, Double> nexts = new HashMap<String, Double>();
                 nexts.put(s2, values[i]);
                 graph.put(s1, nexts);
             } else {
                 graph.get(s1).put(s2, values[i]);
             }
             if(!graph.containsKey(s2)) {
-                Map<String, Double> nexts = new HashMap<>();
+                Map<String, Double> nexts = new HashMap<String, Double>();
                 nexts.put(s1, 1/values[i]);
                 graph.put(s2, nexts);
             } else {

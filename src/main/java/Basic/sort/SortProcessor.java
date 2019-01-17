@@ -28,7 +28,7 @@ public class SortProcessor {
         //mergeSort(input, 0, input.length - 1);
     }
 
-    // length > 286, use merge sort
+    // length > 286, use merge Basic.sort
     // use extra memory
     // O(nlogN)
     private void mergeSort(int[] input, int start, int end) {
@@ -65,7 +65,7 @@ public class SortProcessor {
         }
     }
 
-    // length < 286, use quick sort
+    // length < 286, use quick Basic.sort
     // one pivot, two-way partition
     // O(nLogn) in average case
     // O(n^2) in worst case
@@ -79,7 +79,7 @@ public class SortProcessor {
         count_1pivot_2way++;
 
         /*
-            TODO: enhancement, use insertion sort while end-start < 47
+            TODO: enhancement, use insertion Basic.sort while end-start < 47
          */
 
         int index = partition_1pivot_2way(input, start, end);
@@ -104,7 +104,7 @@ public class SortProcessor {
         return low;
     }
 
-    // quick sort
+    // quick Basic.sort
     // one pivot, 3-way partition
 
     /*
@@ -257,7 +257,7 @@ public class SortProcessor {
         quickSort_1pivot_3way_V2(input, high + 1, end);
     }
 
-    // quick sort
+    // quick Basic.sort
     // dual pivot, 3-way partition
 
     private void quickSort_2pivot_3way(int[] input, int start, int end) {
@@ -319,7 +319,7 @@ public class SortProcessor {
 
     }
 
-    // length < 27, use insertion sort.
+    // length < 27, use insertion Basic.sort.
     // It's stable and a good choice when N is small.
     // O(n) in best case
     // O(n^2) in worst case
@@ -350,7 +350,7 @@ public class SortProcessor {
         }
     }
 
-    //counting sort, use it while sorting integers in limited range.
+    //counting Basic.sort, use it while sorting integers in limited range.
 
     public static void swap(int[] input, int from, int to) {
         int tmp = input[from];
@@ -379,7 +379,7 @@ public class SortProcessor {
 
         //System.out.println(Arrays.toString(array));
 
-        // sort it
+        // Basic.sort it
         long startTime = 0;
         long endTime = 0;
         SortProcessor processor = new SortProcessor();
@@ -408,7 +408,7 @@ public class SortProcessor {
         //System.out.println(Arrays.toString(quickSort_1pivot_3way_v10));
 
 
-        //1 Pivot, 3-way partition quick sort
+        //1 Pivot, 3-way partition quick Basic.sort
         int[] array_1pivot_3partition = array.clone();
         startTime = System.nanoTime();
         processor.quickSort_1pivot_3way(array_1pivot_3partition, 0, array.length - 1);
@@ -417,7 +417,7 @@ public class SortProcessor {
                 + ", loop count = " + count_1pivot_3way);
 
 
-        // 2 Pivot, 3-way partition quick sort
+        // 2 Pivot, 3-way partition quick Basic.sort
 
         int[] array_2pivot_3partition = array.clone();
         startTime = System.nanoTime();

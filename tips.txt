@@ -63,7 +63,7 @@ no duplicated data =>  use set/map              => O(n)
 duplicated data    =>  cannot use set/map
 
 ordered ?          =>  iterate the list         => O(n) ?
-no ordered         =>  sort first               => O(nlogN)
+no ordered         =>  Basic.sort first               => O(nlogN)
                    =>  iterate the list         => O(n^2)
 
 变种1： 增加K

@@ -290,7 +290,7 @@ class L70_Climbing_Stairs {
  *         dp[i] 取决于原序列中i之前所有元素中最优的状态值，复杂度为O(n^2)
  *
  *         other: 二分法解决: O(nlogn)
- *                sort + LCS，复杂度为O(n^2)
+ *                Basic.sort + LCS，复杂度为O(n^2)
  *
  *
  *  变种4： L398 : Longest Continuous Increasing Sequence II  Matrix
@@ -457,7 +457,7 @@ class Longest_Continuous_Increasing_Subsequence_variant2 {
  *  状态转换方程达到了n的平方，无法用滚动数组来优化
  *
  *  还可以：binary search解法: O(nlogn)
- *  还可以：sort + LCS解法：O(nlogn)
+ *  还可以：Basic.sort + LCS解法：O(nlogn)
  */
 class L300_Longest_Increasing_Subsequence_On2 {
     public int lengthOfLIS(int[] nums) {

@@ -1,4 +1,4 @@
-package basic.BinaryTree;
+package Basic.BinaryTree;
 
 import java.util.*;
 
@@ -13,7 +13,7 @@ import java.util.*;
  *
  * There must be no duplicate nodes.
  *
- * The InOrder traversal of BST is sort ascending.
+ * The InOrder traversal of BST is Basic.sort ascending.
  *
  */
 

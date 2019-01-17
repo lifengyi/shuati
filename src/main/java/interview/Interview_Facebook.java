@@ -542,7 +542,7 @@ class L31_Next_Permutation_ {
 
         if(index == 0) {
             reverse(nums, 0, nums.length - 1);
-            //Arrays.sort(nums);
+            //Arrays.Basic.sort(nums);
             return;
         }
 
@@ -553,7 +553,7 @@ class L31_Next_Permutation_ {
         }
         swap(nums, pos, index);
         reverse(nums, pos + 1, nums.length - 1);
-        //Arrays.sort(nums, pos + 1, nums.length);
+        //Arrays.Basic.sort(nums, pos + 1, nums.length);
         return;
     }
 

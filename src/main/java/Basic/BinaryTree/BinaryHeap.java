@@ -1,4 +1,4 @@
-package basic.BinaryTree;
+package Basic.BinaryTree;
 
 import java.util.Arrays;
 
@@ -270,11 +270,11 @@ public class BinaryHeap {
 
         int[] array3 = {4, 3, 8, 10, 11, 13, 7, 30, 17, 26};
         processor.heapSortAscending(array3);
-        System.out.println("Heap sort ascending:  " + Arrays.toString(array3));
+        System.out.println("Heap Basic.sort ascending:  " + Arrays.toString(array3));
 
         int[] array4 = {4, 3, 8, 10, 11, 13, 7, 30, 17, 26};
         processor.heapSortDescending(array4);
-        System.out.println("Heap sort descending: " + Arrays.toString(array4));
+        System.out.println("Heap Basic.sort descending: " + Arrays.toString(array4));
 
         int[] array5 = {4, 3, 8, 10, 11, 13, 7, 30, 17, 26};
         int kth = processor.getLargestKth(array5, 3);

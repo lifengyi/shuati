@@ -375,7 +375,7 @@ class L31_Next_Permutation {
             break;
         }
 
-        //Arrays.sort(nums, begin, len);
+        //Arrays.Basic.sort(nums, begin, len);
         reverse(nums, begin);
     }
 

@@ -1,4 +1,4 @@
-package basic.BinaryTree;
+package Basic.BinaryTree;
 
 
 /**
