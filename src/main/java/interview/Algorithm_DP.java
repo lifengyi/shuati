@@ -4,13 +4,6 @@ import java.util.*;
 
 public class Algorithm_DP {
 
-    /**
-     * Use DP to resolve the following 2 problems which
-     * have been resolved using monotonous stack
-     *
-     * 84. Largest Rectangle in Histogram
-     * 85. Maximal Rectangle
-     */
 }
 
 class L62_Unique_Paths {
@@ -1746,7 +1739,7 @@ class LintCode_125_Backpack_II_OptimizedByArray {
  *  同理0/1 Knapsack 也是一样的情况；
  *
  *
- *  01背包（0/1 Knapsack）和完全背包（Outbounded Knapsack）
+ *  BackPack II: (01背包,0/1 Knapsack）, BackPack III (完全背包,Outbounded Knapsack）
  *  都是带有价值的背包，求解在一定的成本/体积下，求解放入物品价值最优问题
  *
  *  BackPack：    普通，无价值背包，求解一定的成本/体积下，求解可能放入物品个数最多；
@@ -1783,8 +1776,10 @@ class LintCode_440_Backpack_III {
 
 /**
  *  初始状态： dp[i][j][k]， 前i个数字取出j个组成和为k的方案个数
- *  转换方程： dp[i][j][k] = dp[i-1][j-1][k - A[i-1]] + dp[i-1][j][k]
- *                             选                    +  不选
+ *  转换方程： dp[i][j][k] = dp[i-1][j-1][k - A[i-1]]    选当前数字
+ *                         +
+ *                         dp[i-1][j][k]               不选当前数字
+ *
  *  可见虽然是三维，但是在第一位维上都依赖于上一次状态，故可以优化掉第一维，
  *  dp[j][k] = dp[j-1][k - A[i-1]] + dp[j][k]
  *
@@ -1913,6 +1908,38 @@ class L465_Optimal_Account_Balancing {
             accounts.put(from, accounts.get(from) - amount);
             accounts.put(to, accounts.get(to) + amount);
         }
+    }
+}
+
+
+class L91_Decode_Ways_DP {
+    public int numDecodings(String s) {
+        if(s == null || s.length() == 0 || s.charAt(0) == '0') {
+            return 0;
+        }
+        char[] array = s.toCharArray();
+        int[] dp = new int[array.length + 1];
+        dp[0] = 1;
+        dp[1] = 1;
+
+        for(int i = 1; i < array.length; ++i) {
+            int index = i + 1;
+            if(array[i] == '0') {
+                if(array[i - 1] == '0' || array[i - 1] >= '3') {
+                    return 0;
+                } else {
+                    dp[index] = dp[index - 2];
+                }
+            } else {
+                if(array[i - 1] == '1'
+                        || (array[i - 1] == '2' && array[i] <= '6')) {
+                    dp[index] = dp[index - 2] + dp[index - 1];
+                } else{
+                    dp[index] = dp[index - 1];
+                }
+            }
+        }
+        return dp[array.length];
     }
 }
 

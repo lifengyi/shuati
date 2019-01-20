@@ -342,27 +342,36 @@ class L12_Integer_to_Roman {
     }
 }
 
+/**
+ * 算法思想和  282 Expression Add Operator 很像
+ * 都是讲数据先进行计算，并且记录当前计算的值作为回退值，
+ * 下一次计算发现需要回退，则将当前总值进行回退，
+ * 然后再将回退值和当前值进行计算，并入当前总值
+ */
 class L13_Roman_to_Integer {
-    public int L13_romanToInt(String s) {
-        Map<Character, Integer> cache = new HashMap<>();
-        cache.put('I', 1);
-        cache.put('V',5);
-        cache.put('X',10);
-        cache.put('L',50);
-        cache.put('C',100);
-        cache.put('D',500);
-        cache.put('M',1000);
+    public int romanToInt(String s) {
+        Map<Character, Integer> map = new HashMap<>();
+        map.put('I', 1);
+        map.put('V', 5);
+        map.put('X', 10);
+        map.put('L', 50);
+        map.put('C', 100);
+        map.put('D', 500);
+        map.put('M', 1000);
 
-        int num = 0, i = 0;
-        while(i < s.length()){
-            if(i+1 < s.length() && cache.get(s.charAt(i)) < cache.get(s.charAt(i+1))) {
-                num -= cache.get(s.charAt(i++));
+        int totalVal = 0, lastVal = 0;
+        for(int i = 0; i < s.length(); ++i) {
+            int curVal = map.get(s.charAt(i));
+            if(curVal > lastVal) {
+                totalVal -= lastVal;
+                totalVal += curVal - lastVal;
+                lastVal = curVal;
             } else {
-                num += cache.get(s.charAt(i++));
+                totalVal += curVal;
+                lastVal = curVal;
             }
         }
-
-        return num;
+        return totalVal;
     }
 }
 

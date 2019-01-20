@@ -450,3 +450,46 @@ class L23_Merge_k_Sorted_Lists {
         lists[target] = tmp;
     }
 }
+
+
+class L57_Insert_Interval {
+
+    public class Interval {
+        int start;
+        int end;
+        Interval(int s, int e) {
+            start = s;
+            end = e;
+        }
+    }
+    public List<Interval> insert(List<Interval> intervals, Interval newInterval) {
+        Comparator<Interval> comp = new Comparator<Interval>(){
+            @Override
+            public int compare(Interval i1, Interval i2) {
+                return i1.start - i2.start;
+            }
+        };
+
+        List<Interval> newIntervals = new ArrayList<>();
+        newIntervals.addAll(intervals);
+        newIntervals.add(newInterval);
+        Collections.sort(newIntervals, comp);
+
+        Interval first = newIntervals.get(0);
+        int start = first.start;
+        int end = first.end;
+
+        List<Interval> result = new ArrayList<>();
+        for(Interval interval : newIntervals) {
+            if(interval.start <= end) {
+                end = Math.max(end, interval.end);
+            } else {
+                result.add(new Interval(start, end));
+                start = interval.start;
+                end = interval.end;
+            }
+        }
+        result.add(new Interval(start, end));
+        return result;
+    }
+}

@@ -128,3 +128,29 @@ class L68_Text_Justification {
         return sb.toString();
     }
 }
+
+
+class L415_Add_Strings {
+    public String addStrings(String num1, String num2) {
+        StringBuilder sb = new StringBuilder();
+        int index1 = num1.length() - 1;
+        int index2 = num2.length() - 1;
+        int carryover = 0;
+        while(index1 >= 0 || index2 >= 0) {
+            if(index1 >= 0) {
+                carryover += num1.charAt(index1) - '0';
+                index1--;
+            }
+            if(index2 >= 0) {
+                carryover += num2.charAt(index2) - '0';
+                index2--;
+            }
+            sb.append(carryover%10);
+            carryover = carryover/10;
+        }
+        if(carryover != 0) {
+            sb.append(carryover);
+        }
+        return sb.reverse().toString();
+    }
+}

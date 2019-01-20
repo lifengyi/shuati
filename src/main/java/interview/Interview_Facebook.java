@@ -628,44 +628,6 @@ class L91_Decode_Ways_DFS {
 }
 
 
-class L91_Decode_Ways_DP {
-    public int numDecodings(String s) {
-        if(s == null || s.length() == 0) {
-            return 0;
-        }
-
-        char[] array = s.toCharArray();
-        if(array[0] == '0') {
-            return 0;
-        }
-
-        int dp1 = 1, dp2 = 0, tmp = 0;
-        for(int i = 1; i < array.length; ++i) {
-            if(array[i - 1] == '0' && array[i] == '0') {
-                return 0;
-            }
-            if(array[i - 1] - '0' > 2 && array[i] == '0') {
-                return 0;
-            }
-
-            if((array[i - 1] == '1' || array[i - 1] == '2')  && array[i] == '0') {
-                dp2 = dp1;
-                dp1 = 0;
-            } else if (array[i - 1] == '1' || (array[i - 1] == '2' && array[i] - '0' <= 6)) {
-                tmp = dp1;
-                dp1 = dp1 + dp2;
-                dp2 = tmp;
-            } else {
-                dp1 = dp1 + dp2;
-                dp2 = 0;
-            }
-        }
-
-        return dp1 + dp2;
-    }
-}
-
-
 
 
 
