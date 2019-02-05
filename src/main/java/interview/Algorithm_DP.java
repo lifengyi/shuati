@@ -291,7 +291,7 @@ class L70_Climbing_Stairs {
  *         输入不再是一维数组，而是二维矩阵，求矩阵中最长递增子序列的长度
  *         要求：子序列元素相邻 + 递增的
  *
- *         search with memorization
+ *         Search with memorization
  */
 
 class L128_Longest_Consecutive_Sequence {
@@ -452,7 +452,7 @@ class Longest_Continuous_Increasing_Subsequence_variant2 {
  *  还可以：binary search解法: O(nlogn)
  *  还可以：Basic.sort + LCS解法：O(nlogn)
  */
-class L300_Longest_Increasing_Subsequence_On2 {
+class L300_Longest_Increasing_Subsequence {
     public int lengthOfLIS(int[] nums) {
         if(nums == null || nums.length == 0) {
             return 0;
@@ -563,12 +563,16 @@ class L368_Largest_Divisible_Subset {
 
 
 /**
- * 根据w进行排序后，对h做LIS
+ * 根据w进行排序后，对h做LIS， LIS本身存在两种方法： n^2 和 nlogn
+ * 所以导致本题也是两种解法：
+ *
  * O(nlogn + n^2)
- * DP中数据转换方程到n平方的时候，就无法用滚动数组优化
+ *
+ * O(nlogn + nlogn)
+ *
  */
 class L354_Russian_Doll_Envelopes {
-    public int maxEnvelopes(int[][] envelopes) {
+    public int maxEnvelopes_DP_LIS(int[][] envelopes) {
         if(envelopes == null || envelopes.length == 0) {
             return 0;
         }
@@ -599,6 +603,43 @@ class L354_Russian_Doll_Envelopes {
         }
 
         return maxNumber;
+    }
+
+    public int maxEnvelopes_DP_BinarySearch(int[][] envelopes) {
+        if(envelopes == null || envelopes.length == 0
+                || envelopes[0] == null || envelopes[0].length == 0) {
+            return 0;
+        }
+
+        int w = 0, h = 1;
+        Comparator<int[]> compl = new Comparator<int[]>(){
+            @Override
+            public int compare(int[] o1, int[] o2){
+                if(o1[w] == o2[w]) {
+                    return o2[h] - o1[h];
+                } else {
+                    return o1[w] - o2[w];
+                }
+            }
+        };
+
+        Arrays.sort(envelopes, compl);
+        int[] dp = new int[envelopes.length];
+        dp[0] = envelopes[0][h];
+        int len = 1;
+        for(int i = 1; i < envelopes.length; ++i) {
+            if(envelopes[i][h] > dp[len - 1]) {
+                dp[len++] = envelopes[i][h];
+            } else if(envelopes[i][h] < dp[len - 1]) {
+                int index = Arrays.binarySearch(dp, 0, len - 1, envelopes[i][h]);
+                if(index < 0) {
+                    index = -index - 1;
+                    dp[index] = envelopes[i][h];
+                }
+            }
+        }
+
+        return len;
     }
 }
 
@@ -1394,7 +1435,26 @@ class L72_Edit_Distance {
  *
  *  要求这样的序列使得c同时是这两个序列中的部分（不要求连续），
  *  这个就叫做公共子序列，
- *  然后最长公共子序列自然就是所有的子序列中最长的啦
+ *  然后最长公共子序列自然就是所有的子序列中最长的长度
+ *
+ *  Time: O(n * n)  Space: O(n * n) =OptimizedTo=> O(2n)
+ *
+ *
+ *
+ *  变种： 如果修改为要求是公共子串必须是连续的，求打印出最长的公共子串，如何做？
+ *        还是用dp:
+ *        if(s1[i] = s1[j]) {
+ *            dp[i][j] = dp[i-1][j-1] + 1
+ *        } else {
+ *            dp[i][j] = 0;
+ *        }
+ *
+ *        Time: O(m * n)
+ *        Space: O(m * n) => O(2n)
+ *
+ *        改进： 使用Suffix Tree： https://www.geeksforgeeks.org/suffix-tree-application-5-longest-common-substring-2/
+ *        Time: O(m + n)
+ *
  *
  */
 class LintCode_77_Longest_Common_Subsequence {

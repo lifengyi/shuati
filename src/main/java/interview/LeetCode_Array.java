@@ -668,6 +668,67 @@ class L283_Move_Zeroes {
 }
 
 
+class L349_Intersection_of_Two_Arrays {
+    public int[] intersection(int[] nums1, int[] nums2) {
+        Set<Integer> set = new HashSet<>();
+        for(int num : nums1) {
+            set.add(num);
+        }
+
+        List<Integer> list = new ArrayList<>();
+        for(int num : nums2) {
+            if(set.contains(num)) {
+                list.add(num);
+                set.remove(num);
+            }
+        }
+
+        int[] result = new int[list.size()];
+        for(int i = 0; i < result.length; ++i) {
+            result[i] = list.get(i);
+        }
+        return result;
+    }
+}
+
+
+/**
+ * If the two arrays are sorted, then use 2 pointers,
+ * each array has one pointer and compare these 2 pointers,
+ * eaqual: both ++  or
+ * move the pointer with smaller value
+ */
+class L350_Intersection_of_Two_Arrays_II {
+    public int[] intersect(int[] nums1, int[] nums2) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for(int num : nums1) {
+            if(map.containsKey(num)) {
+                map.put(num, map.get(num) + 1);
+            } else {
+                map.put(num, 1);
+            }
+        }
+
+        List<Integer> list = new ArrayList<>();
+        for(int num : nums2) {
+            if(map.containsKey(num)) {
+                list.add(num);
+                int count = map.get(num) - 1;
+                if(count == 0) {
+                    map.remove(num);
+                } else {
+                    map.put(num, count);
+                }
+            }
+        }
+
+        int[] result = new int[list.size()];
+        for(int i = 0; i < result.length; ++i) {
+            result[i] = list.get(i);
+        }
+        return result;
+    }
+}
 
 
 

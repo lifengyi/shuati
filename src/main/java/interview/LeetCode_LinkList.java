@@ -73,76 +73,6 @@ class L148_Sort_List {
     }
 }
 
-class L138_Copy_List_with_Random_Pointer {
-    class RandomListNode {
-        int label;
-        RandomListNode next, random;
-        RandomListNode(int x) { this.label = x; }
-    }
-
-    public RandomListNode L138_copyRandomList(RandomListNode head) {
-        if(head == null)
-            return null;
-
-        RandomListNode cur = head;
-        while(cur != null) {
-            RandomListNode tmp = new RandomListNode(cur.label);
-            tmp.next = cur.next;
-            cur.next = tmp;
-            cur = cur.next.next;
-        }
-
-        cur = head;
-        while(cur != null) {
-            if(cur.random != null) {
-                cur.next.random = cur.random.next;
-            }
-            cur = cur.next.next;
-        }
-
-        RandomListNode newRandomListHead = new RandomListNode(0), curOfNewList = newRandomListHead;
-        cur = head;
-        while(cur != null) {
-            curOfNewList.next = cur.next;
-            cur.next = cur.next.next;
-            cur = cur.next;
-            curOfNewList = curOfNewList.next;
-            curOfNewList.next = null;
-        }
-
-        return newRandomListHead.next;
-    }
-
-    public RandomListNode L138_copyRandomList_withExtraSpace(RandomListNode head) {
-        if(head == null)
-            return null;
-
-        Map<RandomListNode, RandomListNode> cache = new HashMap<>();
-        RandomListNode dummyRandomListHead = new RandomListNode(0);
-        RandomListNode cur = head;
-        RandomListNode dummyCur = dummyRandomListHead;
-        while(cur != null) {
-            dummyCur.next = new RandomListNode(cur.label);
-            dummyCur = dummyCur.next;
-            cache.put(cur, dummyCur);
-            cur = cur.next;
-        }
-
-        cur = head;
-        dummyCur = dummyRandomListHead.next;
-        while(cur != null) {
-            if(cur.random != null) {
-                dummyCur.random = cache.get(cur.random);
-            }
-
-            cur = cur.next;
-            dummyCur = dummyCur.next;
-        }
-
-        return dummyRandomListHead.next;
-    }
-}
-
 class L234_Palindrome_Linked_List {
 
     class ListNode {
@@ -284,51 +214,49 @@ class L160_Intersection_of_Two_Linked_Lists {
     class ListNode {
         int val;
         ListNode next;
-        ListNode(int x) { val = x;};
+        ListNode(int x) {
+            val = x;
+            next = null;
+        }
     }
 
-    public ListNode L160_getIntersectionNode(ListNode headA, ListNode headB) {
-        if(headA == null || headB == null)
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        if(headA == null || headB == null) {
             return null;
-
-        ListNode p = headA;
-        ListNode q = headB;
-        while(p != null && q != null){
-            p = p.next;
-            q = q.next;
         }
 
-        int count = 0;
-        ListNode nodeOfLongList, nodeOfShortList;
-        if(p == null) {
-            nodeOfShortList = headA;
-            nodeOfLongList = headB;
-            while(q != null) {
-                count++;
-                q = q.next;
+        ListNode node = headA;
+        while(node.next != null) {
+            node = node.next;
+        }
+        node.next = headB;
+
+        ListNode slow = headA, quick = headA;
+        do {
+            slow = slow.next;
+            if(quick.next == null) {
+                quick = null;
+            } else {
+                quick = quick.next.next;
             }
-        } else {
-            nodeOfShortList = headB;
-            nodeOfLongList = headA;
-            while(p != null){
-                count++;
-                p = p.next;
-            }
+        } while(slow != quick && slow != null && quick != null);
+
+        if(quick == null || slow == null) {
+            node.next = null;           //recover
+            return null;
         }
 
-        while(count != 0) {
-            nodeOfLongList = nodeOfLongList.next;
-            count--;
+        quick = headA;
+        while(quick != slow) {
+            quick = quick.next;
+            slow = slow.next;
         }
 
-        while(nodeOfLongList != null && nodeOfShortList != null && nodeOfLongList != nodeOfShortList) {
-            nodeOfLongList = nodeOfLongList.next;
-            nodeOfShortList = nodeOfShortList.next;
-        }
-
-        return nodeOfLongList;
+        node.next = null;               //recover
+        return quick;
     }
 }
+
 
 class L23_Merge_k_Sorted_Lists {
     class ListNode {
@@ -491,5 +419,206 @@ class L57_Insert_Interval {
         }
         result.add(new Interval(start, end));
         return result;
+    }
+}
+
+
+
+class L2_Add_Two_Numbers {
+
+    public class ListNode {
+        int val;
+        ListNode next;
+        ListNode(int x) {
+            val = x;
+        }
+    }
+
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode dummyHead = new ListNode(0), prev = dummyHead;
+        int carryover = 0;
+        while(l1 != null || l2 != null) {
+            if(l1 != null) {
+                carryover += l1.val;
+                l1 = l1.next;
+            }
+            if(l2 != null) {
+                carryover += l2.val;
+                l2 = l2.next;
+            }
+            ListNode cur = new ListNode(carryover%10);
+            prev.next = cur;
+            prev = cur;
+            carryover /= 10;
+        }
+
+        if(carryover != 0) {
+            ListNode cur = new ListNode(carryover);
+            prev.next = cur;
+        }
+
+        return dummyHead.next;
+    }
+}
+
+
+class L56_Merge_Intervals {
+    public class Interval {
+        int start;
+        int end;
+        Interval(int s, int e) {
+            start = s;
+            end = e;
+        }
+    }
+
+    public List<Interval> merge(List<Interval> intervals) {
+        List<Interval> result = new ArrayList<>();
+        if(intervals == null || intervals.size() == 0) {
+            return result;
+        }
+
+
+        Comparator<Interval> comp = new Comparator<Interval>(){
+            @Override
+            public int compare(Interval i1, Interval i2) {
+                return i1.start - i2.start;
+            }
+        };
+
+        Collections.sort(intervals,comp);
+
+        Interval first = intervals.get(0);
+        int start = first.start, end = first.end;
+        for(Interval interval : intervals) {
+            if(interval.start <= end) {
+                end = Math.max(end, interval.end);
+            } else {
+                result.add(new Interval(start, end));
+                start = interval.start;
+                end = interval.end;
+            }
+        }
+
+        result.add(new Interval(start, end));
+        return result;
+    }
+}
+
+
+class L24_Swap_Nodes_in_Pairs {
+    class ListNode {
+        int val;
+        ListNode next;
+
+        ListNode(int x) {
+            val = x;
+        }
+    }
+
+    public ListNode swapPairs(ListNode head) {
+        if(head == null || head.next == null) {
+            return head;
+        }
+
+        ListNode dummyHead = new ListNode(0);
+        dummyHead.next = head;
+        ListNode prev = dummyHead, first = head, second = first.next, last = second.next;
+
+        while(last != null) {
+            swap(prev, first, second, last);
+            prev = first;   // Now first is pointing to the last node, but not the second.
+            first = last;
+            if(first.next == null) {
+                second = null;
+                break;
+            }
+            second = first.next;
+            last = second.next;
+        }
+
+        if(first != null && second != null) {
+            swap(prev, first, second, last);
+        }
+
+        return dummyHead.next;
+    }
+
+    void swap(ListNode prev, ListNode first, ListNode second, ListNode last) {
+        prev.next = second;
+        second.next = first;
+        first.next = last;
+    }
+}
+
+
+class L138_Copy_List_with_Random_Pointer {
+    class RandomListNode {
+        int label;
+        RandomListNode next, random;
+        RandomListNode(int x) { this.label = x; }
+    };
+
+    public RandomListNode copyRandomList(RandomListNode head) {
+        if(head == null) {
+            return head;
+        }
+
+        duplicateNode(head);
+        RandomListNode first = head, second = null;
+        while(first != null) {
+            second = first.next;
+            if(first.random == null) {
+                second.random = null;
+            } else {
+                second.random = first.random.next;
+            }
+            first = first.next.next;
+        }
+
+        RandomListNode newHead = head.next;
+        first = head;
+        second = first.next;
+        while(first != null) {
+            first.next = second.next;
+            first = first.next;
+            if(first != null) {
+                second.next = first.next;
+                second = second.next;
+            }
+        }
+        return newHead;
+    }
+
+    void duplicateNode(RandomListNode head) {
+        RandomListNode node = head;
+        while(node != null) {
+            RandomListNode newNode = new RandomListNode(node.label);
+            newNode.next = node.next;
+            node.next = newNode;
+            node = newNode.next;
+        }
+    }
+
+    public RandomListNode copyRandomList_hashmap(RandomListNode head) {
+        if(head == null) {
+            return head;
+        }
+
+        Map<RandomListNode, RandomListNode> map = new HashMap<>();
+        RandomListNode node = head;
+        while(node != null) {
+            RandomListNode newNode = new RandomListNode(node.label);
+            map.put(node, newNode);
+            node = node.next;
+        }
+
+        for(RandomListNode oldNode : map.keySet()) {
+            RandomListNode newNode = map.get(oldNode);
+            newNode.next = map.get(oldNode.next);
+            newNode.random = map.get(oldNode.random);
+        }
+
+        return map.get(head);
     }
 }

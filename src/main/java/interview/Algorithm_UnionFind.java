@@ -420,4 +420,77 @@ class L399_Evaluate_Division_vUnionFind_ {
 
 
 
+class L924_Minimize_Malware_Spread {
+    class UnionFind {
+        int n = 0;
+        int[] father = null;
+        int[] size = null;
+
+        public UnionFind(int n) {
+            this.n = n;
+            this.size = new int[n];
+            this.father = new int[n];
+            for(int i = 0; i < n; ++i) {
+                father[i] = i;
+                size[i] = 1;
+            }
+        }
+
+        public int getSize(int p) {
+            return size[findRoot(p)];
+        }
+
+        public int findRoot(int p) {
+            while(p != father[p]) {
+                father[p] = father[father[p]];
+                p = father[p];
+            }
+            return p;
+        }
+
+        public void union(int p, int q) {
+            int rootp = findRoot(p);
+            int rootq = findRoot(q);
+            if(rootp == rootq) {
+                return;
+            }
+
+            if(size[rootp] > size[rootq]) {
+                father[rootq] = rootp;
+                size[rootp] += size[rootq];
+            } else {
+                father[rootp] = rootq;
+                size[rootq] += size[rootp];
+            }
+        }
+    }
+
+    public int minMalwareSpread(int[][] graph, int[] initial) {
+        int n = graph.length;
+        UnionFind uf = new UnionFind(n);
+        for(int i = 0; i < n; ++i) {
+            for(int j = i + 1; j < n; ++j) {
+                if(graph[i][j] == 1) {
+                    uf.union(i, j);
+                }
+            }
+        }
+
+        int index = -1, scope = Integer.MIN_VALUE;
+        for(int i : initial) {
+            int size = uf.getSize(i);
+            if(size > scope) {
+                scope = size;
+                index = i;
+            } else if(size == scope) {
+                index = Math.min(index, i);
+            }
+        }
+        return index;
+    }
+}
+
+
+
+
 

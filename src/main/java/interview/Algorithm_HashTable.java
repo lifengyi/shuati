@@ -108,3 +108,79 @@ class L734_Sentence_Similarity {
         return true;
     }
 }
+
+class L609_Find_Duplicate_File_in_System {
+    public List<List<String>> findDuplicate(String[] paths) {
+        List<List<String>> result = new ArrayList<>();
+
+        Map<String, Set<String>> map = new HashMap<>();
+        for(String path : paths) {
+            String[] elements = path.split(" ");
+            String curPath = elements[0];
+            for(int i = 1; i < elements.length; ++i) {
+                int indexOfBracket = elements[i].indexOf('(');
+                String fileName = elements[i].substring(0, indexOfBracket);
+                String content = elements[i].substring(indexOfBracket + 1,
+                        elements[i].length() - 1);
+                if(!map.containsKey(content)) {
+                    map.put(content, new HashSet<>());
+                }
+                String fullPath = curPath + "/" + fileName;
+                map.get(content).add(fullPath);
+            }
+        }
+
+        for(String content : map.keySet()) {
+            if(map.get(content).size() != 1) {
+                List<String> list = new ArrayList<>();
+                list.addAll(map.get(content));
+                result.add(list);
+            }
+        }
+
+        return result;
+    }
+}
+
+
+class L811_Subdomain_Visit_Count {
+    public List<String> subdomainVisits(String[] cpdomains) {
+        List<String> result = new ArrayList<>();
+        if(cpdomains == null || cpdomains.length == 0) {
+            return result;
+        }
+
+        Map<String, Integer> cache = new HashMap<>();
+        for(String cpdomain : cpdomains) {
+            String[] items = cpdomain.split(" ");
+            int count = Integer.parseInt(items[0]);
+            String domain = items[1];
+
+            List<String> allSubDomains = getAllSubdomains(domain);
+            for(String subdomain : allSubDomains) {
+                if(cache.containsKey(subdomain)) {
+                    cache.put(subdomain, cache.get(subdomain) + count);
+                } else {
+                    cache.put(subdomain, count);
+                }
+            }
+        }
+        for(String key : cache.keySet()) {
+            String pair = cache.get(key) + " " + key;
+            result.add(pair);
+        }
+        return result;
+    }
+
+    List<String> getAllSubdomains(String domain) {
+        List<String> result = new ArrayList<>();
+        result.add(domain);
+
+        int index = -1;
+        while((index = domain.indexOf(".")) != -1) {
+            domain = domain.substring(index + 1, domain.length());
+            result.add(domain);
+        }
+        return result;
+    }
+}

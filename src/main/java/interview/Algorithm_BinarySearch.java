@@ -538,7 +538,11 @@ class LintCode_390_Find_Peak_Element_II {
 
 /**
  * binary search: O(nlogn)
- * 还有DP解法 O(n^2)
+ *
+ * v1: 自己写二分
+ * v2: 库函数二分
+ *     tips: Arrays.binarySearch 的返回值的意义，以及fromIndex，toIndex的使用
+ *
  */
 class L300_Longest_Increasing_Subsequence_BinarySearch {
     public int lengthOfLIS(int[] nums) {
@@ -585,13 +589,8 @@ class L300_Longest_Increasing_Subsequence_BinarySearch {
         }
         return index;
     }
-}
 
-/**
- *  tips: Arrays.binarySearch 的返回值的意义，以及fromIndex，toIndex的使用
- */
-class L300_Longest_Increasing_Subsequence_default_BinarySearch {
-    public int lengthOfLIS(int[] nums) {
+    public int lengthOfLIS_v2(int[] nums) {
         if(nums == null || nums.length == 0) {
             return 0;
         }
@@ -617,47 +616,9 @@ class L300_Longest_Increasing_Subsequence_default_BinarySearch {
     }
 }
 
-/**
- *  还有DP 解法： O(n^2)
- */
-class L354_Russian_Doll_Envelopes_BinarySearch {
-    public int maxEnvelopes(int[][] envelopes) {
-        if(envelopes == null || envelopes.length == 0
-                || envelopes[0] == null || envelopes[0].length == 0) {
-            return 0;
-        }
 
-        int w = 0, h = 1;
-        Comparator<int[]> compl = new Comparator<int[]>(){
-            @Override
-            public int compare(int[] o1, int[] o2){
-                if(o1[w] == o2[w]) {
-                    return o2[h] - o1[h];
-                } else {
-                    return o1[w] - o2[w];
-                }
-            }
-        };
 
-        Arrays.sort(envelopes, compl);
-        int[] dp = new int[envelopes.length];
-        dp[0] = envelopes[0][h];
-        int len = 1;
-        for(int i = 1; i < envelopes.length; ++i) {
-            if(envelopes[i][h] > dp[len - 1]) {
-                dp[len++] = envelopes[i][h];
-            } else if(envelopes[i][h] < dp[len - 1]) {
-                int index = Arrays.binarySearch(dp, 0, len - 1, envelopes[i][h]);
-                if(index < 0) {
-                    index = -index - 1;
-                    dp[index] = envelopes[i][h];
-                }
-            }
-        }
 
-        return len;
-    }
-}
 
 
 class L33_Search_in_Rotated_Sorted_Array {
@@ -687,5 +648,235 @@ class L33_Search_in_Rotated_Sorted_Array {
         }
 
         return -1;
+    }
+}
+
+/**
+ *  本体的原意就不是考二分查找，考察的是观察这题和上题的区别
+ *  能否辨别出区别并体现在算法复杂度上的考虑
+ *
+ *  上题中，首先我们划分两种不同的rotate情况，然后由于肯定
+ *  不存在重复数据，所以我们可以通过 target vs middle 以及
+ *  target vs start/end 的比较来确定目标数据明确的落在某一
+ *  个半边，从而实现 O(logn)的算法复杂度：
+ *      f(n) = f(n/2) + O(1)
+ *
+ *  本例中，首先我们也可以划分不同的rotate的情况，然后在各自分支中
+ *  我们要明确由于可能出现重复值，所以我们无法通过比较 target vs middle
+ *  以及target vs start/end 来确定目标数据明确的落在某一个半边，
+ *  因为start/end的那个随意不得不同时搜索两边
+ *      f(n) = 2f(n/2) + O(1)
+ *
+ *  最坏情况，所有元素之相同，最后找不多数据；
+ *
+ *  ？？？？
+ *
+ */
+class L81_Search_in_Rotated_Sorted_Array {
+    public boolean search(int[] nums, int target) {
+        for(int i = 0; i < nums.length; ++i) {
+            if(nums[i] == target) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+/**
+ * 二分查找注意问题：
+ *  1. 是找上界，还是找下界
+ *  2. 是否可能移除，左溢出，右溢出
+ *
+ *  对于target - 1，需要找上界，即找到小于等于target-1的最大索引，防止左溢出；
+ *  对于target + 1，需要找下界，即找到大于等于target+1的最小索引，防止右溢出；
+ *
+ *
+ *  换个思路：当我们已知target必然存在的情况下，找target的上界和下界
+ *  1. 找上界的时候需要防止右溢出；
+ *  2. 找下界的时候需要防止左溢出；
+ *
+ *  基于上个思路，我们再改一下，如果删除第一个二分查找，即不知道是否target是否存在
+ *  直接找target上下界，那么思路会有说明变化？
+ *  1. 找上界的时候需要防止左溢出；  （678找5，234找5，只有左溢出）
+ *  2. 找下界的时候需要防止右溢出；  （678找5，234找5，只有右溢出）
+ *
+ *  可以参考和上面第二种思路的比较，可见基本上思路就是，明确求上下界，再明确是否可能溢出，
+ *  以及溢出的方向性问题；
+ *  该方法套用代码：左闭合区间
+ *
+ *               求上界：nums[middle] <= target, 保存middle，移动left；否则移动right；
+ *                     循环退出后，保存的middle就是目标索引
+ *
+ *               求下界：nums[middle] < target, 移动left；否则移动right；
+ *                     left/right重合导致循环退出后， left/right就是目标索引
+ *
+ */
+
+class L34_Find_First_and_Last_Position_of_Element_in_Sorted_Array {
+    public int[] searchRange(int[] nums, int target) {
+        int[] result = new int[2];
+        result[0] = -1;
+        result[1] = -1;
+
+        if(nums == null || nums.length == 0) {
+            return result;
+        }
+
+        int index = Arrays.binarySearch(nums, target);
+        if(index < 0) {
+            return result;
+        }
+
+        int upperBound = findUpperBound(nums, target - 1);
+        int lowerBound = findLowerBound(nums, target + 1);
+        System.out.println(String.format("u:%d,l:%d", upperBound, lowerBound));
+        result[0] = upperBound + 1;
+        result[1] = lowerBound - 1;
+        return result;
+    }
+
+    int findUpperBound(int[] nums, int target) {
+        int left = 0, right = nums.length, middle = 0;
+        int index = -1;         //must be -1 for find uppper bound，可能左溢出
+        while(left < right) {
+            middle = left + (right - left)/2;
+            if(nums[middle] <= target) {        //注意比较符号是大于等于，以为这是我们要求的目标，上界
+                index = middle;
+                left = middle + 1;
+            } else {
+                right = middle;
+            }
+        }
+        return index;
+    }
+
+    int findLowerBound(int[] nums, int target) {
+        int left = 0, right = nums.length, middle = 0;
+        while(left < right) {
+            middle = left + (right - left)/2;
+            if(nums[middle] < target) {     //注意比较符号是小于，因为大于等于是我们要求的目标，下界
+                left = middle + 1;
+            } else {
+                right = middle;
+            }
+        }
+        return left;                    //可能右边溢出
+    }
+
+    public int[] searchRange_V2(int[] nums, int target) {
+        int[] result = new int[2];
+        result[0] = -1;
+        result[1] = -1;
+
+        if(nums == null || nums.length == 0) {
+            return result;
+        }
+
+        int index = Arrays.binarySearch(nums, target);
+        if(index < 0) {
+            return result;
+        }
+
+        int upperBound = findUpperBound_V2(nums, target);
+        int lowerBound = findLowerBound_V2(nums, target);
+        System.out.println(String.format("u:%d,l:%d", upperBound, lowerBound));
+        result[1] = upperBound;
+        result[0] = lowerBound;
+        return result;
+    }
+
+    int findUpperBound_V2(int[] nums, int target) {
+        int left = 0, right = nums.length, middle = 0;
+        int index = -1;         //must be -1 for find uppper bound
+        while(left < right) {
+            middle = left + (right - left)/2;
+            if(nums[middle] <= target) {
+                index = middle;
+                left = middle + 1;
+            } else {
+                right = middle;
+            }
+        }
+        return index;
+    }
+
+    int findLowerBound_V2(int[] nums, int target) {
+        int left = 0, right = nums.length, middle = 0;
+        while(left < right) {
+            middle = left + (right - left)/2;
+            if(nums[middle] < target) {
+                left = middle + 1;
+            } else {
+                right = middle;
+            }
+        }
+        return left;
+    }
+
+
+    /**
+     * 充分领会二分钟的各种思路：
+     *    删除第一个二分搜索，不需要提前判断是否目标值已经存在
+     *
+     *    直接在搜索上界和下界过程中判断是否找到
+     *
+     *    找target上界，考虑可能左溢出
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int[] searchRange_V3(int[] nums, int target) {
+        int[] result = new int[2];
+        result[0] = -1;
+        result[1] = -1;
+
+        if(nums == null || nums.length == 0) {
+            return result;
+        }
+
+        int upperBound = findUpperBound_V3(nums, target);
+        int lowerBound = findLowerBound_V3(nums, target);
+        System.out.println(String.format("u:%d,l:%d", upperBound, lowerBound));
+        if(upperBound < 0 || lowerBound < 0
+                || nums[upperBound] != target || nums[lowerBound] != target) {
+            return result;
+        }
+
+        result[1] = upperBound;
+        result[0] = lowerBound;
+        return result;
+    }
+
+    int findUpperBound_V3(int[] nums, int target) {
+        int left = 0, right = nums.length, middle = 0;
+        int index = -1;         //must be -1 for find uppper bound
+        while(left < right) {
+            middle = left + (right - left)/2;
+            if(nums[middle] <= target) {
+                index = middle;
+                left = middle + 1;
+            } else {
+                right = middle;
+            }
+        }
+        return index;
+    }
+
+    int findLowerBound_V3(int[] nums, int target) {
+        int left = 0, right = nums.length, middle = 0;
+        while(left < right) {
+            middle = left + (right - left)/2;
+            if(nums[middle] < target) {
+                left = middle + 1;
+            } else {
+                right = middle;
+            }
+        }
+        if(left == nums.length) {
+            left = - left - 1;
+        }
+        return left;
     }
 }

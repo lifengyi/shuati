@@ -259,3 +259,50 @@ class  L480_Sliding_Window_Median {
 }
 
 
+class L347_Top_K_Frequent_Elements {
+    class Node {
+        int num;
+        int count;
+
+        public Node(int num, int count){
+            this.num = num;
+            this.count = count;
+        }
+    }
+
+    public List<Integer> topKFrequent(int[] nums, int k) {
+        Map<Integer, Integer> cache = new HashMap<>();
+        for(int num : nums) {
+            if(cache.containsKey(num)) {
+                cache.put(num, cache.get(num) + 1);
+            } else {
+                cache.put(num, 1);
+            }
+        }
+
+        Comparator<Node> comp = new Comparator<Node>(){
+            @Override
+            public int compare(Node n1, Node n2) {
+                return n1.count - n2.count;
+            }
+        };
+
+        int count = 0;
+        PriorityQueue<Node> heap = new PriorityQueue<>(comp);
+        for(int num : cache.keySet()) {
+            count = cache.get(num);
+            if(heap.size() < k) {
+                heap.offer(new Node(num, count));
+            } else if(count >= heap.peek().count) {     //最小堆，头结点是最小结果,当前结果大于头结点，即可以放入heap
+                heap.poll();
+                heap.offer(new Node(num, count));
+            }
+        }
+
+        List<Integer> result = new ArrayList<>();
+        for(int i = 0; i < k; ++i) {
+            result.add(heap.poll().num);
+        }
+        return result;
+    }
+}

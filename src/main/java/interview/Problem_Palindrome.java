@@ -43,6 +43,7 @@ class L5_LongestPalindrome_SubString_OptimizedByManacher {
 
         char[] array = convert(s);
         int[] position = new int[array.length];
+
         int center = 0, right = 0;
         int resCenter = 0, resLen = 0;
         for(int i = 1; i < array.length; ++i) {

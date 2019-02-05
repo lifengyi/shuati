@@ -1436,10 +1436,10 @@ class L499_The_Maze_III_ {
  *  无向图DFS判断是否有闭环：    通过访问数组，检测是否访问到一个曾经访问过的节点
  *
  *  有向图拓扑排序判断是否有孤岛： 基本不涉及孤岛问题，因为孤岛会被当做indegree为0在第一时间被处理
- *  无向图DFS判断是否有闭环：    通过判断节点访问的总数是否和图节点总数相同
+ *  无向图DFS判断是否有孤岛：    通过判断节点访问的总数是否和图节点总数相同
  *
  *
- *  269的题目我的理解有歧义，我的理解是：基本上是一个邮箱无环图，所有words中出现的字符都是一个节点
+ *  269的题目我的理解有歧义，我的理解是：基本上是一个有向无环图，所有words中出现的字符都是一个节点
  *  1. 有向图出现闭环，为错
  *  2. 有向图出现孤岛，为错，以为无法判断孤岛和其他节点的优先顺序
  *  3. 有多个入度为0的节点，为错，因为无法判断这些点的优先顺序
@@ -1466,6 +1466,8 @@ class L499_The_Maze_III_ {
  *  332题中，需要在有向图中找到一个字母顺序最小的路径，所以用了PriorityQueue
  *  如果此题按照我的理解来进行解题的话，则可以使用LinkedList实现Queueu进行操作offer/pull操作
  *  同时为了排除重复边的问题，首先生成使用set的图，最后图生成完毕之后，再最后转成使用queue的图
+ *
+ *  这个题目的本意没那么复杂，就是一个普通的拓扑排序问题
  */
 class L269_Alien_Dictionary {
     class Solution {
@@ -1477,32 +1479,23 @@ class L269_Alien_Dictionary {
                 return "";
             }
 
-        /*
-        for(char ch : graph.keySet()) {
-            System.out.println(String.format("ch=%c, nexts=%s", ch, graph.get(ch)));
-        }
-        */
-
             StringBuilder sb = new StringBuilder();
-            Set<Character> visited = new HashSet<>();
+            int visited = 0;
             LinkedList<Character> queue = new LinkedList<>();
             for(char ch : indegree.keySet()) {
                 if(indegree.get(ch) == 0) {
                     queue.offer(ch);
-                    visited.add(ch);
+                    visited++;
                     sb.append(ch);
                 }
             }
             while(!queue.isEmpty()) {
                 char ch = queue.poll();
                 for(char next : graph.get(ch)) {
-                    if(visited.contains(next)) {
-                        return "";
-                    }
 
                     indegree.put(next, indegree.get(next) - 1);
                     if(indegree.get(next) == 0) {
-                        visited.add(next);
+                        visited++;
                         queue.offer(next);
                         sb.append(next);
                     }
@@ -1510,7 +1503,7 @@ class L269_Alien_Dictionary {
             }
             //拓扑排序的闭环检测是通过判断节点访问的个数， 孤岛默认被算入到入度为0的启示节点
             //dfs的闭环检测是通过访问节点判断，孤岛通过判断节点访问的个数；
-            if(visited.size() != graph.size()) {
+            if(visited != graph.size()) {
                 return "";
             }
             return sb.toString();
@@ -1540,6 +1533,8 @@ class L269_Alien_Dictionary {
                         break;
                     }
                 }
+
+                //字典中的数据本身错误，导致无解
                 if(j >= len && w1.length() > len) {
                     return false;
                 }
@@ -1549,6 +1544,69 @@ class L269_Alien_Dictionary {
     }
 }
 
+
+class L928_Minimiza_Malware_Spread_II {
+    public int minMalwareSpread(int[][] graph, int[] initial) {
+        Map<Integer, Set<Integer>> graphMap = new HashMap<>();
+        populateGraph(graph, graphMap);
+
+        int minScope = Integer.MAX_VALUE, result = -1;
+        int count = 0;
+        for(int i : initial) {
+            count = bfs(graphMap, i, initial);
+            if(count < minScope) {
+                minScope = count;
+                result = i;
+            } else if(count == minScope) {
+                result = Math.min(result, i);
+            }
+        }
+        return result;
+    }
+
+    void populateGraph(int[][] graph, Map<Integer, Set<Integer>> map) {
+        int len = graph.length;
+        for(int i = 0; i < len; ++i) {
+            map.put(i, new HashSet<Integer>());
+        }
+
+        for(int i = 0; i < len; ++i) {
+            for(int j = i + 1; j < len; ++j) {
+                if(graph[i][j] == 1) {
+                    map.get(i).add(j);
+                    map.get(j).add(i);
+                }
+            }
+        }
+    }
+
+    int bfs(Map<Integer, Set<Integer>> graph, int excludeNode, int[] initial) {
+        LinkedList<Integer> queue = new LinkedList<>();
+        Set<Integer> visited = new HashSet<>();
+        visited.add(excludeNode);
+        for(int i : initial) {
+            if(i == excludeNode) {
+                continue;
+            }
+            queue.offer(i);
+            visited.add(i);
+        }
+
+        int count = 0;
+        while(!queue.isEmpty()){
+            int cur = queue.poll();
+            count++;
+            for(int next : graph.get(cur)) {
+                if(visited.contains(next)) {
+                    continue;
+                }
+                queue.offer(next);
+                visited.add(next);
+            }
+        }
+        return count;
+    }
+}
 
 
 

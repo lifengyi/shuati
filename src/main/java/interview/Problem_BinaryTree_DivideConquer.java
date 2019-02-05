@@ -878,3 +878,48 @@ class LintCode_L73_Construct_binary_Tree_from_Preorder_and_Inorder_Traversal {
         return -1;
     }
 }
+
+
+class L250_Count_Univalue_Subtrees {
+    class Tuple {
+        boolean isUniValueTree = false;
+        int counter = 0;
+
+        public Tuple (boolean isUniValueTree, int counter) {
+            this.isUniValueTree = isUniValueTree;
+            this.counter = counter;
+        }
+    }
+
+    public int countUnivalSubtrees(TreeNode root) {
+        if(root == null) {
+            return 0;
+        }
+
+        Tuple tuple = countUnivalTrees(root);
+        return tuple.counter;
+    }
+
+    Tuple countUnivalTrees(TreeNode root) {
+        int counter = 0;
+        boolean isValid = false;
+        boolean leftValid = true, rightValid = true;
+
+        if(root.left != null) {
+            Tuple leftTuple = countUnivalTrees(root.left);
+            counter += leftTuple.counter;
+            leftValid = leftTuple.isUniValueTree && root.val == root.left.val;
+        }
+        if(root.right != null) {
+            Tuple rightTuple = countUnivalTrees(root.right);
+            counter += rightTuple.counter;
+            rightValid = rightTuple.isUniValueTree && root.val == root.right.val;
+        }
+
+        if(leftValid && rightValid) {
+            counter += 1;
+            isValid = true;
+        }
+        return new Tuple(isValid, counter);
+    }
+}
