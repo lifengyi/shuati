@@ -650,7 +650,7 @@ class L17_Letter_Combinations_of_a_Phone_Number {
  * value for evaluation as follows:
  * current val = curTotalVal - last + last * current val
  *
- * First we subtract last and then add last * current val for evaluation,
+ * First we subtract last and then update last * current val for evaluation,
  * new last is last * current val
  * current val = 5 - 4 + 4 * 7
  * last = 4* 7

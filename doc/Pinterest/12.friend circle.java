@@ -140,8 +140,8 @@ public class GFG {
         sparseVector sv3 = new sparseVector(2);
         try{
             sv1.add(sv2);
-            // sv1.add(sv3);
-            // add(sv1, sv3);
+            // sv1.update(sv3);
+            // update(sv1, sv3);
             sv1.dot(sv2);
             // dot(sv1, sv3);
             sv1.cosine(sv2);

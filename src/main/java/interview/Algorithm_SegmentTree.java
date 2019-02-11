@@ -200,6 +200,10 @@ class Counter_Of_Smaller_Number_opt {
         return node;
     }
 
+
+    /**
+     * update a single point
+     */
     private void modify(SegmentTreeNode root, int index) {
         if(root.start == index && root.end == index) {
             root.count += 1;

@@ -965,7 +965,7 @@ class L438_Find_All_anagrams_In_a_String {
  * 3. BFS + Memorizaion，leet还是挂
  *
  * 进一步优化：首先使用优先队列，这样我们每次取出的都是当前匹配情况下最远端的
- *              即最靠近字符串尾部的地方进行下一次的匹配，这样能优化时间复杂度
+ *           即最靠近字符串尾部的地方进行下一次的匹配，这样能优化时间复杂度
  *
  *
  * 再进一步优化：
@@ -1021,90 +1021,43 @@ class L139_Word_Break {
 /**
  * 普通DFS在极限case下肯定会挂，考虑优化pruning，
  *
- * 减少重复计算量，即记录下某个index下可以达到的路径
+ * search + memorization
  *
- * 为了减少每个index记录消耗的存储空间，只存储下一条index，
- *
- * 并不存储所有全部路径；
- *
- * 这样当递归到一个曾经访问并有匹配记录的索引时，进行二次递归
  */
 class L140_Word_Break_II {
-    public List<String> wordBreak(String s, List<String> wordDict) {
-        List<String> result = new ArrayList<>();
-
-        List<String> sentence = new ArrayList<>();
-        Map<Integer, List<String>> map = new HashMap<>();
-
-        dfs(s, 0, wordDict, sentence, map, result);
-
-        return result;
+    public List<String> wordBreak_II_optimized(String s, List<String> wordDict) {
+        if (s == null || s.length() == 0 || wordDict == null || wordDict.size() == 0) {
+            return new ArrayList<>();
+        }
+        Map<String, List<String>> map = new HashMap<>();
+        return backtracking(map, s, wordDict);
     }
 
-    boolean dfs(String s, int startIndex, List<String> wordDict,
-                List<String> sentence, Map<Integer, List<String>> map, List<String> result) {
-        // Check if this is the tail of the string.
-        if(startIndex == s.length()) {
-            result.add(buildString(sentence));
-            return true;
+    private List<String> backtracking(Map<String, List<String>> map, String s, List<String> wordDict) {
+        if (map.containsKey(s)) {
+            return map.get(s);
         }
 
-        // Check if the cache entry exists.
-        List<String> cache = map.get(startIndex);
-        if(cache != null) {
-            if(cache.size() != 0) {
-                flush(s, startIndex, sentence, map, result);
-                return true;
-            } else {
-                return false;
-            }
+        List<String> res = new ArrayList<>();
+        if (s.length() == 0) {
+            res.add("");
+            return res;
         }
 
-        // Create the entry.
-        map.put(startIndex, new ArrayList<>());
-        cache = map.get(startIndex);
-
-        boolean ret = false;
-        int end = 0;
-        for(int i = 0; i < wordDict.size(); ++i) {
-            String word = wordDict.get(i);
-            end = startIndex + word.length();
-            if(end > s.length()) {
-                continue;
-            }
-            if(s.startsWith(word, startIndex)) {
-                sentence.add(word);
-                if(dfs(s, end, wordDict, sentence, map, result)) {
-                    cache.add(word);
-                    ret = true;                 //  注意此处设置返回结果，一旦找到，表示当前index有命中项；
+        for (String word : wordDict) {
+            if (s.startsWith(word)) {
+                List<String> list = backtracking(map, s.substring(word.length()), wordDict);
+                for (String temp : list) {
+                    if (temp.length() == 0) {
+                        res.add(word);
+                    } else {
+                        res.add(word + " " + temp);
+                    }
                 }
-                sentence.remove(sentence.size() - 1);
             }
         }
-
-        return ret;
-    }
-
-    void flush(String s, int index, List<String> sentence,
-               Map<Integer, List<String>> map, List<String> result) {
-        if(index == s.length()) {
-            result.add(buildString(sentence));
-            return;
-        }
-
-        for(String word : map.get(index)) {
-            sentence.add(word);
-            flush(s, index + word.length(), sentence, map, result);
-            sentence.remove(sentence.size() - 1);
-        }
-    }
-
-    String buildString(List<String> sentence) {
-        StringBuilder sb = new StringBuilder();
-        for(String word : sentence) {
-            sb.append(word).append(" ");
-        }
-        return sb.toString().trim();
+        map.put(s, res);
+        return res;
     }
 }
 
@@ -1646,7 +1599,8 @@ class L291_Word_Pattern_II {
         return dfs(pattern, 0, str, 0, map, set);
     }
 
-    private boolean dfs(String pattern, int patternIndex, String str, int start, Map<Character, String> map, Set<String> set) {
+    private boolean dfs(String pattern, int patternIndex, String str, int start,
+                        Map<Character, String> map, Set<String> set) {
         if(patternIndex == pattern.length() && start == str.length()) {
             return true;
         } else if(patternIndex == pattern.length() || start == str.length()) {

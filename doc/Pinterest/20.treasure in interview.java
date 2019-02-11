@@ -99,7 +99,7 @@ class Solution {
     if(i >= 0 && i < m && j >= 0 && j < n) {
       if(board[i][j] == 1 || board[i][j] == 0) {
         // 缺了这一行！！
-        //cur.add(new int[]{i,j});
+        //cur.update(new int[]{i,j});
         if(board[i][j] == 1){
           count++;
         }

@@ -110,7 +110,7 @@ class L68_Text_Justification {
         StringBuilder sb = new StringBuilder();
         for(int i = start; i <= end; ++i) {
             sb.append(words[i]);
-            if(i == end) {	                                         //do not add space at tail
+            if(i == end) {	                                         //do not update space at tail
                 break;
             }
             for(int j = 0; j < minimumSpace; ++j) {

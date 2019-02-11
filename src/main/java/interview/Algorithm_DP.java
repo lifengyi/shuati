@@ -1243,7 +1243,7 @@ class LintCode_593_Stone_Game_II {
                     + search(k + 1, j, prefixSum, dp));
         }
 
-        //add current sum
+        //update current sum
         minStones += prefixSum[j + 1] - prefixSum[i];
 
         dp[i][j] = minStones;

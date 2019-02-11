@@ -603,7 +603,7 @@ class LintCode_Binary_Tree_Path_Sum_III {
          *          return;
          *      }
          *
-         *      path.add(node.val);
+         *      path.update(node.val);
          *
          *      if(comeFrom != node.parent) {
          *          findSum(node.parent, false, target - currentNodeValue, path, result);

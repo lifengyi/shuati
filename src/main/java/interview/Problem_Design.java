@@ -6,9 +6,7 @@ public class Problem_Design {
 }
 
 
-/**
- * 需要设计成线程安全的类封装
- */
+
 class L379_Design_Phone_Directory {
     Set<Integer> used = null;
     LinkedList<Integer> free = null;
@@ -49,44 +47,115 @@ class L379_Design_Phone_Directory {
 }
 
 
-
+/**
+ *  v2: Use BitSet
+ *      Time: O(n)  Space: O(n) => n/8
+ *
+ *  v3: Use int array
+ *      Time: O(1) Space: O(n) => 4 * n
+ *
+ *  we can also use bitset + queue
+ *      Time: O(1) Space: O(n) => n/8 + 4 * n
+ */
 
 class L379_Design_Phone_Directory_v2 {
-    BitSet bitset;
-    int max; // max limit allowed
-    int smallestFreeIndex; // current smallest index of the free bit
+    BitSet bitset = null;
+    int size = 0;
 
+    /** Initialize your data structure here
+     @param maxNumbers - The maximum numbers that can be stored in the phone directory. */
     public L379_Design_Phone_Directory_v2(int maxNumbers) {
-        this.bitset = new BitSet(maxNumbers);
-        this.max = maxNumbers;
+        bitset = new BitSet(maxNumbers);
+        size = maxNumbers;
     }
 
+    /** Provide a number which is not assigned to anyone.
+     @return - Return an available number. Return -1 if none is available. */
     public int get() {
-        // handle bitset fully allocated
-        if(smallestFreeIndex == max) {
+        if(bitset.size() == size) {
             return -1;
         }
-        int num = smallestFreeIndex;
-        bitset.set(smallestFreeIndex);
-        //Only scan for the next free bit, from the previously known smallest free index
-        smallestFreeIndex = bitset.nextClearBit(smallestFreeIndex);
-        return num;
+
+        int index = bitset.nextClearBit(0);
+        if(index < size) {
+            bitset.set(index);
+            return index;
+        }
+
+        return -1;
     }
 
+    /** Check if a number is available or not. */
     public boolean check(int number) {
-        return bitset.get(number) == false;
+        if(number >= size) {
+            return false;
+        }
+
+        return !bitset.get(number);
     }
 
+    /** Recycle or release a number. */
     public void release(int number) {
-        //handle release of unallocated ones
-        if(bitset.get(number) == false)
-            return;
-        bitset.clear(number);
-        if(number < smallestFreeIndex) {
-            smallestFreeIndex = number;
+        if(number < size) {
+            bitset.clear(number);
         }
     }
 }
+
+
+class L379_Design_Phone_Directory_v3 {
+    int availablePosition = 0;
+    int[] map = null;
+
+    /** Initialize your data structure here
+     @param maxNumbers - The maximum numbers that can be stored in the phone directory. */
+    public L379_Design_Phone_Directory_v3(int maxNumbers) {
+        map = new int[maxNumbers];
+        for(int i = 0; i < maxNumbers; ++i) {
+            map[i] = (i + 1) % maxNumbers;
+        }
+    }
+
+    /** Provide a number which is not assigned to anyone.
+     @return - Return an available number. Return -1 if none is available. */
+    public int get() {
+        if(map[availablePosition] == -1) {
+            return -1;
+        }
+
+        int index = availablePosition;
+        availablePosition = map[availablePosition];
+        map[index] = -1;
+        return index;
+    }
+
+    /** Check if a number is available or not. */
+    public boolean check(int number) {
+        if(number >= map.length) {
+            return false;
+        }
+
+        if(map[number] == -1) {
+            return false;
+        }
+        return true;
+    }
+
+    /** Recycle or release a number. */
+    public void release(int number) {
+        if(number >= map.length) {
+            return;
+        }
+
+        if(map[number] != -1) {
+            return;
+        }
+
+        map[number] = availablePosition;
+        availablePosition = number;
+    }
+}
+
 
 
 /**
@@ -112,7 +181,7 @@ class L362_Design_Hit_Counter {
         ts = new int[size];
     }
 
-    public void hit(int timestamp) {
+    public synchronized void hit(int timestamp) {
         int index = timestamp%size;
         if(ts[index] == timestamp) {
             hits[index]++;
@@ -122,7 +191,7 @@ class L362_Design_Hit_Counter {
         }
     }
 
-    public int getHits(int timestamp) {
+    public synchronized int getHits(int timestamp) {
         int count = 0;
         for(int i = 0; i < size; ++i) {
             if(timestamp - ts[i] < size) {      // 遍历整个数组，只记录5min内的数据
