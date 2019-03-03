@@ -87,6 +87,26 @@ class LintCode_L480_Binary_Tree_Paths {
 }
 
 
+/**
+ *  475: 根 -> 任意节点，求最大和
+ *  94:  任意父子节点之间，求最大和
+ *  124： 任意节点之间，求最大和
+ */
+
+class LintCode_L475_Binary_Tree_maximum_Path_Sum_II {
+    public int maxPathSum2(TreeNode root) {
+        // write your code here
+        if(root == null) {
+            return 0;
+        }
+
+        int left = Math.max(0, maxPathSum2(root.left));
+        int right = Math.max(0, maxPathSum2(root.right));
+        return root.val + Math.max(left, right);
+    }
+}
+
+
 class LintCode_L94_Binary_Tree_Maximum_Path_Sum {
     int maxSum = Integer.MIN_VALUE;
 
@@ -112,19 +132,31 @@ class LintCode_L94_Binary_Tree_Maximum_Path_Sum {
     }
 }
 
-class LintCode_L475_Binary_Tree_maximum_Path_Sum_II {
-    public int maxPathSum2(TreeNode root) {
+class L124_Binary_Tree_Maximum_Path_Sum {
+    int maxSum = Integer.MIN_VALUE;
+
+    public int maxPathSum(TreeNode root) {
         // write your code here
         if(root == null) {
             return 0;
         }
 
-        int left = Math.max(0, maxPathSum2(root.left));
-        int right = Math.max(0, maxPathSum2(root.right));
-        return root.val + Math.max(left, right);
+        getMaxSum(root);
+        return maxSum;
+    }
+
+    private int getMaxSum(TreeNode node) {
+        if(node == null) {
+            return 0;
+        }
+
+        int leftMax = Math.max(0, getMaxSum(node.left));
+        int rightMax = Math.max(0, getMaxSum(node.right));
+
+        maxSum = Math.max(maxSum, node.val + leftMax + rightMax);
+        return node.val + Math.max(leftMax, rightMax);
     }
 }
-
 
 
 class LintCode_L93_Balanced_Binary_Tree {
@@ -208,11 +240,11 @@ class LintCode_L453_Flatten_Binary_Tree_to_Linked_List {
 /**
  *  LCS and its variants:
  *
- *  I. Node A and B must be in the tree.
+ *  88  I. Node A and B must be in the tree.
  *
- *  II. Node has a pointer points to its parent.
+ *  474 II. Node has a pointer points to its parent.
  *
- *  III. Node a and B may not exist in the tree.
+ *  578 III. Node a and B may not exist in the tree.
  */
 class LintCode_L88_Lowest_Common_Ancestor_of_a_Binary_Tree {
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode A, TreeNode B) {
@@ -336,6 +368,10 @@ class LintCode_L578_Lowest_Common_Ancestor_III {
 }
 
 
+/**
+ *   595 任意父子节点之间，求最大连续递增序列
+ *   614 任意节点之间，求最大连续递增序列
+ */
 class LintCode_L595_Binary_Tree_Longest_Consecutive_Sequence {
     int max = 0;
     public int longestConsecutive(TreeNode root) {
@@ -365,6 +401,7 @@ class LintCode_L595_Binary_Tree_Longest_Consecutive_Sequence {
 }
 
 class LintCode_L614_Binary_Tree_Longest_Consecutive_Sequence_II {
+
     class ResultType {
         int upLen;
         int downLen;
@@ -420,7 +457,12 @@ class LintCode_L614_Binary_Tree_Longest_Consecutive_Sequence_II {
 }
 
 
-
+/**
+ *   376：
+ *   根 -> 叶子节点之间，求sum = K
+ *   任意父子节点之间，求sum=k
+ *   任意节点之间，求sum=k
+ */
 class LintCode_L376_Binary_Tree_Path_Sum {
     public List<List<Integer>> binaryTreePathSum(TreeNode root, int target) {
         // write your code here
@@ -454,19 +496,16 @@ class LintCode_L376_Binary_Tree_Path_Sum {
             path.remove(path.size() - 1);
         }
     }
-}
 
-
-/**
- *  写法2:   将临时数据的维护操作放到了dfs函数中的开始和结尾，
- *          原来临时数据集的维护操作都是在进入dfs之前做的，
- *
- *          注意区别就是后者情况下：dfs函数中任何退出的地方都要
- *          记得动态维护数据集，否则就会出错，所以尽量保持只有一个
- *          退出函数的地方
- */
-class LintCode_L376_Binary_Tree_Path_Sum_CodeStyle_II {
-    public List<List<Integer>> binaryTreePathSum(TreeNode root, int target) {
+    /**
+     *  写法2:   将临时数据的维护操作放到了dfs函数中的开始和结尾，
+     *          原来临时数据集的维护操作都是在进入dfs之前做的，
+     *
+     *          注意区别就是后者情况下：dfs函数中任何退出的地方都要
+     *          记得动态维护数据集，否则就会出错，所以尽量保持只有一个
+     *          退出函数的地方
+     */
+    public List<List<Integer>> binaryTreePathSum_v2(TreeNode root, int target) {
         // write your code here
         List<List<Integer>> result = new ArrayList<>();
         if(root == null) {
@@ -474,11 +513,11 @@ class LintCode_L376_Binary_Tree_Path_Sum_CodeStyle_II {
         }
 
         List<Integer> path = new ArrayList<>();
-        dfs(root, target, path, result);
+        dfs_v2(root, target, path, result);
         return result;
     }
 
-    void dfs(TreeNode node, int target, List<Integer> path, List<List<Integer>> result) {
+    void dfs_v2(TreeNode node, int target, List<Integer> path, List<List<Integer>> result) {
         if(node == null) {
             return;
         }
@@ -809,7 +848,7 @@ class LintCode_L245_Subtree {
 }
 
 
-class LIntCode_L1360_Symmetric_Tree {
+class LintCode_L1360_Symmetric_Tree {
     public boolean isSymmetric(TreeNode root) {
         if(root == null) {
             return true;
@@ -921,5 +960,42 @@ class L250_Count_Univalue_Subtrees {
             isValid = true;
         }
         return new Tuple(isValid, counter);
+    }
+}
+
+
+class L450_Delete_Node_in_a_BST {
+    public TreeNode deleteNode(TreeNode root, int key) {
+        if(root == null) {
+            return null;
+        }
+
+        if(key < root.val) {
+            root.left = deleteNode(root.left, key);
+        } else if(key > root.val) {
+            root.right = deleteNode(root.right, key);
+        } else {
+            if(root.left == null && root.right == null) {
+                root = null;
+            } else if(root.left == null) {
+                return root.right;
+            } else  if(root.right == null) {
+                return root.left;
+            } else {
+                TreeNode node = findLeftMostNode(root.right);
+                root.val = node.val;
+                root.right = deleteNode(root.right, root.val);
+            }
+        }
+
+        return root;
+    }
+
+    TreeNode findLeftMostNode(TreeNode root) {
+        TreeNode node = root;
+        while(node.left != null) {
+            node = node.left;
+        }
+        return node;
     }
 }

@@ -2,25 +2,37 @@ package dropbox;
 
 
     /**
-     *  Define # of buckets : K
-     *  Split n nubmer into K buckets
      *
-     *  Use BST/Segment tree to store buckets
-     *  space: O(n/8)
-     *  time:  get:  O(klogk) + O(n/k)
-     *         check/release : O(logk) + O(1)
+     *  HashSet + Queue
+     *  space: O(4n) + O(4n) + O(Pointers)
+     *  time: O(1)
      *
      *
-     *  Use HashTable to store buckets
-     *  bucketId <-> bucket (use ByteSet to store phone number)
-     *  space: O(n/8)
-     *  time: get: O(k) + O(n/k)
-     *        check/release: O(1);
-     *
-     *
+     *  Circular Array
      *  space: O(4n)
-     *  time:  get: O(1)
-     *         check/releasae: O(1)
+     *  time: O(1)
+     *
+     *
+     *  Use BitSet
+     *  space: O(n/8)
+     *  time: O(n)
+     *
+     *
+     *  考虑将 BitSet split into several buckets
+     *
+     *  1. hastable ? space : O(n/8) + O(poninters)
+     *                time:   release/check: O(1)
+     *                        get: O(n/k) + o(k)
+     *
+     *  2. circular array?: space: O(n/8) + O(4k)  <-- 数组记录每个buckets当前分配的总数
+     *                      time: release/check: O(1)
+     *                            get: O(n/k) + O(k)
+     *
+     *                   继续改进时间复杂度：          <-- 数组记录当前可用的bucket
+     *                   space: O(8/n) + O(4k)
+     *                   time: release/check: O(1)
+     *                         get: O(n/k)
+     *
      */
 
 import java.util.*;

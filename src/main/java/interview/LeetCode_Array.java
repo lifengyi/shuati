@@ -697,6 +697,11 @@ class L349_Intersection_of_Two_Arrays {
  * each array has one pointer and compare these 2 pointers,
  * eaqual: both ++  or
  * move the pointer with smaller value
+ *
+ * For 2 unsorted arrays, use the following approach
+ * Time:  O(n + m)
+ * Space: O(n)
+ *
  */
 class L350_Intersection_of_Two_Arrays_II {
     public int[] intersect(int[] nums1, int[] nums2) {
@@ -730,6 +735,173 @@ class L350_Intersection_of_Two_Arrays_II {
     }
 }
 
+
+class L243_Shortest_Word_Distance {
+    public int shortestDistance(String[] words, String word1, String word2) {
+        int i1 = -1, i2 = -1;
+        int shortestDistance = Integer.MAX_VALUE;
+        for(int i = 0; i < words.length; ++i) {
+            if(words[i].equals(word1)) {
+                i1 = i;
+            } else if(words[i].equals(word2)) {
+                i2 = i;
+            }
+
+            if(i1 != -1 && i2 != -1) {
+                shortestDistance = Math.min(shortestDistance, Math.abs(i1 - i2));
+            }
+        }
+        return shortestDistance;
+    }
+}
+
+
+class L244_Shortest_Word_Distance_II {
+    Map<String, List<Integer>> cache = null;
+
+    public L244_Shortest_Word_Distance_II(String[] words) {
+        cache = new HashMap<>();
+        for(int i = 0; i < words.length; ++i) {
+            if(cache.containsKey(words[i])) {
+                cache.get(words[i]).add(i);
+            } else {
+                List<Integer> list = new ArrayList<>();
+                list.add(i);
+                cache.put(words[i], list);
+            }
+        }
+    }
+
+    public int shortest(String word1, String word2) {
+        List<Integer> l1 = cache.get(word1);
+        List<Integer> l2 = cache.get(word2);
+        int distance = Integer.MAX_VALUE;
+        int i1 = 0, i2 = 0;
+        while(i1 < l1.size() && i2 < l2.size()) {
+            int num1 = l1.get(i1);
+            int num2 = l2.get(i2);
+            if(num1 < num2) {
+                distance = Math.min(distance, num2 - num1);
+                i1++;
+            } else {
+                distance = Math.min(distance, num1 - num2);
+                i2++;
+            }
+        }
+        return distance;
+    }
+}
+
+
+class L245_Shortest_Word_Distance_III {
+    public int shortestWordDistance(String[] words, String word1, String word2) {
+        boolean isSame = word1.equals(word2);
+        int p1 = -1, p2 = -1;
+        int distance = Integer.MAX_VALUE;
+        for(int i = 0; i < words.length; ++i) {
+            if(words[i].equals(word1)) {
+                if(isSame) {
+                    p1 = p2;
+                    p2 = i;
+                } else {
+                    p1 = i;
+                }
+            }
+            if(!isSame && words[i].equals(word2)) {
+                p2 = i;
+            }
+            if(p1 != -1 && p2 != -1) {
+                distance = Math.min(distance, Math.abs(p1 - p2));
+            }
+        }
+        return distance;
+    }
+}
+
+class L636_Exclusive_time_of_Functions {
+    class Node {
+        int id = 0;
+        int type = 0;  //0: start, 1: end
+        int time = 0;
+
+        public Node(String log) {
+            String[] strings = log.split(":");
+            id = Integer.valueOf(strings[0]);
+
+            if(strings[1].equals("end")) {
+                type = 1;
+            }
+            time = Integer.valueOf(strings[2]);
+        }
+
+    }
+
+    public int[] exclusiveTime(int n, List<String> logs) {
+        int[] res = new int[n];
+        int lastUpdate = 0;
+        LinkedList<Integer> stack = new LinkedList<>();
+
+        for(int i = 0; i < logs.size(); ++i) {
+            Node cur = new Node(logs.get(i));
+
+            if(stack.isEmpty()) {
+                stack.push(cur.id);
+                lastUpdate = cur.time;
+                continue;
+            }
+
+            int top = stack.peek();
+            if(cur.type == 0) {
+                res[top] += cur.time - lastUpdate;
+                lastUpdate = cur.time;
+                stack.push(cur.id);
+            } else {
+                res[top] += cur.time - lastUpdate + 1;      //注意这里
+                lastUpdate = cur.time + 1;                  //还有这里
+                                                            //end结束，lastUpdate+1为了2个目的
+                                                            //1. 下一个start进来，对当前top计数增加为0
+                                                            //2. 如果下一个还是end，即外部嵌套的end，需要做-1处理
+                stack.pop();
+            }
+        }
+        return res;
+    }
+}
+
+
+class L605_Can_Place_Flowers {
+    public boolean canPlaceFlowers(int[] flowerbed, int n) {
+        int start = -1, end = -1;
+        int sum = 0;
+
+        if(flowerbed[0] == 0) {
+            start = 0;
+        }
+
+        for(int i = 1; i < flowerbed.length; ++i) {
+            if(start == -1) {
+                if(flowerbed[i] == 0 && flowerbed[i - 1] == 0) {
+                    start = i;
+                }
+            } else {
+                if(flowerbed[i] == 1) {
+                    end = i - 1;
+                }
+            }
+
+            if(start != -1 && end != -1) {
+                sum += (end - start + 1)/2;
+                start = -1;
+                end = -1;
+            }
+        }
+
+        if(start != -1) {
+            sum += (flowerbed.length - start + 1)/2;
+        }
+        return sum >= n;
+    }
+}
 
 
 

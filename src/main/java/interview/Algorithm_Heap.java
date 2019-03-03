@@ -150,7 +150,9 @@ class L295_MedianFinder {
  * 480. Sliding Window Median
  *
  * 1. 使用heap，但是不能使用PriorityQueue，因为需要挪出元素，使用TreeSet
+ *
  * 2. 使用TreeSet,但是不能放入重复元素，所以需要引入一个类，额外引入id的概念，val相同则对id进行操作
+ * 
  * 3. TreeSet默认就是升序列，可以定义Comparator对类进行比较，放入到TreeSet的定义中
  *    也可以在类的定义中直接实现compareTo函数
  *    同时定义 class Node implements Comparable<Node> {...}

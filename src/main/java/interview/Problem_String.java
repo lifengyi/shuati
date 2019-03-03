@@ -38,7 +38,8 @@ class L418_Sentence_Screen_Fitting {
 
 /**
  * 1. 首先要能判断多少个word组成一行：
- * 这里统计读入的所有words的总长curLen，并需要计算空格的长度。假如已经读入words[0:i]。当curLen + i <=L 且加curLen + 1 + word[i+1].size() > L时，一行结束。
+ * 这里统计读入的所有words的总长curLen，并需要计算空格的长度。假如已经读入words[0:i]。
+ * 当curLen + i <=L 且加curLen + 1 + word[i+1].size() > L时，一行结束。
  *
  * 2. 知道一行的所有n个words，以及总长curLen之后要决定空格分配：
  * 平均空格数：k = (L - curLen) / (n-1)

@@ -49,6 +49,11 @@ public class chunkManager2 {
             return null;
         }
 
+        // return the next node of the input element
+        public E next(E element) {
+            return null;
+        }
+
         public void add(E element) {
 
         }
@@ -77,10 +82,21 @@ public class chunkManager2 {
         Interval prev = tree.floor(cur);
         Interval next = tree.ceiling(cur);
 
-        //remove the next chunk if it is included in current chunk
-        while(next != null && next.end <= cur.end) {
+        // if tree has a node which has the same start with current chunk
+        // remove it
+        if(prev != null && next != null && prev == next) {
+            cur.end = Math.max(cur.end, next.end);
             tree.remove(next);
+            prev = tree.floor(cur);
             next = tree.ceiling(cur);
+        }
+
+        // if ceiling node is included in current chunk
+        // remove it
+        while(next != null && next.end <= cur.end) {
+            Interval tobeDeleted = next;
+            next = tree.getSuccessor(next);
+            tree.remove(tobeDeleted);
         }
 
         if(prev == null && next == null) {
@@ -89,35 +105,35 @@ public class chunkManager2 {
             if(cur.end < next.start){
                 tree.add(cur);
             } else {
+                cur.end = Math.max(cur.end, next.end);
                 tree.remove(next);
-                cur.end = next.end;
                 tree.add(cur);
             }
         } else if(next == null) {
             if(cur.start > prev.end) {
                 tree.add(cur);
             } else if(cur.end > prev.end) {
-                tree.remove(prev);
                 cur.start = prev.start;
+                tree.remove(prev);
                 tree.add(cur);
             }
-            //ignore the current chunk if it is included in prev
+            //ignore if current chunk is included in prev
         } else {
-            int gapStart = prev.end + 1;
-            int gapEnd = next.start - 1;
-            if(cur.start <= gapStart && cur.end >= gapEnd) {
+            //注意左闭合区间定义在这里的体现
+            int gapStart = prev.end;
+            int gapEnd = next.start;
+            if (cur.start <= gapStart && cur.end >= gapEnd) {
                 tree.remove(prev);
                 tree.remove(next);
                 cur.start = prev.start;
                 cur.end = next.end;
-            } else if(cur.start <= gapStart) {
+            } else if (cur.start <= gapStart) {
                 tree.remove(prev);
                 cur.start = prev.start;
-            } else if(cur.end >= gapEnd) {
+            } else if (cur.end >= gapEnd) {
                 tree.remove(next);
                 cur.end = next.end;
             }
-
             tree.add(cur);
         }
     }

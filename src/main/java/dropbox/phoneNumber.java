@@ -71,8 +71,12 @@ public class phoneNumber {
      *        如果字典大可以用trie tree优化空间
      *
      *   但是这个问题问的是最终字符串很大，怎么办？
-     *   除了上述的validatePrefix优化之外，
-     *   还可以缓存当前匹配中的数据类似于word break中的搜索+记忆化
+     *
+     *   tradeoff : 可以牺牲空间，trie tree => hash map
+     *
+     *   或者在原来 Trie Tree基础上，对已经匹配成功的字符串做缓存
+     *
+     *   或者每次遍历都check prefix ？
      *
      *
      * *************   上述文图的follow up

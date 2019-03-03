@@ -83,3 +83,38 @@ class L5_LongestPalindrome_SubString_OptimizedByManacher {
         return sb.toString().toCharArray();
     }
 }
+
+class L516_Longest_Palindromic_Subsequence_ {
+    public int longestPalindromeSubseq(String s) {
+        if(s == null || s.length() == 0) {
+            return 0;
+        }
+
+        int len = s.length();
+        int[][] dp = new int[len][len];
+        for(int i = 0; i < len * len; ++i) {
+            dp[i/len][i%len] = -1;
+        }
+
+        return search(s, 0, s.length() - 1, dp);
+    }
+
+    int search(String s, int start, int end, int[][] dp) {
+        if(start == end) {
+            return 1;
+        } else if(s.charAt(start) == s.charAt(end) && start + 1 == end) {
+            return 2;
+        } else if(dp[start][end] != -1) {
+            return dp[start][end];
+        }
+
+        int res = 0;
+        if(s.charAt(start) == s.charAt(end)) {
+            res = 2 + search(s, start + 1, end - 1, dp);
+        } else {
+            res = Math.max(search(s, start + 1, end, dp), search(s, start, end - 1, dp));
+        }
+        dp[start][end] = res;
+        return res;
+    }
+}

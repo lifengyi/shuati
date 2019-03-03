@@ -491,6 +491,93 @@ class L924_Minimize_Malware_Spread {
 }
 
 
+class L547_Friend_Circles {
+    class UnionFind {
+        private int[] father = null;
+        private int count = 0;
 
+        public UnionFind(int n) {
+            this.count = n;
+            this.father = new int[n];
+            for(int i = 0; i < n; ++i) {
+                father[i] = i;
+            }
+        }
+
+        public int findRoot(int p) {
+            while(p != father[p]) {
+                father[p] = father[father[p]];
+                p = father[p];
+            }
+            return p;
+        }
+
+        public void connect(int p, int q) {
+            int rootp = findRoot(p);
+            int rootq = findRoot(q);
+            if(rootp != rootq) {
+                father[rootp] = rootq;
+                count--;
+            }
+        }
+
+        public int getCount() {
+            return count;
+        }
+
+    }
+    public int findCircleNum(int[][] M) {
+        int num = M.length;
+        UnionFind uf = new UnionFind(num);
+        for(int i = 0; i < num; ++i) {
+            for(int j = 0; j < num; ++j) {
+                if(i != j && M[i][j] == 1) {
+                    uf.connect(i, j);
+                }
+            }
+        }
+        return uf.getCount();
+    }
+}
+
+
+
+class L150_Evaluate_Reverse_Polish_Notation {
+    public int evalRPN(String[] tokens) {
+        LinkedList<Long> stack = new LinkedList<>();
+        for(String token : tokens) {
+            if(isOperator(token)) {
+                calculate(token, stack);
+            } else {
+                stack.push(Long.valueOf(token));
+            }
+        }
+        long res = stack.pop();
+        return (int)res;
+    }
+
+    void calculate(String operator, LinkedList<Long> stack) {
+        long second = stack.pop();
+        long first = stack.pop();
+        long res = 0;
+        if(operator.equals("*")) {
+            res = first * second;
+        } else if(operator.equals("/")) {
+            res = first/second;
+        } else if(operator.equals("+")) {
+            res = first + second;
+        } else {
+            res = first - second;
+        }
+        stack.push(res);
+    }
+
+    boolean isOperator(String s) {
+        if(s.equals("*") || s.equals("/") || s.equals("+") || s.equals("-")) {
+            return true;
+        }
+        return false;
+    }
+}
 
 

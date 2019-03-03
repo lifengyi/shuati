@@ -380,49 +380,6 @@ class L23_Merge_k_Sorted_Lists {
 }
 
 
-class L57_Insert_Interval {
-
-    public class Interval {
-        int start;
-        int end;
-        Interval(int s, int e) {
-            start = s;
-            end = e;
-        }
-    }
-    public List<Interval> insert(List<Interval> intervals, Interval newInterval) {
-        Comparator<Interval> comp = new Comparator<Interval>(){
-            @Override
-            public int compare(Interval i1, Interval i2) {
-                return i1.start - i2.start;
-            }
-        };
-
-        List<Interval> newIntervals = new ArrayList<>();
-        newIntervals.addAll(intervals);
-        newIntervals.add(newInterval);
-        Collections.sort(newIntervals, comp);
-
-        Interval first = newIntervals.get(0);
-        int start = first.start;
-        int end = first.end;
-
-        List<Interval> result = new ArrayList<>();
-        for(Interval interval : newIntervals) {
-            if(interval.start <= end) {
-                end = Math.max(end, interval.end);
-            } else {
-                result.add(new Interval(start, end));
-                start = interval.start;
-                end = interval.end;
-            }
-        }
-        result.add(new Interval(start, end));
-        return result;
-    }
-}
-
-
 
 class L2_Add_Two_Numbers {
 
@@ -462,48 +419,6 @@ class L2_Add_Two_Numbers {
 }
 
 
-class L56_Merge_Intervals {
-    public class Interval {
-        int start;
-        int end;
-        Interval(int s, int e) {
-            start = s;
-            end = e;
-        }
-    }
-
-    public List<Interval> merge(List<Interval> intervals) {
-        List<Interval> result = new ArrayList<>();
-        if(intervals == null || intervals.size() == 0) {
-            return result;
-        }
-
-
-        Comparator<Interval> comp = new Comparator<Interval>(){
-            @Override
-            public int compare(Interval i1, Interval i2) {
-                return i1.start - i2.start;
-            }
-        };
-
-        Collections.sort(intervals,comp);
-
-        Interval first = intervals.get(0);
-        int start = first.start, end = first.end;
-        for(Interval interval : intervals) {
-            if(interval.start <= end) {
-                end = Math.max(end, interval.end);
-            } else {
-                result.add(new Interval(start, end));
-                start = interval.start;
-                end = interval.end;
-            }
-        }
-
-        result.add(new Interval(start, end));
-        return result;
-    }
-}
 
 
 class L24_Swap_Nodes_in_Pairs {
@@ -621,4 +536,127 @@ class L138_Copy_List_with_Random_Pointer {
 
         return map.get(head);
     }
+}
+
+
+class L146_LRU_Cache {
+    class LRU<K, V> extends LinkedHashMap<K, V> {
+        private int capacity = 0;
+
+        public LRU(int capacity) {
+            super(capacity * 2, 0.75f, true);
+            this.capacity = capacity;
+        }
+
+        @Override
+        protected boolean removeEldestEntry(java.util.Map.Entry<K, V> eldestEntry) {
+            if(size() > capacity) {
+                return true;
+            }
+            return false;
+        }
+    }
+
+
+    private LRU<Integer, Integer> lru = null;
+
+    public L146_LRU_Cache(int capacity) {
+        this.lru = new LRU(capacity);
+    }
+
+    public int get(int key) {
+        return lru.containsKey(key) ? lru.get(key) : -1;
+    }
+
+    public void put(int key, int value) {
+        lru.put(key, value);
+    }
+}
+
+
+class L146_LRU_Cache_v2 {
+    class Node {
+        public int key;
+        public int value;
+        public Node prev;
+        public Node next;
+
+        public Node(int key, int value) {
+            this.key = key;
+            this.value = value;
+            prev = null;
+            next = null;
+        }
+    }
+
+    private int capacity = 0;
+    private Node head = null;
+    private Node tail = null;
+    private Map<Integer, Node> map = null;
+
+    public L146_LRU_Cache_v2 (int capacity) {
+        this.capacity = capacity;
+        this.map = new HashMap<>(capacity * 2);
+        this.head = new Node(0, 0);
+        head.next = tail;
+        this.tail = new Node(0, 0);
+        tail.prev = head;
+    }
+
+    public int get(int key) {
+        if(!map.containsKey(key)) {
+            return -1;
+        }
+
+        Node node = map.get(key);
+        if(node.next != tail) {
+            pullNode(node);
+            putAtTail(node);
+        }
+
+        return node.value;
+    }
+
+    public void put(int key, int value) {
+        Node node = null;
+        if(!map.containsKey(key)) {
+            node = new Node(key, value);
+            putAtTail(node);
+        } else {
+            node = map.get(key);
+            node.value = value;
+            pullNode(node);
+            putAtTail(node);
+        }
+        map.put(key, node);
+        if(map.size() > capacity) {
+            deleteEldestNode();
+        }
+    }
+
+    private void deleteEldestNode() {
+        Node firstNode = head.next;
+        map.remove(firstNode.key);
+
+        pullNode(firstNode);
+        firstNode.prev = null;
+        firstNode.next = null;
+    }
+
+    private void pullNode(Node node) {
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+    }
+
+    private void putAtTail(Node node) {
+        node.prev = tail.prev;
+        node.next = tail;
+        tail.prev.next = node;
+        tail.prev = node;
+    }
+}
+
+
+class LFU {
+
 }

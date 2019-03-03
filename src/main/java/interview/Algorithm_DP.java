@@ -1098,6 +1098,41 @@ class LintCode_396_Coins_in_a_Line_III {
 }
 
 
+class L516_Longest_Palindromic_Subsequence {
+    public int longestPalindromeSubseq(String s) {
+        if(s == null || s.length() == 0) {
+            return 0;
+        }
+
+        int len = s.length();
+        int[][] dp = new int[len][len];
+        for(int i = 0; i < len * len; ++i) {
+            dp[i/len][i%len] = -1;
+        }
+
+        return search(s, 0, s.length() - 1, dp);
+    }
+
+    int search(String s, int start, int end, int[][] dp) {
+        if(start == end) {
+            return 1;
+        } else if(s.charAt(start) == s.charAt(end) && start + 1 == end) {
+            return 2;
+        } else if(dp[start][end] != -1) {
+            return dp[start][end];
+        }
+
+        int res = 0;
+        if(s.charAt(start) == s.charAt(end)) {
+            res = 2 + search(s, start + 1, end - 1, dp);
+        } else {
+            res = Math.max(search(s, start + 1, end, dp), search(s, start, end - 1, dp));
+        }
+        dp[start][end] = res;
+        return res;
+    }
+}
+
 class L877_Stone_Game {
     public boolean stoneGame(int[] piles) {
         if(piles == null || piles.length == 0) {
@@ -2000,6 +2035,34 @@ class L91_Decode_Ways_DP {
             }
         }
         return dp[array.length];
+    }
+}
+
+
+/**
+ *   dp[i][j], 前i个硬币组成j最少的硬币数是多少
+ *   第一列设置为0，表示前i个硬币组成0最少的硬币数是0
+ *   第一行设置为无效值，此处用amount + 1，没有用Integer.MAX_VALUE + 1
+ *   （因为后续做Math.min操作中，有可能遇到 1 + Integer.MAX_VALUE,就会变成负数）
+ *   同理，-1也不可以在这里作为无效值的代表，所以采用一个比较稳妥的值作为无效值
+ *
+ *   之所以-1和Integer.MAX_VALUE无法作为无效值，主要是因为我们用了min操作
+ *
+ */
+class L322_Coin_Change {
+    public int coinChange(int[] coins, int amount) {
+        int[] dp = new int[amount + 1];
+        Arrays.fill(dp, amount + 1);
+        dp[0] = 0;
+
+        for(int i = 1; i <= coins.length; ++i) {
+            for(int j = coins[i - 1]; j <= amount; ++j) {
+                dp[j] = Math.min(dp[j], 1 + dp[j - coins[i - 1]]);
+                                        //无效值如果使用-1或者MAX_VALUE,这里可能出现负值
+            }
+        }
+
+        return dp[amount] > amount ? -1 : dp[amount];
     }
 }
 

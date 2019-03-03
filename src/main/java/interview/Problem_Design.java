@@ -288,3 +288,115 @@ class L146_LRU_Cache_ {
 }
 
 
+class L716_Max_Stack {
+    class Node {
+        int val = 0;
+        Node prev = null;
+        Node next = null;
+
+        public Node(int val){
+            this.val = val;
+        }
+    }
+
+    Node head = null;
+    Node tail = null;
+    TreeMap<Integer, List<Node>> cache = null;
+
+    /** initialize your data structure here. */
+    public L716_Max_Stack() {
+        cache = new TreeMap<>();
+        head = new Node(0);
+        tail = new Node(0);
+        head.next = tail;
+        tail.prev = head;
+    }
+
+    public void push(int x) {
+        Node node = new Node(x);
+        //add to list
+        Node last = tail.prev;
+        last.next = node;
+        node.prev = last;
+        node.next = tail;
+        tail.prev = node;
+
+        //add to map
+        if(cache.containsKey(x)) {
+            cache.get(x).add(node);
+        } else {
+            List<Node> list = new ArrayList<>();
+            list.add(node);
+            cache.put(x, list);
+        }
+    }
+
+    public int pop() {
+        Node node = tail.prev;
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+        node.prev = null;
+        node.next = null;
+
+        List<Node> list = cache.get(node.val);
+        list.remove(list.size() - 1);
+        if(list.size() == 0) {
+            cache.remove(node.val);
+        }
+        return node.val;
+    }
+
+    public int top() {
+        return tail.prev.val;
+    }
+
+    public int peekMax() {
+        return cache.lastKey();
+    }
+
+    public int popMax() {
+        int maxKey = cache.lastKey();
+        List<Node> list = cache.get(maxKey);
+        Node node = list.get(list.size() - 1);
+
+        list.remove(list.size() - 1);
+        if(list.size() == 0) {
+            cache.remove(maxKey);
+        }
+
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+        node.next = null;
+        node.prev = null;
+
+        return maxKey;
+    }
+}
+
+class L528_Random_Pick_with_Weight_ {
+    int[] sum = null;
+    Random random = null;
+    int count = 0;
+
+    public L528_Random_Pick_with_Weight_(int[] w) {
+        random = new Random();
+        sum = new int[w.length];
+        sum[0] = w[0];
+        for(int i = 1; i < w.length; ++i) {
+            sum[i] = sum[i - 1] + w[i];
+        }
+        count = sum[sum.length - 1];
+    }
+
+    public int pickIndex() {
+        int number = random.nextInt(count);
+        int index = Arrays.binarySearch(sum , number + 1);  //注意：搜索的是randNum + 1
+        if(index < 0) {
+            index = -index - 1;
+        }
+        return index;
+    }
+}
+
+
+

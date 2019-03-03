@@ -84,7 +84,7 @@ class L273_Integer_to_English_Words {
  */
 
 /**
- *  It requires minimum change, but DFS traverse all the subsets of this sting,
+ *  It requires minimum change, but DFS traverse all the subsets of this string,
  *  which means if the code even find a longer substring that meets the requirement,
  *  it still try to traverse other shorter substring. We need to improve it.
  *
@@ -258,14 +258,14 @@ class L301_Remove_Invalid_Parentheses_DFSwithPruning {
         }
 
         int scanCursor = 0, removeCursor = 0;
-        dfs(s, scanCursor, removeCursor, s1, ret);
+        dfs(s, removeCursor, s1, ret);
         if(ret.size() == 0) {
             ret.add("");
         }
         return ret;
     }
 
-    void dfs(String s, int scanCur, int removeCur, char[] compare, List<String> result) {
+    void dfs(String s, int removeCur, char[] compare, List<String> result) {
         int count = 0;
         char[] array = s.toCharArray();
         for(int i = 0; i < array.length; ++i) {
@@ -279,10 +279,15 @@ class L301_Remove_Invalid_Parentheses_DFSwithPruning {
             }
 
             //remove all the possible ')'/'(' and run dfs again;
+            //removeCur在整个index之前的删除点已经被尝试过了，此次dfs如果要尝试
+            //删除的话，请从该索引开往往后尝试
             for(int j = removeCur; j <= i; ++j) {
+                //条件首先是匹配中第二个选项值，可能是")"也可能是"("
+                //还有一个条件是避免重复项被选中，即使a[j]!=a[j-1]
+                //由于条件中有j-1所以当第一个为命中项时，时可以尝试的
                 if(array[j] == compare[1] && (j == removeCur || array[j] != array[j - 1])) {
                     String tmp = s.substring(0, j) + s.substring(j + 1);
-                    dfs(tmp, i, j, compare, result);
+                    dfs(tmp, j, compare, result);
                 }
             }
             return;
@@ -290,7 +295,7 @@ class L301_Remove_Invalid_Parentheses_DFSwithPruning {
 
         String reversed = new StringBuilder(s).reverse().toString();
         if(compare[0] == '(') {
-            dfs(reversed, 0, 0, s2, result);
+            dfs(reversed, 0, s2, result);
         } else {
             result.add(reversed);
         }
@@ -350,6 +355,16 @@ class L301_Remove_Invalid_Parentheses_DFSwithPruning_BFS {
         return count == 0;
     }
 
+
+    /**
+     *  可以尝试把上面validate和这个addQueue函数结合起来
+     *  首先判断count的情况：
+     *    等于0，该字符串放入result
+     *    大于0，删除所有可能左括号
+     *    小于0，删除所有可能右括号
+     *
+     *    用visited来进行去重
+     */
     void addQueue(LinkedList<String> queue, Set<String> visited, String s) {
         char[] array = s.toCharArray();
         int count = 0;
@@ -1484,6 +1499,16 @@ class Lintcode_42_Maximum_Subarray_II {
  *  这个写法：DP中出现的选于不选的问题，导致当前数字存在取和不取的情况，可以做为横轴
  *          ith number， jth pick
  *
+ *  dp1[i][j] 前i个数字组成j个数组，最大和
+ *
+ *  dp2[i][j] 前i个数字组成j个数组，当前第i个数字必须被使用
+ *
+ *
+ *  dp1[i][j] =  不取i:  dp1[i-1][j]
+ *               取i :   dp2[i][j]
+ *
+ *  dp2[i][j] = 取i， i独立为一个数组：  dp1[i-1][j-1] + A[i]
+ *                   i和包含在最后一个数组中: dp2[i-1][j] + A[i]
  */
 class Lintcode_42_Maximum_Subarray_II_v2 {
     public int maxTwoSubArrays(List<Integer> nums) {
@@ -1773,7 +1798,7 @@ class L528_Random_Pick_with_Weight {
 
     public int pickIndex() {
         int randNum = rand.nextInt(size);
-        int index = Arrays.binarySearch(sum, randNum + 1);
+        int index = Arrays.binarySearch(sum, randNum + 1);  // 注意，寻找的事randNum + 1
         if(index < 0) {
             index = -index-1;
         }

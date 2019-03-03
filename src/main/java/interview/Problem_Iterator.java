@@ -13,7 +13,8 @@ public class Problem_Iterator {
 
 class L173_Binary_Search_Tree_Iterator {
 
-    LinkedList<TreeNode> stack;
+    LinkedList<TreeNode> stack = null;
+    TreeNode top = null;
 
     public L173_Binary_Search_Tree_Iterator(TreeNode root) {
         stack = new LinkedList<>();
@@ -25,26 +26,70 @@ class L173_Binary_Search_Tree_Iterator {
         }
     }
 
+    /** @return the next smallest number */
+    public int next() {
+        int ret = -1;
+        if(hasNext()) {
+            ret = top.val;
+            top = null;
+        }
+
+        return ret;
+    }
+
     /** @return whether we have a next smallest number */
     public boolean hasNext() {
+        if(top != null) {
+            return true;
+        }
+
         if(stack.isEmpty()) {
             return false;
         }
 
-        if(stack.peek().right != null) {
-            TreeNode node = stack.pop();
-            TreeNode tmp = node.right;
-            while(tmp != null) {
-                stack.push(tmp);
-                tmp = tmp.left;
+        top = stack.pop();
+        if(top.right != null) {
+            TreeNode next = top.right;
+            while(next != null) {
+                stack.push(next);
+                next = next.left;
             }
-            stack.push(node);
         }
+
         return true;
+    }
+}
+
+class L173_Binary_Search_Tree_Iterator_v2 {
+    LinkedList<TreeNode> stack = null;
+
+    public L173_Binary_Search_Tree_Iterator_v2(TreeNode root) {
+        stack = new LinkedList<>();
+
+        TreeNode node = root;
+        while(node != null) {
+            stack.push(node);
+            node = node.left;
+        }
     }
 
     /** @return the next smallest number */
     public int next() {
-        return stack.pop().val;
+        TreeNode node = stack.pop();
+
+        if(node.right != null) {
+            TreeNode next = node.right;
+            while(next != null) {
+                stack.push(next);
+                next = next.left;
+            }
+        }
+
+        return node.val;
+    }
+
+    /** @return whether we have a next smallest number */
+    public boolean hasNext() {
+        return !stack.isEmpty();
     }
 }

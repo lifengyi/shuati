@@ -178,6 +178,66 @@ class L103_Binary_Tree_Zigzag_Level_Order_Traversal {
 
         return ret;
     }
+
+    public List<List<Integer>> zigzagLevelOrder_v2(TreeNode root) {
+        List<List<Integer>> result = new ArrayList<>();
+        if(root == null) {
+            return result;
+        }
+
+        int level = 0;
+        LinkedList<TreeNode> queue = new LinkedList<>();
+        queue.offerLast(root);
+
+        while(!queue.isEmpty()) {
+            int size = queue.size();
+            if(level%2 == 0) {
+                // poll node from head
+                // process left -> right and put them to tail
+                processLeftToRight(queue, size, result);
+            } else {
+                // poll node from tail
+                // process right -> left and put them to head
+                processRightToLeft(queue, size, result);
+            }
+            level++;
+        }
+        return result;
+    }
+
+    private void processLeftToRight(LinkedList<TreeNode> queue, int size,
+                                    List<List<Integer>> result) {
+        List<Integer> candidate = new ArrayList<>();
+        for(int i = 0; i < size; ++i) {
+            TreeNode node = queue.pollFirst();
+            candidate.add(node.val);
+
+            if(node.left != null) {
+                queue.offerLast(node.left);
+            }
+            if(node.right != null) {
+                queue.offerLast(node.right);
+            }
+        }
+        result.add(candidate);
+    }
+
+    private void processRightToLeft(LinkedList<TreeNode> queue, int size,
+                                    List<List<Integer>> result) {
+        List<Integer> candidate = new ArrayList<>();
+        for(int i = 0; i < size; ++i) {
+            TreeNode node = queue.pollLast();
+            candidate.add(node.val);
+
+            if(node.right != null) {
+                queue.offerFirst(node.right);
+            }
+            if(node.left != null) {
+                queue.offerFirst(node.left);
+            }
+        }
+        result.add(candidate);
+    }
 }
 
 class UndirectedGraphNode {

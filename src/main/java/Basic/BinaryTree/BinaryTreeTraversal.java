@@ -87,10 +87,6 @@ public class BinaryTreeTraversal {
         }
     }
 
-
-
-
-
     public void preOrder_Morris(TreeNode node) {
         if(node == null)
             return;

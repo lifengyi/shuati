@@ -478,3 +478,140 @@ class L287_Find_the_Duplicate_Number {
         return slow;
     }
 }
+
+
+class L277_Find_the_Celebrity {
+    private boolean knows(int n1, int n2) {
+        return true;
+    }
+
+    public int findCelebrity(int n) {
+        int left = 0, right = n - 1;
+        while(left < right) {
+            if(knows(left, right)) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+
+        int cur = left;
+        for(int i = 0; i < n; ++i) {
+            if(i != cur && (knows(cur, i) || !knows(i, cur))) {
+                return -1;
+            }
+        }
+        return cur;
+    }
+}
+
+
+
+class L151_Reverse_Words_in_a_String {
+    public String reverseWords(String s) {
+        if(s == null || s.length() == 0) {
+            return s;
+        }
+
+        s = s.trim();
+        List<String> words = getWords(s);
+        StringBuilder sb = new StringBuilder();
+        for(int i = words.size() - 1; i >= 0; --i) {
+            sb.append(words.get(i)).append(" ");
+        }
+        return sb.toString().trim();
+    }
+
+    List<String> getWords(String s) {
+        List<String> res = new ArrayList<>();
+        int start = -1, end = -1;
+        for(int i = 0; i < s.length(); ++i) {
+            if(s.charAt(i) != ' ' && start == -1) {
+                start = i;
+            } else if(s.charAt(i) == ' ' && start != -1) {
+                end = i;
+            }
+            if(start != -1 && end != -1) {
+                res.add(s.substring(start, end));
+                start = -1;
+                end = -1;
+            }
+        }
+
+        if(start != -1) {
+            res.add(s.substring(start, s.length()));
+        }
+
+        return res;
+    }
+
+    public String reverseWords_v2(String s) {
+        if(s == null || s.length() == 0) {
+            return s;
+        }
+
+        char[] array = s.trim().toCharArray();
+        reverseString(array, 0, array.length - 1);
+        reverseWords(array);
+        return cleanupSpaces(array);
+    }
+
+    String cleanupSpaces(char[] array) {
+        int index = 0;
+        //no leading and trailing spaces
+        for(int i = 0; i < array.length; ++i) {
+            if(i != 0 && array[i] == ' ' && array[i - 1] == array[i]) {
+                continue;
+            }
+            if(index != i){
+                array[index] = array[i];
+            }
+            index++;
+        }
+        return new String(array).substring(0, index);
+    }
+
+    void reverseWords(char[] array) {
+        int start = -1, end = -1;
+        for(int i = 0; i < array.length; ++i) {
+            if(array[i] == ' ') {
+                if(start != -1) {
+                    end = i;
+                }
+            } else {
+                if(start == -1) {
+                    start = i;
+                }
+            }
+            if(start != -1 && end != -1) {
+                reverseString(array, start, end - 1);
+                start = -1;
+                end = -1;
+            }
+        }
+        if(start != -1) {
+            reverseString(array, start, array.length - 1);
+        }
+    }
+
+    void reverseString(char[] array, int start, int end) {
+        char tmp = ' ';
+        while(start < end) {
+            tmp = array[start];
+            array[start] = array[end];
+            array[end] = tmp;
+            start++;
+            end--;
+        }
+    }
+
+    public String reverseWords_v1(String s) {
+        String[] words = s.trim().split("\\s+");
+        StringBuilder sb = new StringBuilder();
+        for(int i = words.length - 1; i >= 0; --i) {
+            sb.append(words[i]).append(" ");
+        }
+        return sb.toString().trim();
+    }
+}
+

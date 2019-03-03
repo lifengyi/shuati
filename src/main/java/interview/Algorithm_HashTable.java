@@ -184,3 +184,35 @@ class L811_Subdomain_Visit_Count {
         return result;
     }
 }
+
+
+/**
+ * 这道题目其实就是一个 Rolling Hash的应用场景
+ * 多用于巨型字符串匹配问题，也用于查找重复文件
+ *
+ * 理解 Rolling Hash的原理！
+ */
+class L187_Repeated_DNA_Sequences {
+    public List<String> findRepeatedDnaSequences(String s) {
+        if(s == null || s.length() < 10) {
+            return new ArrayList<>();
+        }
+
+        int size = 10;
+        Set<String> seen = new HashSet<>();
+        Set<String> res = new HashSet<>();
+        for(int i = size - 1; i < s.length(); ++i) {
+            String newString = s.substring(i - size + 1, i + 1);
+            if(res.contains(newString)) {
+                continue;
+            }
+            if(seen.contains(newString)) {
+                res.add(newString);
+                seen.remove(newString);
+            } else {
+                seen.add(newString);
+            }
+        }
+        return new ArrayList(res);
+    }
+}

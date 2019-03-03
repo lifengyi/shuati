@@ -5,6 +5,25 @@ import java.util.*;
 import java.util.concurrent.locks.*;
 import java.util.concurrent.atomic.*;
 
+
+/**
+ *  多线程爬虫： 需要沟通几个问题：
+ *  1， 是否检测重复网页， 是： 增加set
+ *
+ *  2. 是否可以假设内存queue肯定能装下所有网页，
+ *     例如： 分配2G内存给queue和set， 每部分有1g内存
+ *           假设每个url占用1k长度，那么上限处理是1M的网页url
+ *
+ *           这个单机多线程的爬虫只能爬< 一百万的链接，也就是在处理任务来之前需要知道处理的规模，
+ *           如果超过就不应该用这个单机爬虫系统。如果处理作业的规模超过了系统处理能力还是需要它来
+ *           处理的话，可以设置一个capacity参数，如果Queue的URL接近容量了，让所有爬虫线程把已
+ *           经抓到链接写log输出，等log写完了，结束线程
+ *
+ *  3. 如何回收所有的子线程，如果2成立，那么3就不是问题
+ *
+ */
+
+
 public class multipleThreadMessageQ {
     public static void main(String[] args) throws InterruptedException {
         Manager manager = new Manager(4);
@@ -89,13 +108,15 @@ class Manager {
 class Work implements Runnable{
 
     private MyBlockingQueue bq = null;
+    private int status = 0;
 
     public void setQueue(MyBlockingQueue bq) {
         this.bq = bq;
+        this.status = 1;
     }
 
     public void run() {
-        while(true) {
+        while(status == 1) {
             String task = bq.get();
             if(task.equals("end task")) {
                 System.out.println(String.format("thread:%d, get end task msg",
@@ -111,9 +132,51 @@ class Work implements Runnable{
         System.out.println(String.format("thread:%d, get task: %s.",
                 Thread.currentThread().getId(), task));
         if(task.equals("mom task")) {
-            bq.put("derived son task");
+            bq.put("mom task");
+        }
+
+        try {
+            Thread.sleep(10 * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
+}
+
+class MyBlockingQueue_simple {
+
+    private List<Object> queue = new LinkedList<>();
+    private int  limit = 10;
+
+    public MyBlockingQueue_simple(int limit){
+        this.limit = limit;
+    }
+
+
+    public synchronized void enqueue(Object item)
+            throws InterruptedException  {
+        while(this.queue.size() == this.limit) {
+            wait();
+        }
+        if(this.queue.size() == 0) {
+            notifyAll();
+        }
+        this.queue.add(item);
+    }
+
+
+    public synchronized Object dequeue()
+            throws InterruptedException{
+        while(this.queue.size() == 0){
+            wait();
+        }
+        if(this.queue.size() == this.limit){
+            notifyAll();
+        }
+
+        return this.queue.remove(0);
+    }
+
 }
 
 class MyBlockingQueue {

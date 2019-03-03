@@ -21,11 +21,25 @@ public class logHit {
      *
      *
      * 4. 多线程的话 lock和unlock怎么写，modify code
-     *    使用读写锁
+     *    使用读写锁，或者ConcurrentHashMap(但需要实现垃圾回收)
      *    真是世界一般使用memcache+TTL实现rate limiter，如果此题使用hashmap实现，则ocurrentHashMap也不错
      *
      * 5. 不用chaining array的话， 怎么做，HashMap or queue
      *    In real world, we use memcache to store the pair with TTL
+     *
+     *
+     * 1. 加全局锁，两个方法加上synchronized
+     *
+     * 2. 封装方法调用，把命令放到queue上，然后server在另一端不断地取task执行，
+     *    这样解耦了consumer和producer，异步化方法调用
+     *
+     * 3. ConcurrentHashMap来代替数组，因为log是读少写多，只需要在getHit的时候加锁
+     *
+     * 4. 如果只有固定的几个admin，那就固定给一个  ConcurrentHashMap，用admin ID当key，内层就可以HashMap了，因为admin们不会影响别人
+     *
+     * 5. 在4的基础上，如果admin并不是一定要全局的数据（可以只做些sampling），那可以用ThreadLocal，完全抛弃锁。
+     *
+     * 6. AtomicLongAdder 是一个不错的方法
      */
 
     public static void main(String[] args) throws InterruptedException {

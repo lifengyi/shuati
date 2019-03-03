@@ -3,6 +3,8 @@ package poc;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class app {
 
@@ -13,6 +15,24 @@ public class app {
         System.out.println(a.startsWith("b"));
         System.out.println(a.startsWith("bc", 1));
         System.out.println(a.startsWith("bcd", 1));
+        System.out.println(-3/2);
+        Set<Integer> set = new HashSet<>();
+        List<Integer> list = new ArrayList(set);
+    }
+
+    @Test
+    public void test_array() {
+        int[][] array = new int[3][0];
+        System.out.println(array[0].length);
+        int[] a1 = {1, 2};
+        int[] a2 = {3, 4};
+        array[0] = a1;
+        array[1] = a2;
+        array[2] = new int[3];
+        array[2][2] = 9;
+        System.out.println(Arrays.toString(array[0]));
+        System.out.println(Arrays.toString(array[1]));
+        System.out.println(Arrays.toString(array[2]));
     }
 
     @Test
@@ -29,6 +49,26 @@ public class app {
 
         sb.delete(0, sb.length() - 1);
         System.out.println(sb.toString());
+
+        String[] array = {"0000", "1000", "0010"};
+        Arrays.sort(array);
+        System.out.println(Arrays.toString(array));
+
+        int n = Integer.MIN_VALUE;
+        System.out.println(n);
+        System.out.println(-n - 1);
+    }
+
+    @Test
+    public void test_double() {
+        int size = 0;
+        double a = 1.6;
+        size = Math.max(size, (int)(4 + a));
+        System.out.println(size);
+        Date date = new Date();
+        date.toString();
+
+        BlockingQueue<String> bq = new LinkedBlockingQueue<>();
     }
 
     @Test

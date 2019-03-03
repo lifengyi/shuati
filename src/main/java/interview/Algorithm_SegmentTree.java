@@ -140,6 +140,7 @@ class Counter_Of_Smaller_Number {
         }
         return count;
     }
+
     /**
      * @param A: An integer array
      * @param queries: The query list

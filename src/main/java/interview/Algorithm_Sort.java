@@ -1,9 +1,6 @@
 package interview;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
+import java.util.*;
 
 public class Algorithm_Sort {
     public static void main(String[] args) {
@@ -270,3 +267,43 @@ class StableSorting_RadixSort_BasedOnDigital {
         return ret;
     }
 }
+
+
+
+
+class L451_Sort_Characters_By_Frequency {
+    public String frequencySort(String s) {
+        if(s == null || s.length() == 0) {
+            return "";
+        }
+
+        int[] map = new int[256];
+        for(int i = 0; i < s.length(); ++i) {
+            map[s.charAt(i)] += 1;
+        }
+
+        PriorityQueue<int[]> pq = new PriorityQueue<>(new Comparator<int[]>(){
+            public int compare(int[] a, int[] b) {
+                return b[1] - a[1];
+            }
+        });
+        for(int i = 0; i < 256; ++i) {
+            if(map[i] != 0) {
+                pq.offer(new int[]{i, map[i]});
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        while(!pq.isEmpty()) {
+            int[] item = pq.poll();
+            while(item[1] > 0) {
+                sb.append((char)(item[0]));
+                item[1]--;
+            }
+        }
+        return sb.toString();
+    }
+}
+
+
+

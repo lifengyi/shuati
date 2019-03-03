@@ -230,7 +230,7 @@ class LintCode_437_Copy_Books {
 }
 
 class L644_Maximum_Average_Subarray_II {
-    public double L644_maxAverage(int[] nums, int k) {
+    public double maxAverage(int[] nums, int k) {
         // write your code here
         if(k == 0) {
             return 0;
@@ -411,6 +411,72 @@ class LintCode_Sqrt_X_II {
         }
 
         return res;
+    }
+}
+
+
+class L50_Pow {
+
+    public double myPow(double x, int n) {
+        int k = n < 0 ? -n - 1 : n;         //少算1个
+        double res = 1.0;
+        while(k > 0) {
+            res *= pow(x, lowbit(k));
+            k -= lowbit(k);
+        }
+
+        return n < 0 ? 1/res/x : res;       //少算的1个，在这里补齐
+    }
+
+    int lowbit(int n) {
+        return n & -n;
+    }
+
+    double pow(double x, int n) {
+        double res = x;
+        while(n != 1) {
+            res *= res;         //注意是 res * res
+            n = n >> 1;
+        }
+        return res;
+    }
+
+
+    public double myPow_v1(double x, int n) {
+        if(n == 0) {
+            return 1;
+        }
+
+        double res = 1.0;
+        for(int i = n; i != 0; i /= 2) {
+            if(i%2 != 0) {
+                res *= x;
+            }
+            x *= x;
+        }
+
+        return n < 0 ? 1/res : res;
+    }
+
+
+    public double myPow_v2(double x, int n) {
+        if(n < 0) {
+            return 1/pow_v2(x, -n);
+        } else {
+            return pow_v2(x, n);
+        }
+    }
+
+    double pow_v2(double x, int n) {
+        if(n == 0) {
+            return 1;
+        }
+        double half = pow_v2(x, n/2);
+        if(n%2 == 0) {
+            return half * half;
+        } else {
+            return half * half * x;
+        }
     }
 }
 
@@ -880,3 +946,47 @@ class L34_Find_First_and_Last_Position_of_Element_in_Sorted_Array {
         return left;
     }
 }
+
+
+
+class L29_Divide_Two_Integer {
+    public int divide(int dividend, int divisor) {
+        if(dividend == 0) {
+            return 0;
+        }
+
+        if(dividend == Integer.MIN_VALUE && divisor == -1) {
+            return Integer.MAX_VALUE;
+        }
+
+        if(divisor == 1) {                      // Time limit without this logic
+            return dividend;
+        } else if(divisor == -1) {
+            return -dividend;
+        }
+
+        boolean isNegative = (dividend > 0 && divisor < 0)
+                || (dividend < 0 && divisor > 0);
+
+        long a = Math.abs((long)dividend);      // Must use long, other wise "b << shift" will overflow
+        long b = Math.abs((long)divisor);
+
+        int shift = 0, result = 0;
+        while(a >= b) {
+            while(a >= (b << shift)) {
+                shift++;
+            }
+            shift--;
+            a -= b << shift;
+            result += 1 << shift;
+            shift = 0;
+        }
+
+        if(isNegative) {
+            result = -result;
+        }
+        return result;
+    }
+}
+
+

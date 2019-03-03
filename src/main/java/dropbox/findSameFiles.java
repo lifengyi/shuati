@@ -11,7 +11,8 @@ import java.util.*;
 
 /**
  *
- * 熟悉以下相关文件API操作：
+ *
+ * 需要熟悉以下相关文件API操作：
  *
  * File[] File.listFiles()
  * Long File.length()
@@ -24,7 +25,70 @@ import java.util.*;
  * String hashvalue = new BigInteger(1, md5.digest()).toString();
  *
  *
- * 基于全文见做checksum可能会false positive
+ *
+ * 思路：
+ * 1. 文件大小
+ * 2. 文件总体hash， MD5,SHA256,SHA512
+ * 3. 文件分块hash
+ * 4. 文件按位比较
+ *
+ *
+ * Follow up:  文件很多怎么办？
+ *   1. 本地文件系统： 基于size，过滤第一步
+ *                  不同的size做比较： 小文件可以直接比较， 大文件求hash（分块hash和全文hash）
+ *                  多线程运行，貌似瓶颈基本在I/O，所以多机器更适合
+ *
+ *   2. 分布式文件系统：考虑做一个文件(块)的哈希值数据库，方便查询
+ *      多机分布式计算更适合
+ *
+ *
+ * Follow up： 目录很深？
+ * 注意DFS爆栈的可能性，BFS内存使F用率以及用来存储文件路径的字符数组是否会溢出；
+ *
+ *
+ *
+ * Follow up ： 可能出现的情况有什么？
+ *
+ * 文件被同时读写,可以使用FileLock，对于多线程而言，都是基于java语言，
+ * 使用同一种文件锁，是没什么问题；
+ *
+ * 但是如果是多进程呢？而且其他进程是其他语言写的，那么设计到以下问题：
+ * 操作系统可能提供多种风格的锁：unix-like 提供POSIX和BSD-style锁
+ * 前者是lock record，后者是record whole file,
+ *
+ * 同时考虑到文件可能被不同的文件系统map，不同文件系统对于网络文件映射的锁机制也有所不同，
+ * maybe advisory or mandatory, 同一个文件在不同的文件系统上被不同进程读写？
+ *
+ * 考虑修改/更新文件时，不是直接在原文件上修改，而是新文件和旧文件进行比较，
+ * 然后写diff文件
+ *
+ *
+ * Follow up: 注意主动沟通问题，是否需要检测符号链接：
+ *
+ *   import java.noi.file.Files;
+ *
+ *       File file = new File(file_path);
+ *       boolean isSymbolicFile = Files.isSymbolicLink(file.toPath());
+ *       String realPath = file.getCanonicalPath();
+ *       if(visited.contains(realPath)) {
+ *           ...
+ *       }
+ *
+ *   另一种方法就是：直接file.getCanonicalPath()
+ *   然后判断是否visited，
+ *
+ *   考虑另一个问题：如果symbol link链接到root directory意外，如何处理？
+ *
+ *
+ *
+ *
+ * Follow up:  于全文见做checksum可能会false positive
+ *
+ * SHA512 > SHA256 > MD5
+ *
+ *
+ *
+ * Follow up：文件很大，怎么办？
  *
  * 那么可以使用类似于分布式文件系统那样，大文件分块
  * 存储，每个chunk有自己的哈希值，对于本地文件也可
@@ -57,24 +121,8 @@ import java.util.*;
  * 据存储量。最成功的网盘Dropbox使用这种方式实现数据去重
  *
  *
+
  *
- *
- *  注意主动沟通问题：
- *  是否需要检测符号链接：
- *
- *  import java.noi.file.Files;
- *
- *      File file = new File(file_path);
- *      boolean isSymbolicFile = Files.isSymbolicLink(file.toPath());
- *      String realPath = file.getCanonicalPath();
- *      if(visited.contains(realPath)) {
- *          ...
- *      }
- *
- *  另一种方法就是：直接file.getCanonicalPath()
- *  然后判断是否visited，
- *
- *  考虑另一个问题：如果symbol link链接到root directory意外，如何处理？
  */
 
 public class findSameFiles {
