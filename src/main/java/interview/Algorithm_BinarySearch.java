@@ -683,17 +683,12 @@ class L300_Longest_Increasing_Subsequence_BinarySearch {
 }
 
 
-
-
-
-
 class L33_Search_in_Rotated_Sorted_Array {
     public int L33_search(int[] nums, int target) {
         int begin = 0;
         int end = nums.length - 1;
 
         while(begin <= end) {
-
             int middle = (begin + end)/2;
             if(nums[middle] == target) {
                 return middle;
@@ -722,20 +717,22 @@ class L33_Search_in_Rotated_Sorted_Array {
  *  能否辨别出区别并体现在算法复杂度上的考虑
  *
  *  上题中，首先我们划分两种不同的rotate情况，然后由于肯定
- *  不存在重复数据，所以我们可以通过 target vs middle 以及
- *  target vs start/end 的比较来确定目标数据明确的落在某一
- *  个半边，从而实现 O(logn)的算法复杂度：
+ *  不存在重复数据，所以我们可以通过 middle vs start/end
+ *  的比较来确定当前middle所在的情况，是否被包含在rotated部
+ *  分中，还是被排除在外，这样再结合middle vs target我们可
+ *  以找到特定半边区间进行下一步搜索，从而实现 O(logn)的算法
+ *  复杂度：
  *      f(n) = f(n/2) + O(1)
  *
  *  本例中，首先我们也可以划分不同的rotate的情况，然后在各自分支中
- *  我们要明确由于可能出现重复值，所以我们无法通过比较 target vs middle
- *  以及target vs start/end 来确定目标数据明确的落在某一个半边，
- *  因为start/end的那个随意不得不同时搜索两边
+ *  我们要明确由于可能出现重复值，所以我们无法通过比较 middle vs start/end
+ *  得出当前middle是否被包含在rotated part中，因此不得不搜索两边
  *      f(n) = 2f(n/2) + O(1)
  *
- *  最坏情况，所有元素之相同，最后找不多数据；
+ *  例如： 11111111011111
+ *  除了0之外其他都相同，当得到1的时候，你无法知道你当前mid的1是在0的左边or右边
  *
- *  ？？？？
+ *  最坏情况，所有元素之相同，最后找不多数据；
  *
  */
 class L81_Search_in_Rotated_Sorted_Array {
@@ -747,6 +744,31 @@ class L81_Search_in_Rotated_Sorted_Array {
         }
         return false;
     }
+}
+
+class L153_Find_Minimum_in_Rotated_Sorted_Array {
+    public int findMin(int[] nums) {
+        if(nums == null || nums.length == 0) {
+            return -1;
+        }
+
+        int start = 0, end = nums.length - 1;
+        int mid = -1;
+        while(start < end) {
+            mid = start + (end - start)/2;
+            if(nums[mid] < nums[end]) {
+                end = mid;
+            } else {
+                start = mid + 1;
+            }
+        }
+        return nums[start];
+    }
+}
+
+// Time: O(n)
+class L154_Find_Minimum_in_Rotated_Sorted_Array_II {
+    //同上
 }
 
 /**

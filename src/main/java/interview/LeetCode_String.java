@@ -276,12 +276,44 @@ class L14_Longest_Common_Prefix {
 
 class L12_Integer_to_Roman {
 
+    public String intToRoman(int num) {
+        char[][] map = {
+                {'I', 'V'},
+                {'X', 'L'},
+                {'C', 'D'},
+                {'M'}
+        };
+
+        StringBuilder sb = new StringBuilder();
+        char[] array = String.valueOf(num).toCharArray();
+        int level = array.length - 1;
+        for(int i = 0; i < array.length; ++i) {
+            int value = array[i] - '0';
+            if(value > 0 && value < 4) {
+                for(int j = 0; j < value; ++j) {
+                    sb.append(map[level][0]);
+                }
+            } else if(value == 4) {
+                sb.append(map[level][0]).append(map[level][1]);
+            } else if(value >= 5 && value < 9) {
+                sb.append(map[level][1]);
+                for(int j = 0; j < value - 5; ++j) {
+                    sb.append(map[level][0]);
+                }
+            } else if(value == 9){
+                sb.append(map[level][0]).append(map[level + 1][0]);
+            }
+            level--;
+        }
+        return sb.toString();
+    }
+
     public String[][] table = {{"I","V","X"},
             {"X","L","C"},
             {"C","D","M"},
             {"M", null, null}};
 
-    public String L12_intToRoman(int num) {
+    public String intToRoman_v1(int num) {
         if(num > 3999)
             return null;
 

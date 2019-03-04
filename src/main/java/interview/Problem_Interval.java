@@ -204,7 +204,39 @@ class L57_Insert_Interval {
             end = e;
         }
     }
+
     public List<Interval> insert(List<Interval> intervals, Interval newInterval) {
+        if(intervals == null || newInterval == null) {
+            return intervals;
+        }
+        if(intervals.size() == 0) {
+            intervals.add(newInterval);
+            return intervals;
+        }
+
+        List<Interval> res = new ArrayList<>();
+        boolean isAdded = false;
+        for(int i = 0; i < intervals.size(); ++i) {
+            Interval cur = intervals.get(i);
+            if(isAdded == true || cur.end < newInterval.start) {
+                res.add(cur);
+            } else if(cur.start > newInterval.end) {
+                isAdded = true;
+                res.add(newInterval);
+                res.add(cur);
+            } else {
+                newInterval.start = Math.min(cur.start, newInterval.start);
+                newInterval.end = Math.max(cur.end, newInterval.end);
+            }
+        }
+        if(!isAdded) {
+            res.add(newInterval);
+        }
+        return res;
+    }
+
+
+    public List<Interval> insert_v1(List<Interval> intervals, Interval newInterval) {
         Comparator<Interval> comp = new Comparator<Interval>(){
             @Override
             public int compare(Interval i1, Interval i2) {

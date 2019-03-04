@@ -26,11 +26,99 @@ class L238_Product_of_Array_Except_Self_ {
 }
 
 class L23_Merge_k_Sorted_Lists_ {
+    class ListNode {
+        int val;
+        ListNode next;
+        ListNode(int x) { val = x;};
+    }
 
+    public ListNode L23_mergeKLists(ListNode[] lists) {
+        if(lists == null || lists.length == 0)
+            return null;
+
+        PriorityQueue<ListNode> heap = new PriorityQueue<>(new Comparator<ListNode>(){
+            @Override
+            public int compare(ListNode o1, ListNode o2) {
+                if(o1.val < o2.val)
+                    return -1;
+                if(o1.val > o2.val)
+                    return 1;
+                return 0;
+            }
+        });
+
+        ListNode dummyHead = new ListNode(0);
+        for(ListNode node : lists) {
+            if(node == null)
+                continue;
+
+            heap.offer(node);
+        }
+
+        ListNode cur = dummyHead;
+        while(!heap.isEmpty()) {
+            cur.next = heap.poll();
+            if(cur.next.next != null)
+                heap.offer(cur.next.next);
+
+            cur = cur.next;
+            cur.next = null;
+        }
+
+        return dummyHead.next;
+    }
 }
 
+/**
+ *  Use preorder to serialize/deserialize tree
+ */
 class L297_Serialize_and_Deserialize_Binary_Tree_ {
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        StringBuilder sb = new StringBuilder();
+        if(root == null) {
+            return sb.toString();
+        }
 
+        build(root, sb);
+        return sb.toString();
+    }
+
+    void build(TreeNode node, StringBuilder sb) {
+        if(node == null) {
+            sb.append("null").append("#");
+            return;
+        }
+
+        sb.append(node.val).append("#");
+        build(node.left, sb);
+        build(node.right, sb);
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        if(data == null || data.length() == 0) {
+            return null;
+        }
+
+        LinkedList<String> queue = new LinkedList<>();
+        String[] strings = data.split("#");
+        queue.addAll(Arrays.asList(strings));
+
+        return deserialize(queue);
+    }
+
+    TreeNode deserialize(LinkedList<String> list) {
+        String s = list.poll();
+        if(s.equals("null")) {
+            return null;
+        }
+
+        TreeNode root = new TreeNode(Integer.valueOf(s));
+        root.left = deserialize(list);
+        root.right = deserialize(list);
+        return root;
+    }
 }
 
 class L33_Search_in_Rotated_Sorted_Array_ {
@@ -63,7 +151,60 @@ class L33_Search_in_Rotated_Sorted_Array_ {
 
 
 class L76_Minimum_window_SubString {
+    public String minWindow(String s, String t) {
+        if(s == null || t == null || s.length() == 0 || t.length() == 0 ) {
+            return "";
+        }
+        if(s.length() < t.length()) {
+            return "";
+        }
 
+        int[] destMap = new int[256];
+        populate(t, destMap);
+        int count = t.length();
+
+        char[] array = s.toCharArray();
+        int[] srcMap = new int[256];
+        int minLen = Integer.MAX_VALUE, start = -1;
+
+        for(int i = 0, j = 0; i < array.length; ++i) {
+            while(j < array.length && !isMatched(srcMap, destMap, array[j], count)) {
+                srcMap[array[j]] += 1;
+                if(srcMap[array[j]] <= destMap[array[j]]) {
+                    count--;
+                }
+                j++;
+            }
+
+            if(j == array.length) {
+                break;
+            }
+
+            if(j - i + 1 < minLen) {
+                minLen = j - i + 1;
+                start = i;
+            }
+
+            srcMap[array[i]] -= 1;
+            if(srcMap[array[i]] < destMap[array[i]]) {
+                count++;
+            }
+        }
+        return minLen == Integer.MAX_VALUE ? "" : s.substring(start, start + minLen);
+    }
+
+    boolean isMatched(int[] src, int[] dst, char ch, int count) {
+        if(src[ch] + 1 == dst[ch] && count - 1 == 0) {
+            return true;
+        }
+        return false;
+    }
+
+    void populate(String s, int[] map) {
+        for(int i = 0; i < s.length(); ++i) {
+            map[s.charAt(i)] += 1;
+        }
+    }
 }
 
 
@@ -831,38 +972,44 @@ class L706_Design_HashMap {
  * 3. *解释: *nums可以分为4个子集：(5), (1, 4), (2,3), (2,3)。每个子集和相等。
  *
  * 解题思路分析
- *
  * 这个题即使k = 2，仍然没有什么除搜索外好的解法，所有的解法时间复杂度都在多项式时间以上，
  * 所以事实上它是一个NP问题 (https://baike.baidu.com/item/NP%E9%97%AE%E9%A2%98/2860567?fr=aladdin)，
  * 更不用说当k > 2时。
  * 这里能采用的方法仅仅是不断搜索。但是即使是搜索，也有许多的优化和方式可做，这里给出一种直观的搜索方法，和另一种较快的DP方法。
  *
+ *
  * 方法一（常规深度优先搜索）：
- * 很容易想到每一个子集和必须为target = sum(nums) / k，如果除不尽，那么一定会返回False。
- * 先模拟出k个子集，对于nums中最后一个数n，将其弹出。遍历k个子集，只要加入n后，这个子集和不超过target，
- * 就把它加入这个子集当中，然后带着当前的选择，继续递归搜索nums（此时nums已不包括n）。
- * 重复上述过程，如果nums最后为空，那么说明搜索成功了。
- * 这种方法十分直观，但是速度很慢，不过有一些加速方法可以采用，这里列举其中一些：
- * k个子集从前到后递归，如果当前的子集和与前一个子集和相同，那么这个子集就不用试了，因为把n放到这个子集和放到前一个子集没有差别。我们只关心能否搜索到，并不关心具体的分配方案。
- * 先把nums排序，并优先先放入最大的元素，这样能减少许多搜索路径。
- * 一旦找到nums[i] > target，那么就直接返回False。因为如果某一个元素，都超过了target，那么就一定不合题。
- * 复杂度分析：
- * 时间复杂度：O(k ^ N)，其中N时nums的长度，k是子集数。如果采用了优化方案a，则复杂度至少降到O(k ^ (N - k) * k!)，因为一开始会跳过很多和为0的子集，至少前k个元素的搜索次数不超过O(k!)。
- * 空间复杂度：O(N)， 用于函数调用栈。
+ *     1. 很容易想到每一个子集和必须为target = sum(nums) / k，如果除不尽，那么一定会返回False。
+ *
+ *     2. 先模拟出k个子集，对于nums中最后一个数n，将其弹出。遍历k个子集，只要加入n后，这个子集和不超过target，
+ *        就把它加入这个子集当中，然后带着当前的选择，继续递归搜索nums（此时nums已不包括n）。
+ *
+ *     4. 重复上述过程，如果nums最后为空，那么说明搜索成功了。
+ *
+ *     这种方法十分直观，但是速度很慢，不过有一些加速方法可以采用，这里列举其中一些：
+ *         a. k个子集从前到后递归，如果当前的子集和与前一个子集和相同，那么这个子集就不用试了，因为把n放到这个子集和放到前一个子集没有差别。
+ *            我们只关心能否搜索到，并不关心具体的分配方案。
+ *         b. 先把nums排序，并优先先放入最大的元素，这样能减少许多搜索路径。
+ *            一旦找到nums[i] > target，那么就直接返回False。因为如果某一个元素，都超过了target，那么就一定不合题。
+ *
+ *     复杂度分析：
+ *     a. 时间复杂度：O(k ^ N)，其中N时nums的长度，k是子集数。如果采用了优化方案a，则复杂度至少降到O(k ^ (N - k) * k!)，
+ *        因为一开始会跳过很多和为0的子集，至少前k个元素的搜索次数不超过O(k!)。
+ *     b. 空间复杂度：O(N)， 用于函数调用栈。
  *
  *
  *
  * 方法二：（构造一种序列化的搜索，相较方法一，减少冗余；不过该方法难度较大，且不好想）
- *
  * 方法一尽管经过优化，但是理论的时间复杂度仍然很大，其中的重要原因是*存在部分重复的搜索，
  * 当nums和当前所有子集和相同时，之后的搜索运行了不止一次，而且如果只是分组排列不同，其实结果无差别，
  * 但在方法一中有可能会继续搜索。
  *
- * 方法一并不能解决这些问题。要解决重复搜索的问题，一种有效的方法是*构造一种序列化的搜索，并对于已搜索过的序列不重复搜索。
- * 由此引出方法二。
+ * 方法一并不能解决这些问题。要解决重复搜索的问题，一种有效的方法是
+ *      *构造一种序列化的搜索，并对于已搜索过的序列不重复搜索。由此引出方法二。
+ *
  * 同方法一，首先target = sum(nums) / k。接着用变量used表示nums[i]的使用情况，当且仅当nums[i]已经用过时，
- * used的第i位为1。
- * 仍然是搜索，只不过这次的搜索方法是是*寻找一个nums的序列，使得按照这个序列使用nums的元素时，能够正好构造出一个接一个的子集。
+ * used的第i位为1。仍然是搜索，只不过这次的搜索方法是是
+ *      *寻找一个nums的序列，使得按照这个序列使用nums的元素时，能够正好构造出一个接一个的子集。
  *
  * 接着我们的任务就变成了构造出这样一个序列。
  * 构造过程中，在确定序列中下一个元素时，需要遍历nums中的元素，*只有当used的对应位为0时，才表示这个元素还没有在序列中，
@@ -878,6 +1025,10 @@ class L706_Design_HashMap {
  * 复杂度分析：
  * 时间复杂度：O(N * 2 ^ N)，N是nums的长度，因为只有2 ^ N个used情况，每种情况其自身只需要O(N)的时间去遍历nums。
  * 空间复杂度O(2 ^ N)，主要用于visit数组。
+ *
+ *
+ *
+ * 当K = 2， 可以转换成01背包
  *
  */
 class L698_Partition_to_K_Equal_Sum_Subsets_ {
@@ -1151,11 +1302,336 @@ class L245_Shortest_Word_Distance_III_ {
 
 
 
+class L101_Symmetric_Tree_ {
+    public boolean isSymmetric(TreeNode root) {
+        if(root == null) {
+            return true;
+        }
+
+        return isSymmetric(root.left, root.right);
+    }
+
+    private boolean isSymmetric(TreeNode node1, TreeNode node2) {
+        if(node1 == null && node2 == null) {
+            return true;
+        } else if(node1 == null || node2 == null) {
+            return false;
+        } else {
+            if(node1.val == node2.val) {
+                return isSymmetric(node1.left, node2.right) & isSymmetric(node1.right, node2.left);
+            }
+            return false;
+        }
+    }
+}
+
+
+
+class L543_Diameter_of_Binary_Tree {
+    int max = 0;
+
+    public int diameterOfBinaryTree(TreeNode root) {
+        height(root);
+        return max;
+    }
+
+    int height(TreeNode root) {
+        if(root == null) {
+            return 0;
+        }
+
+        int leftHeight = height(root.left);
+        int rightHeight = height(root.right);
+
+        max = Math.max(max, leftHeight + rightHeight);
+        return 1 + Math.max(leftHeight, rightHeight);
+    }
+}
+
+
+class L152_Maximum_Product_Subarray_ {
+    public int maxProduct(int[] nums) {
+        if(nums == null || nums.length == 0) {
+            return 0;
+        }
+
+        int maxRes = Integer.MIN_VALUE;
+        int max = 1, min = 1, tmp = 0;
+        for(int i = 0; i < nums.length; ++i) {
+            tmp = max;
+            max = Math.max(nums[i], Math.max(max * nums[i], min * nums[i]));
+            min = Math.min(nums[i], Math.min(tmp * nums[i], min * nums[i]));
+            maxRes = Math.max(maxRes, max);
+        }
+        return maxRes;
+    }
+}
+
+
+class L61_Rotate_List {
+    class ListNode {
+        int val;
+        ListNode next;
+        ListNode(int x) { val = x; }
+    }
+
+    public ListNode rotateRight(ListNode head, int k) {
+        if(head == null || k == 0) {
+            return head;
+        }
+
+        ListNode node = head;
+        int count = 1;
+        while(node.next != null){
+            node = node.next;
+            count++;
+        }
+
+        if(k % count == 0) {        //注意是取模，不是等于
+            return head;
+        } else if(k > count) {
+            k = k % count;
+        }
+
+        ListNode slow = head, quick = head;
+        while(k > 0) {
+            quick = quick.next;
+            k--;
+        }
+        while(quick.next != null) {
+            slow = slow.next;
+            quick = quick.next;
+        }
+
+        ListNode newHead = slow.next;
+        slow.next = null;
+        quick.next = head;
+        return newHead;
+    }
+}
+
+
+class L35_Search_Insert_Position {
+    public int searchInsert(int[] nums, int target) {
+        if(nums == null || nums.length == 0) {
+            return 0;
+        }
+
+        int start = 0, end = nums.length;
+        int mid = 0;
+        while(start < end) {
+            mid = start + (end - start)/2;
+            if(nums[mid] == target) {
+                return mid;
+            }
+            if(nums[mid] < target) {
+                start = mid + 1;
+            } else {
+                end = mid;
+            }
+        }
+        return start;
+    }
+}
+
+
+class L12_Integer_to_Roman_ {
+    public String intToRoman(int num) {
+        char[][] map = {
+                {'I', 'V'},
+                {'X', 'L'},
+                {'C', 'D'},
+                {'M'}
+        };
+
+        StringBuilder sb = new StringBuilder();
+        char[] array = String.valueOf(num).toCharArray();
+        int level = array.length - 1;
+        for(int i = 0; i < array.length; ++i) {
+            int value = array[i] - '0';
+            if(value > 0 && value < 4) {
+                for(int j = 0; j < value; ++j) {
+                    sb.append(map[level][0]);
+                }
+            } else if(value == 4) {
+                sb.append(map[level][0]).append(map[level][1]);
+            } else if(value >= 5 && value < 9) {
+                sb.append(map[level][1]);
+                for(int j = 0; j < value - 5; ++j) {
+                    sb.append(map[level][0]);
+                }
+            } else if(value == 9){
+                sb.append(map[level][0]).append(map[level + 1][0]);
+            }
+            level--;
+        }
+        return sb.toString();
+    }
+}
+
+class L261_Graph_Valid_Tree_ {
+    class UnionFind {
+        int counter = 0;
+        int[] father = null;
+
+        public UnionFind(int n) {
+            this.counter = n;
+            this.father = new int[n];
+            for(int i = 0; i < n; ++i) {
+                father[i] = i;
+            }
+        }
+
+        public int findRoot(int p) {
+            while(p != father[p]) {
+                father[p] = father[father[p]];
+                p = father[p];
+            }
+            return p;
+        }
+
+        public boolean isConnected(int p, int q) {
+            return findRoot(p) == findRoot(q);
+        }
+
+        public void connect(int p, int q) {
+            int rootp = findRoot(p);
+            int rootq = findRoot(q);
+            if(rootp != rootq) {
+                father[rootp] = rootq;
+                counter--;
+            }
+        }
+    }
+
+    public boolean validTree(int n, int[][] edges) {
+        UnionFind uf = new UnionFind(n);
+        for(int[] edge : edges) {
+            if(uf.isConnected(edge[0], edge[1])) {
+                return false;
+            } else {
+                uf.connect(edge[0], edge[1]);
+            }
+        }
+        return uf.counter == 1 ? true : false;
+    }
+}
+
+
+class L57_Insert_Interval_ {
+
+    public class Interval {
+        int start;
+        int end;
+        Interval(int s, int e) {
+            start = s;
+            end = e;
+        }
+    }
+
+    public List<Interval> insert(List<Interval> intervals, Interval newInterval) {
+        if(intervals == null || newInterval == null) {
+            return intervals;
+        }
+        if(intervals.size() == 0) {
+            intervals.add(newInterval);
+            return intervals;
+        }
+
+        List<Interval> res = new ArrayList<>();
+        boolean isAdded = false;
+        for(int i = 0; i < intervals.size(); ++i) {
+            Interval cur = intervals.get(i);
+            if(isAdded == true || cur.end < newInterval.start) {        //如果已经加完了，就直接add所有节点
+                res.add(cur);
+            } else if(cur.start > newInterval.end) {
+                isAdded = true;
+                res.add(newInterval);
+                res.add(cur);
+            } else {
+                newInterval.start = Math.min(cur.start, newInterval.start);
+                newInterval.end = Math.max(cur.end, newInterval.end);
+            }
+        }
+
+        if(!isAdded) {                 //判断是否已经加了新节点
+            res.add(newInterval);
+        }
+        return res;
+    }
+
+
+    public List<Interval> insert_v1(List<Interval> intervals, Interval newInterval) {
+        Comparator<Interval> comp = new Comparator<Interval>(){
+            @Override
+            public int compare(Interval i1, Interval i2) {
+                return i1.start - i2.start;
+            }
+        };
+
+        List<Interval> newIntervals = new ArrayList<>();
+        newIntervals.addAll(intervals);
+        newIntervals.add(newInterval);
+        Collections.sort(newIntervals, comp);
+
+        Interval first = newIntervals.get(0);
+        int start = first.start;
+        int end = first.end;
+
+        List<Interval> result = new ArrayList<>();
+        for(Interval interval : newIntervals) {
+            if(interval.start <= end) {
+                end = Math.max(end, interval.end);
+            } else {
+                result.add(new Interval(start, end));
+                start = interval.start;
+                end = interval.end;
+            }
+        }
+        result.add(new Interval(start, end));
+        return result;
+    }
+}
 
 
 
 
+class L658_Find_K_Closet_Elements {
+    public List<Integer> findClosestElements(int[] arr, int k, int x) {
+        LinkedList<Integer> res = new LinkedList<>();
+
+        int index = Arrays.binarySearch(arr, x);
+        if(index < 0) {
+            index = -index - 1;
+        }
 
 
+        int left = index - 1;
+        int right = index;
+        for(int i = 0; i < k; ++i) {
+            if(isLeftCloser(arr, x, left, right)) {
+                res.offerFirst(arr[left]);
+                left--;
+            } else {
+                res.offerLast(arr[right]);
+                right++;
+            }
+        }
 
+        return res;
+    }
+
+    boolean isLeftCloser(int[] arr, int target, int left, int right) {
+        if(left < 0) {
+            return false;
+        } else if(right >= arr.length) {
+            return true;
+        }
+
+        if(Math.abs(target - arr[left]) <= Math.abs(target - arr[right])) {
+            return true;
+        }
+        return false;
+    }
+}
 

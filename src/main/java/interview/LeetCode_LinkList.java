@@ -252,7 +252,7 @@ class L160_Intersection_of_Two_Linked_Lists {
             slow = slow.next;
         }
 
-        node.next = null;               //recover
+        node.next = null;               // recover
         return quick;
     }
 }

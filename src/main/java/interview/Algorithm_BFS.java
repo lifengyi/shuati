@@ -68,7 +68,7 @@ class L323_Number_Of_Connected_Components_in_an_Undirected_Graph_ {
 }
 
 
-class L261_Graph_Valid_Tree_ {
+class L261_Graph_Valid_Tree__ {
     public boolean validTree(int n, int[][] edges) {
         if(edges == null || edges.length + 1 != n) {
             return false;

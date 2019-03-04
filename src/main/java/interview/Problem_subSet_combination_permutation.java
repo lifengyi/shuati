@@ -26,7 +26,7 @@ public class Problem_subSet_combination_permutation {
  *                                                           重复值中的前者所求得结果基本已经涵盖了后者所能求得的结果
  *              d. 每次DFS索引进行+1操作
  *
- * III: 数据不重复（但只能用1次），结果个数满足n结果满足K
+ * III: 数据不重复，但只能用1次，结果个数满足n结果满足K
  *              a. 排序数组
  *              b. 对每次DFS有效自己判断是否满足K和N
  *              c. 每次DFS索引需要进行+1操作

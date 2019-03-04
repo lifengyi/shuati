@@ -2,6 +2,22 @@ package Linkedin;
 
 public class stack_PushPullMiddle_O1 {
 
+    public static void main(String[] args) {
+        stack_Push_Pop_GetMiddle_O1 stack = new stack_Push_Pop_GetMiddle_O1();
+        stack.push(1);
+        stack.push(2);
+        stack.push(3);
+        stack.push(4);
+        stack.push(5);
+        stack.pop();
+        stack.pop();
+        stack.pop();
+        System.out.println(stack.getMiddle());
+    }
+}
+
+class stack_PushPullMiddle {
+
     /* A Doubly Linked List Node */
     class DLLNode
     {
@@ -100,7 +116,7 @@ public class stack_PushPullMiddle_O1 {
     }
 
     // Function for finding middle of the stack
-    int findMiddle(myStack ms)
+    int getMiddle(myStack ms)
     {
         if(ms.count == 0)
         {
@@ -108,5 +124,74 @@ public class stack_PushPullMiddle_O1 {
             return -1;
         }
         return ms.mid.data;
+    }
+}
+
+
+
+class stack_Push_Pop_GetMiddle_O1 {
+
+    class Node {
+        int val = 0;
+        Node prev = null;
+        Node next = null;
+
+        public Node(int val) {
+            this.val = val;
+        }
+    }
+
+    Node head = null;
+    Node tail = null;
+    Node mid = null;
+    int count = 0;
+
+    public stack_Push_Pop_GetMiddle_O1() {
+        head = new Node(0);
+        tail = new Node(0);
+        head.next = tail;
+        tail.prev = head;
+    }
+
+    public void push(int val) {
+        Node node = new Node(val);
+        node.next = head.next;
+        node.prev = head;
+        head.next = node;
+        node.next.prev = node;
+        count++;
+        if(count == 1) {
+            mid = node;
+        } else if(count%2 != 0) {
+            mid = mid.prev;
+        }
+    }
+
+    public int pop() {
+        if(head.next == tail) {
+            return -1;
+        }
+
+        Node top = head.next;
+        head.next = top.next;
+        head.next.prev = head;
+        top.next = null;
+        top.prev = null;
+        count--;
+        if(count == 0) {
+            mid = null;
+        } else if(count%2 == 0) {
+            mid = mid.next;
+        }
+
+        return top.val;
+    }
+
+    public int getMiddle() {
+        if(mid == null) {
+            return -1;
+        }
+
+        return mid.val;
     }
 }
