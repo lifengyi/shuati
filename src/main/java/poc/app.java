@@ -100,6 +100,8 @@ public class app {
     public void test2() {
         int[] nums = {2, 1};
         System.out.println(findMin(nums));
+        String s = "abc";
+        s.toCharArray();
     }
 
     public int findMin(int[] nums) {

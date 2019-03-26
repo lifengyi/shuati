@@ -1635,3 +1635,250 @@ class L658_Find_K_Closet_Elements {
     }
 }
 
+
+
+class L432_All_O1_Data_Structure {
+    class Node {
+        Set<String> keys = null;
+        Node prev = null;
+        Node next = null;
+
+        public Node() {
+            this.keys = new HashSet<>();
+        }
+
+        public void add(String key) {
+            keys.add(key);
+        }
+
+        public void remove(String key) {
+            keys.remove(key);
+        }
+
+        public boolean isEmpty() {
+            return keys.isEmpty();
+        }
+    }
+
+    Map<String, Integer> dataMap = null;
+    Map<Integer, Node> counterMap = null;
+    Node head = null;
+    Node tail = null;
+
+    /** Initialize your data structure here. */
+    public L432_All_O1_Data_Structure() {
+        dataMap = new HashMap<>();
+        counterMap = new HashMap<>();
+        head = new Node();
+        tail = new Node();
+        head.next = tail;
+        tail.prev = head;
+    }
+
+    /** Inserts a new key <Key> with value 1. Or increments an existing key by 1. */
+    public void inc(String key) {
+        if(!dataMap.containsKey(key)) {
+            dataMap.put(key, 1);
+            initCounter(key);
+        } else {
+            int cnt = dataMap.get(key);
+            dataMap.put(key, cnt + 1);
+            changeCounter(key, cnt, 1);
+        }
+    }
+
+    /** Decrements an existing key by 1. If Key's value is 1, remove it from the data structure. */
+    public void dec(String key) {
+        if(!dataMap.containsKey(key)) {
+            return;
+        }
+
+        int cnt = dataMap.get(key);
+        if(cnt == 1) {
+            dataMap.remove(key);
+        } else {
+            dataMap.put(key, cnt - 1);
+        }
+        changeCounter(key, cnt, -1);
+    }
+
+    private void initCounter(String key) {
+        if(counterMap.containsKey(1)) {
+            counterMap.get(1).add(key);
+        } else {
+            Node node = new Node();
+            node.add(key);
+            counterMap.put(1, node);
+            addNextNode(head, node);
+        }
+    }
+
+    /**
+     * 将key从就旧节点挪到新节点
+     * 1. 旧节点需要被删除，如果旧节点为空
+     * 2. 新节点需要被创建，如果新节点不存在；
+     *    新节点不需要被创建，当dec到0；
+     *
+     */
+    private void changeCounter(String key, int curCount, int diff) {
+        Node curNode = counterMap.get(curCount);
+
+        int newCount = curCount + diff;
+        if(newCount != 0) {                 //新节点不需要被创建， 当且仅当dec到0
+            Node newNode = counterMap.get(newCount);
+            if(newNode == null) {
+                newNode = new Node();
+                counterMap.put(newCount, newNode);
+                if(diff > 0) {
+                    addNextNode(curNode, newNode);
+                } else {
+                    addPrevNode(curNode, newNode);
+                }
+            }
+            newNode.add(key);
+        }
+
+        curNode.remove(key);
+        if(curNode.isEmpty()) {             //旧节点如果为空，需要删除
+            counterMap.remove(curCount);
+            removeNodeFromList(curNode);
+        }
+    }
+
+    void addNextNode(Node cur, Node next) {
+        next.next = cur.next;
+        next.prev = cur;
+        next.prev.next = next;
+        next.next.prev = next;
+    }
+
+    void addPrevNode(Node cur, Node prev) {
+        prev.next = cur;
+        prev.prev = cur.prev;
+        prev.prev.next = prev;
+        prev.next.prev = prev;
+    }
+
+    void removeNodeFromList(Node node) {
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+        node.prev = null;
+        node.next = null;
+    }
+
+    /** Returns one of the keys with maximal value. */
+    public String getMinKey() {
+        if(head.next == tail) {
+            return "";
+        }
+        return (String)head.next.keys.iterator().next();
+    }
+
+    /** Returns one of the keys with Minimal value. */
+    public String getMaxKey() {
+        if(tail.prev == head) {
+            return "";
+        }
+        return (String)tail.prev.keys.iterator().next();
+    }
+}
+
+
+/**
+ * 1. 首先要能判断多少个word组成一行：
+ * 这里统计读入的所有words的总长curLen，并需要计算空格的长度。假如已经读入words[0:i]。
+ * 当curLen + i <=L 且加curLen + 1 + word[i+1].size() > L时，一行结束。
+ *
+ * 2. 知道一行的所有n个words，以及总长curLen之后要决定空格分配：
+ * 平均空格数：k = (L - curLen) / (n-1)
+ * 前m组每组有空格数k+1：m = (L - curLen) % (n-1)
+ *
+ * 例子：L = 21，curLen = 14，n = 4
+ * k = (21 - 14) / (4-1) = 2
+ * m = (21 - 14) % (4-1)  = 1
+ * A---B--C--D
+ *
+ * 注意： 结尾没有空格
+ *
+ * 3. 特殊情况：
+ * (a) 最后一行：当读入到第i = words.size()-1 个word时为最后一行。该行k = 1，m = 0
+ * (b) 一行只有一个word：此时n-1 = 0，计算(L - curLen)/(n-1)会出错。该行k = L-curLen, m = 0
+ */
+
+class L68_Text_Justification_ {
+    public List<String> fullJustify(String[] words, int maxWidth) {
+        List<String> ret = new ArrayList<>();
+        if(words == null || words.length == 0) {
+            return ret;
+        }
+
+        int start = 0, currentLength = 0;
+        for(int i = 0; i < words.length; ++i) {
+            currentLength += words[i].length();
+            if(currentLength == maxWidth) {
+                ret.add(createLine(words, start, i, maxWidth));
+                start = i + 1;
+                currentLength = 0;
+            } else if(currentLength > maxWidth) {
+                ret.add(createLine(words, start, i - 1, maxWidth));
+                start = i;
+                currentLength = words[i].length() + 1;
+            } else {
+                currentLength++;
+            }
+        }
+
+        if(currentLength != 0) {
+            ret.add(createLine(words, start, words.length - 1, maxWidth));
+        }
+
+        return ret;
+    }
+
+    String createLine(String[] words, int start, int end, int max) {
+        if(start == end) {
+            // one word in one line
+            return createLine(words, start, end, max, 0, 0);
+        } else if(end == words.length - 1) {
+            // has the last word
+            return createLine(words, start, end, max, 1, 0);
+        } else {
+            int totalWordsLen = 0;
+            for(int i = start; i <= end; ++i) {
+                totalWordsLen += words[i].length();
+            }
+            int totalSpaceNumbers = max - totalWordsLen;
+            int minSpace = totalSpaceNumbers/(end - start);
+            int remainingSpace = totalSpaceNumbers%(end - start);     // no space at tail
+            return createLine(words, start, end, max, minSpace, remainingSpace);
+        }
+    }
+
+    String createLine(String[] words, int start, int end, int max, int minimumSpace,
+                      int additionalSpace) {
+        StringBuilder sb = new StringBuilder();
+        for(int i = start; i <= end; ++i) {
+            sb.append(words[i]);
+            if(i == end) {	                                         //do not update space at tail
+                break;
+            }
+            for(int j = 0; j < minimumSpace; ++j) {
+                sb.append(' ');
+            }
+            if(additionalSpace > 0) {
+                sb.append(' ');
+                additionalSpace--;
+            }
+        }
+
+        while(sb.length() < max) {
+            sb.append(' ');
+        }
+        return sb.toString();
+    }
+}
+
+
+
+
+

@@ -677,7 +677,7 @@ class L282_Expression_Add_Operators {
 
         for(int i = startIndex; i < num.length(); ++i) {
             if(i != startIndex && num.charAt(startIndex) == '0') {
-                break;   //a number starts with 0
+                break;                                                 //ignore the number starts with 0
             }
 
             long curVal = Long.parseLong(num.substring(startIndex, i + 1));
