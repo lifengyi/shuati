@@ -2,6 +2,22 @@ package interview;
 
 import java.util.*;
 
+/**
+ *  Implementation of Rolling Hash is based on Rabin Fingerprint
+ *
+ *  Rabin Karp uses a rolling hash to quickly filter out positions
+ *  of the text that cannot match the pattern, and then checks for
+ *  a match at the remaining positions.
+ *
+ *  Rabin Karp uses following approach to implement O(m + n) instead of O(m * n)
+ *  1. rolling hash:  roll the "window" in source string
+ *  2. hash the target and pattern string, compare integer value instead of string value
+ *
+ *  If the string is too long, the final hash value may have overflow issue.
+ *  We have to do MOD and the mod value should be larger enough to reduce the conflict
+ *  It is better to use prime number.
+ */
+
 public class Algorithm_HashTable {
 }
 
