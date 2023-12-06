@@ -2,6 +2,17 @@ package interview;
 
 import java.util.*;
 
+/**
+ *  Implementation of Rolling Hash is based on Rabin Fingerprint
+ *
+ *  Rabin Karp uses a rolling hash to quickly filter out positions
+ *  of the text that cannot match the pattern, and then checks for
+ *  a match at the remaining positions.
+ *
+ *  Rabin Karp uses rolling hash and use hash value to compare integer
+ *  instead of comparing string
+ */
+
 public class Algorithm_HashTable {
 }
 
@@ -187,10 +198,15 @@ class L811_Subdomain_Visit_Count {
 
 
 /**
- * 这道题目其实就是一个 Rolling Hash的应用场景
+ * 这道题目其实就是一个 Rolling Hash 的应用场景
  * 多用于巨型字符串匹配问题，也用于查找重复文件
  *
- * 理解 Rolling Hash的原理！
+ * 理解 Rolling Hash 的原理！
+ *
+ * 凡是寻找重复，相同的东西，或者匹配查找相同的东西，去重等等
+ * 基本上用 rolling hash 的思想
+ * 辅以各种不同的实现
+ *
  */
 class L187_Repeated_DNA_Sequences {
     public List<String> findRepeatedDnaSequences(String s) {
@@ -216,3 +232,5 @@ class L187_Repeated_DNA_Sequences {
         return new ArrayList(res);
     }
 }
+
+
