@@ -16,6 +16,8 @@ import java.util.*;
  *  If the string is too long, the final hash value may have overflow issue.
  *  We have to do MOD and the mod value should be larger enough to reduce the conflict
  *  It is better to use prime number.
+ *
+ *  12/06/2023
  */
 
 public class Algorithm_HashTable {
