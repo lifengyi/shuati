@@ -24,6 +24,62 @@ public class Algorithm_HashTable {
 }
 
 
+class L29_Find_the_index_of_the_first_occurrence_in_a_string {
+    public int strStr(String haystack, String needle) {
+        int BASE = 31, MOD = 10001;
+
+        if (haystack == null || needle == null || needle.length() > haystack.length()) {
+            return -1;
+        }
+
+        int m = needle.length();
+        if (m == 0) {
+            return -1;
+        }
+
+        // i
+        // abcde
+        int power = 1;
+        for (int i = 0; i < m; ++i) {
+            power = (power * BASE) % MOD;
+        }
+
+        // abc
+        int targetHashCode = 0;
+        for (int i = 0; i < m; ++i) {
+            targetHashCode = (targetHashCode * BASE + needle.charAt(i)) % MOD;
+        }
+
+        int hashCode = 0;
+        for (int i = 0; i < haystack.length(); ++i) {
+            hashCode = (hashCode * BASE + haystack.charAt(i)) % MOD;
+            if (i < m - 1) {
+                continue;
+            }
+
+            // m = 3
+            //    i
+            // abcde
+            if (i >= m) {
+                hashCode = hashCode - (haystack.charAt(i - m) * power) % MOD;
+                // Add mod if hash code is less than 0 instead of moding above hashCode
+                if (hashCode < 0) {
+                    hashCode += MOD;
+                }
+            }
+
+            // m = 3
+            //   i
+            // abcde
+            if (hashCode == targetHashCode && haystack.substring(i - m + 1, i + 1).equals(needle)) {
+                return i - m + 1;
+            }
+        }
+
+        return -1;
+    }
+}
+
 class L249_Group_Shifted_Strings {
     public List<List<String>> groupStrings(String[] strings) {
         Map<String, List<String>> map = new HashMap<>();
