@@ -9,6 +9,53 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class app {
 
     @Test
+    public void test_1() {
+        int a1 = 13;
+        int a2 = 3;
+        double ret = a1/a2;
+        double ret2 = (double)a1/a2;
+
+        System.out.println("ret = " + ret);
+        System.out.println("ret1 = " + ret2);
+        int t = -1;
+        int t1 = t/10;
+        System.out.println(t1);
+        int a = 5;
+        int b = 9;
+        boolean ret1 = (a + b) / 10 > 0;
+        System.out.println("ret = " + ret1);
+        int c = ' ';
+        System.out.println("c = " + c);
+
+        int[] array = new int[256];
+        for(int i = 0; i < 256; ++i) {
+            array[0] = -1;
+        }
+
+        String s = " ";
+        int maxLen = 0, left = 0;
+        for(int i = 0; i < s.length(); ++i) {
+            int pos = s.charAt(i);
+            int index = array[pos];
+
+            System.out.println(i);
+
+            // no repeated char or repeated char is out of the window
+            if(index == -1 || index < left) {
+                maxLen = Math.max(maxLen, i - left + 1);
+                array[pos] = i;
+            } else {
+                // find repeated char
+                maxLen = Math.max(maxLen, i - left);
+                left = index + 1;
+                array[pos] = i;
+            }
+        }
+
+        System.out.println(maxLen);
+    }
+
+    @Test
     public void test_string() {
         String a = "abc";
         System.out.println(a.startsWith("ab"));

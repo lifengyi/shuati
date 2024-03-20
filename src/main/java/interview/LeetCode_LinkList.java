@@ -8,6 +8,51 @@ public class LeetCode_LinkList {
 
 }
 
+class L92_Reverse_Linked_List_II {
+    public class ListNode {
+        int val;
+        ListNode next;
+        ListNode() {}
+        ListNode(int val) { this.val = val; }
+        ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+    }
+    public ListNode reverseBetween(ListNode head, int left, int right) {
+        ListNode dummyNode = new ListNode(Integer.MAX_VALUE);
+        dummyNode.next = head;
+
+        int count = 0;
+        ListNode cur = dummyNode;
+        while(count != left - 1) {
+            cur = cur.next;
+            count++;
+        }
+        ListNode prevOfReversed = cur, leftOfReversed = cur.next;
+
+        while(count != right) {
+            cur = cur.next;
+            count ++;
+        }
+        ListNode nextOfTail = cur.next, rightOfReserved = cur;
+
+        reverse(leftOfReversed, nextOfTail);
+        prevOfReversed.next = rightOfReserved;
+        leftOfReversed.next = nextOfTail;
+
+        return dummyNode.next;
+    }
+
+    // [start, end)
+    private void reverse(ListNode start, ListNode end) {
+        ListNode prev = null, cur = start;
+        while(cur != end) {
+            ListNode temp = cur.next;
+            cur.next = prev;
+            prev = cur;
+            cur = temp;
+        }
+    }
+}
+
 class L148_Sort_List {
     class ListNode {
         int val;
@@ -386,9 +431,42 @@ class L2_Add_Two_Numbers {
     public class ListNode {
         int val;
         ListNode next;
+        ListNode() {}
         ListNode(int x) {
             val = x;
         }
+        ListNode(int x, ListNode y) { val = x; next = y;}
+    }
+
+    public ListNode addTwoNumbers_2(ListNode l1, ListNode l2) {
+        ListNode dummyNode = new ListNode(0, null), prevNode = dummyNode;
+        int carry = 0;
+        int MOD = 10;
+
+        while(l1 != null || l2 != null) {
+            ListNode curNode = new ListNode();
+
+            int l1Value = l1 == null ? 0 : l1.val;
+            int l2Value = l2 == null ? 0 : l2.val;
+            int val = carry + l1Value + l2Value;
+
+            curNode.val = val % MOD;
+            carry = val >= 10 ? 1 : 0;
+
+            prevNode.next = curNode;
+            prevNode = curNode;
+
+            l1 = l1 == null ? null : l1.next;
+            l2 = l2 == null ? null : l2.next;
+        }
+
+        if(carry > 0) {
+            ListNode node = new ListNode(1, null);
+            prevNode.next = node;
+            prevNode = node;
+        }
+
+        return dummyNode.next;
     }
 
     public ListNode addTwoNumbers(ListNode l1, ListNode l2) {

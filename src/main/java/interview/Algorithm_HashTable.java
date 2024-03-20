@@ -24,7 +24,7 @@ public class Algorithm_HashTable {
 }
 
 
-class L29_Find_the_index_of_the_first_occurrence_in_a_string {
+class L28_Find_the_index_of_the_first_occurrence_in_a_string {
     public int strStr(String haystack, String needle) {
         int BASE = 31, MOD = 10001;
 
@@ -46,7 +46,7 @@ class L29_Find_the_index_of_the_first_occurrence_in_a_string {
 
         // abc
         int targetHashCode = 0;
-        for (int i = 0; i < m; ++i) {
+        for (int i = 0; i < m; ++i) {  // m but not m - 1, 因为移位后，成为最高位的时候，就是有m，而不是m-1
             targetHashCode = (targetHashCode * BASE + needle.charAt(i)) % MOD;
         }
 
@@ -61,7 +61,7 @@ class L29_Find_the_index_of_the_first_occurrence_in_a_string {
             //    i
             // abcde
             if (i >= m) {
-                hashCode = hashCode - (haystack.charAt(i - m) * power) % MOD;
+                hashCode = hashCode - (haystack.charAt(i - m) * power) % MOD; // 减去最高位的值需要先MOD
                 // Add mod if hash code is less than 0 instead of moding above hashCode
                 if (hashCode < 0) {
                     hashCode += MOD;
@@ -268,25 +268,29 @@ class L811_Subdomain_Visit_Count {
  */
 class L187_Repeated_DNA_Sequences {
     public List<String> findRepeatedDnaSequences(String s) {
-        if(s == null || s.length() < 10) {
+        int dnaLength = 10;
+        if(s == null || s.length() < dnaLength) {
             return new ArrayList<>();
         }
 
-        int size = 10;
-        Set<String> seen = new HashSet<>();
-        Set<String> res = new HashSet<>();
-        for(int i = size - 1; i < s.length(); ++i) {
-            String newString = s.substring(i - size + 1, i + 1);
-            if(res.contains(newString)) {
+        Set<String> seenStrings = new HashSet<>();
+        Set<String> dnaSeq = new HashSet<>();
+        String subString = null;
+        for(int i = 0; i < s.length(); ++i) {
+            if(i < dnaLength - 1) {
                 continue;
             }
-            if(seen.contains(newString)) {
-                res.add(newString);
-                seen.remove(newString);
+
+            //   i
+            // abcde
+            subString = s.substring(i - dnaLength + 1, i + 1);
+            if(seenStrings.contains(subString)) {
+                dnaSeq.add(subString);
             } else {
-                seen.add(newString);
+                seenStrings.add(subString);
             }
         }
-        return new ArrayList(res);
+
+        return new ArrayList<>(dnaSeq);
     }
 }

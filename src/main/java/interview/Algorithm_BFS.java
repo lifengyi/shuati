@@ -249,6 +249,67 @@ class UndirectedGraphNode {
     }
 }
 
+class L133_Clone_Graph_v2 {
+
+    class Node {
+        public int val;
+        public List<Node> neighbors;
+        public Node() {
+            val = 0;
+            neighbors = new ArrayList<Node>();
+        }
+        public Node(int _val) {
+            val = _val;
+            neighbors = new ArrayList<Node>();
+        }
+        public Node(int _val, ArrayList<Node> _neighbors) {
+            val = _val;
+            neighbors = _neighbors;
+        }
+    }
+
+    public Node cloneGraph(Node node) {
+        if(node == null) {
+            return null;
+        }
+
+        Map<Node, Node> map = new HashMap<>();
+        Queue<Node> queue = new LinkedList<>();
+        Set<Node> visited = new HashSet<>();
+        queue.offer(node);
+
+        while (!queue.isEmpty()) {
+            Node curNode = queue.poll();
+            if(visited.contains(curNode)) {
+                continue;
+            }
+            visited.add(curNode);
+
+            // copy point
+            if(!map.containsKey(curNode)) {
+                Node newNode = new Node(curNode.val, new ArrayList<>());
+                map.put(curNode, newNode);
+            }
+
+            // copy edges
+            for(Node neighbor : curNode.neighbors) {
+                if(!visited.contains(neighbor)) {
+                    queue.offer(neighbor);
+                }
+
+                if(!map.containsKey(neighbor)) {
+                    Node newNeighbor = new Node(neighbor.val, new ArrayList<>());
+                    map.put(neighbor, newNeighbor);
+                }
+
+                map.get(curNode).neighbors.add(map.get(neighbor));
+            }
+        }
+
+        return map.get(node);
+    }
+}
+
 class L133_Clone_Graph {
     public UndirectedGraphNode cloneGraph(UndirectedGraphNode node) {
         if(node == null) {

@@ -12,7 +12,98 @@ public class LeetCode_Array {
 
 }
 
+class L6_ZigZag_Conversion {
 
+    // can be optimized to : time O(m), space O(1): leverage skip patterns in matrix
+    public String convert_optimized(String s, int numRows) {
+        if(numRows == 1) {
+            return s;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        int mainDiff = 2 * numRows - 2;
+
+        for(int i = 0; i < numRows; ++i) {
+
+            // the index of next char in the middle of matrix
+            int nextIndex = mainDiff - 2 * i;
+
+            for(int j = i; j < s.length(); j = j + mainDiff) {
+                // read the char on matrix edge
+                sb.append(s.charAt(j));
+
+                if(i != 0 && i != numRows - 1 && j + nextIndex < s.length()) {
+                    sb.append(s.charAt(j + nextIndex));
+                }
+            }
+        }
+
+        return sb.toString();
+    }
+
+    // string length: m , time: O(m), space: O(m)
+    public String convert(String s, int numRows) {
+        if(numRows == 1) {
+            return s;
+        }
+
+        StringBuilder[] buffers = new StringBuilder[numRows];
+        for(int i = 0; i < numRows; ++i) {
+            buffers[i] = new StringBuilder();
+        }
+
+        int mod = 2 * numRows - 2;
+        for(int i = 0; i < s.length(); ++i) {
+            int index = i % mod;
+            if(index < numRows) {
+                buffers[index].append(s.charAt(i));
+            } else {
+                int idx2 = index % numRows;
+                buffers[numRows - 2 - idx2].append(s.charAt(i));
+            }
+        }
+
+        StringBuilder findalSB = new StringBuilder();
+        for(int i = 0; i < numRows; ++i) {
+            findalSB.append(buffers[i]);
+        }
+        return findalSB.toString();
+    }
+}
+
+
+// Merge sort, O(m+n)
+// binary search : O(log(m+n)) ?
+class L2_Median_Of_Two_Sorted_Arrays {
+    public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+        int len = nums1.length + nums2.length;
+        int[] num = new int[len];
+
+        int i = 0, j = 0, k = 0;
+        while(i < nums1.length || j < nums2.length) {
+            if(i < nums1.length && j < nums2.length) {
+                if(nums1[i] < nums2[j]) {
+                    num[k++] = nums1[i++];
+                } else {
+                    num[k++] = nums2[j++];
+                }
+            } else if (i < nums1.length) {
+                num[k++] = nums1[i++];
+            } else {
+                num[k++] = nums2[j++];
+            }
+        }
+
+        double ret = 0.0;
+        if(len%2 == 0) {
+            ret = (double)(num[len/2] + num[len/2 - 1])/2;
+        } else {
+            ret = num[len/2];
+        }
+
+        return ret;
+    }
+}
 
 class L34_Search_for_a_Range {
     public int[] L34_searchRange(int[] nums, int target) {

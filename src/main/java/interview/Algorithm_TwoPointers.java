@@ -81,6 +81,32 @@ class L209_Minimum_Size_Subarray_Sum {
 
 
 class L3_Longest_Substring_Without_Repeating_Characters {
+    public int lengthOfLongestSubstring_v2(String s) {
+        int[] array = new int[256];
+        for(int i = 0; i < 256; ++i) {
+            array[i] = -1;
+        }
+
+        int maxLen = 0, left = 0;
+        for(int i = 0; i < s.length(); ++i) {
+            int pos = s.charAt(i);
+            int index = array[pos];
+
+            // no repeated char or repeated char is out of the window
+            if(index == -1 || index < left) {
+                maxLen = Math.max(maxLen, i - left + 1);
+                array[pos] = i;
+            } else {
+                // find repeated char
+                maxLen = Math.max(maxLen, i - left);
+                left = index + 1;
+                array[pos] = i;
+            }
+        }
+
+        return maxLen;
+    }
+
     public int lengthOfLongestSubstring(String s) {
         if(s == null || s.length() == 0) {
             return 0;

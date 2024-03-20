@@ -8,6 +8,53 @@ public class Algorithm_UnionFind {
 }
 
 class L261_Graph_Valid_Tree {
+    public boolean validTree_v2(int n, int[][]edges) {
+        // validate the count of points and edges
+        if(n != edges.length + 1) {
+            return false;
+        }
+
+        // check if all nodes are connected
+        UnionFindV2 graph = new UnionFindV2(n);
+        for(int[] edge : edges) {
+            graph.connect(edge[0], edge[1]);
+        }
+
+        // should be only 1 graph
+        return graph.count == 1;
+    }
+
+    class UnionFindV2 {
+        public int[] fathers;
+        public int count;
+
+        public UnionFindV2(int n) {
+            fathers = new int[n];
+            count = n;
+            for(int i = 0; i < n; ++i) {
+                fathers[i] = i;
+            }
+        }
+
+        public int findRoot(int a) {
+            if(a != fathers[a]) {
+                fathers[a] = findRoot(fathers[a]);
+                return fathers[a];
+            }
+
+            return a;
+        }
+
+        public void connect(int a, int b) {
+            int rootA = findRoot(a);
+            int rootB = findRoot(b);
+            if(rootA != rootB) {
+                fathers[rootA] = rootB;// everything should be build on top or Root
+                count--;
+            }
+        }
+    }
+
     public boolean validTree(int n, int[][] edges) {
         if(n < 2) {
             return true;

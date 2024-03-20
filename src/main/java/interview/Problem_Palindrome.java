@@ -4,6 +4,8 @@ public class Problem_Palindrome {
 
 }
 
+
+// time: O(n^2), space: O(1)
 class L5_LongestPalindromic_Substring {
     public int start  = 0;
     public int maxLen = 0;
@@ -35,6 +37,7 @@ class L5_LongestPalindromic_Substring {
     }
 }
 
+// O(n)
 class L5_LongestPalindrome_SubString_OptimizedByManacher {
     public String longestPalindrome(String s) {
         if(s == null || s.length() == 0) {

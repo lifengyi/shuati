@@ -162,6 +162,61 @@ class L230_Kth_Smallest_Element_in_a_BST {
 }
 
 
+class L1644_Lowest_Common_Ancestor_of_a_Binary_Tree_II {
+    class ResultType {
+        TreeNode lca;
+        int count;
+
+        public ResultType() {};
+    }
+
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        ResultType rt = findLCA(root, p, q);
+        if(rt.lca != null && rt.count == 2) {
+            return rt.lca;
+        }
+        return null;
+    }
+
+    ResultType findLCA(TreeNode node, TreeNode p, TreeNode q) {
+        ResultType rt = new ResultType();
+
+        if(node == null) {
+            return rt;
+        }
+
+        ResultType left = findLCA(node.left, p, q);
+        ResultType right = findLCA(node.right, p, q);
+
+        if(left.lca != null && right.lca != null) {
+            rt.lca = node;
+            rt.count = 2;
+        } else {
+            if(left.lca != null) {
+                rt.lca = left.lca;
+                rt.count += left.count;
+            }
+            if (right.lca != null) {
+                rt.lca = right.lca;
+                rt.count += right.count;
+            }
+
+            if(node.val == p.val) {
+                rt.lca = node;
+                rt.count += 1;
+            }
+            if(node.val == q.val) {
+                rt.lca = node;
+                rt.count += 1;
+            }
+        }
+
+        return rt;
+    }
+}
+
+
+
 class L236_Lowest_Common_Ancestor_of_a_Binary_Tree {
 
     /**

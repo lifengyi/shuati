@@ -3,11 +3,37 @@ package poc;
 import org.junit.Test;
 
 import java.util.BitSet;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class test_BitSet {
 
     @Test
     public void test1() {
+        class TreeNode {
+            int val;
+            TreeNode left;
+            TreeNode right;
+            TreeNode(int x) { val = x; }
+        }
+
+        TreeNode t1 = new TreeNode(2);
+        TreeNode t2 = new TreeNode(10);
+
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(t1);
+        queue.offer(t2);
+        queue.offer(t1);
+        System.out.println(queue.size());
+        while(!queue.isEmpty()) {
+            TreeNode node = queue.poll();
+            if(node == t1) {
+                System.out.println("t1");
+            } else if (node == t2) {
+                System.out.println("t2");
+            }
+        }
+
 
         BitSet bits1 = new BitSet(64);
         //BitSet bits2 = new BitSet(16);

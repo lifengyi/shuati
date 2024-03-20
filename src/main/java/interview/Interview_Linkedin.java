@@ -121,6 +121,86 @@ class L297_Serialize_and_Deserialize_Binary_Tree_ {
     }
 }
 
+class L297_Serialize_and_Deserialize_Binary_Tree_v3 {
+    int PLACE_HOLDER = Integer.MAX_VALUE;
+    String NULL_STRING = "null";
+    String SEPARATOR = ",";
+
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        if(root == null) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+
+        TreeNode dummyNode = new TreeNode(PLACE_HOLDER);
+
+        while(!queue.isEmpty()) {
+            int size = queue.size();
+            for(int i = 0; i < size; ++i) {
+                TreeNode node = queue.poll();
+                if(node == dummyNode) {
+                    sb.append(NULL_STRING).append(SEPARATOR);
+                } else {
+                    sb.append(node.val).append(SEPARATOR);
+                    TreeNode left = node.left != null ? node.left : dummyNode;
+                    queue.offer(left);
+                    TreeNode right = node.right != null ? node.right : dummyNode;
+                    queue.offer(right);
+                }
+            }
+        }
+
+        String ret = sb.toString();
+        return ret;
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        if(data.isEmpty()) {
+            return null;
+        }
+
+        String[] values = data.split(SEPARATOR);
+        if(values.length == 0) {
+            return null;
+        }
+
+        Queue<TreeNode> queue = new LinkedList<>();
+        int first = Integer.parseInt(values[0]); // shold not be null
+        TreeNode root = new TreeNode(first);
+        queue.offer(root);
+        int idx = 1;
+
+        while(!queue.isEmpty() && idx < values.length) {
+            TreeNode node = queue.poll();
+
+            // left
+            String leftValue = values[idx++];
+            if(leftValue.equals(NULL_STRING)) {
+                node.left = null;
+            } else {
+                node.left = new TreeNode(Integer.parseInt(leftValue));
+                queue.offer(node.left);
+            }
+
+            // right
+            String rightValue = values[idx++];
+            if(rightValue.equals(NULL_STRING)) {
+                node.right = null;
+            } else {
+                node.right = new TreeNode(Integer.parseInt(rightValue));
+                queue.offer(node.right);
+            }
+        }
+
+        return root;
+    }
+}
+
 class L33_Search_in_Rotated_Sorted_Array_ {
     public int search(int[] nums, int target) {
         int left = 0, right = nums.length - 1, middle = 0;

@@ -185,6 +185,9 @@ public class BinaryTreeTraversal {
         from.right = currentNode;
     }
 
+    // 1. take the current node if it's not null
+    // 2. push the current node and point the current node to left node
+    // 3. current node is null: pop the node from stack and point the current node to right
     public void preOrder_df_stack(TreeNode node) {
         if(node == null)
             return;
@@ -220,6 +223,10 @@ public class BinaryTreeTraversal {
         }
     }
 
+
+
+    // if the current node is not null, push it to stack and set the current node to left
+    // if the current node is null, pop the node and take it, set the current node to right
     public void inOrder_df_stack(TreeNode node) {
         if(node == null)
             return;
@@ -300,6 +307,22 @@ public class BinaryTreeTraversal {
 
     }
 
+    public void preOrderTraverse_2024(TreeNode root) {
+        LinkedList<TreeNode> stack = new LinkedList<>();
+        stack.push(root);
+        while(!stack.isEmpty()) {
+            TreeNode cur = stack.pop();
+            System.out.print(cur.val + " ");
+
+            if(cur.right != null) {
+                stack.push(cur.right);
+            }
+            if(cur.left != null) {
+                stack.push(cur.left);
+            }
+        }
+    }
+
     public void preOrder_df_recursion(TreeNode node) {
         if(node == null)
             return;
@@ -327,6 +350,60 @@ public class BinaryTreeTraversal {
             inOrder_df_recursion(node.right);
         }
 
+    }
+
+
+    // 将左子树所有节点存入直到为空，从栈中去除数据，访问，并指向右节点
+    public void inOrderTraverse_2024(TreeNode node) {
+        LinkedList<TreeNode> stack = new LinkedList<>();
+        TreeNode cur = node;
+
+        while(!stack.isEmpty() || cur != null) {
+            while(cur != null) {
+                stack.push(cur);
+                cur = cur.left;
+            }
+
+            cur = stack.pop();
+            System.out.print(cur.val + " "); // take it
+            cur = cur.right;
+        }
+    }
+
+    // tips: binary tree traverse:
+    // inOrder, postOrder的5个常规步骤：push, pop, point to left, point to right, take it
+    // common: 遍历左子树， push => point to left
+    // inOrder: cur == null: pop => take it => point to right
+    // postOrder: cur == null:
+    //            second time to access the node in stack? or right node is null:
+    //                pop => take it + set last visited => set cur node to keep poping node
+    //            first time to access the node:
+    //                point to right
+
+    public void postOrderTraverse_2024(TreeNode root) {
+        LinkedList<TreeNode> stack = new LinkedList<>();
+        TreeNode cur = root;
+        TreeNode lastVisited = null;
+
+        while(cur != null || !stack.isEmpty()) {
+            while(cur != null) {
+                stack.push(cur);
+                cur = cur.left;
+            }
+
+            TreeNode top = stack.peek();
+            if(top.right == null || top.right == lastVisited) {
+                // second time to access the root or right is null
+                cur = stack.pop();
+                System.out.print(cur.val + " ");
+
+                lastVisited = cur;
+                cur = null; // tips: cur is last right, keep popping node from stack
+            } else {
+                // first time to access the root, need to access right first
+                cur = top.right;
+            }
+        }
     }
 
     public void postOrder_df_recursion(TreeNode node){
@@ -444,6 +521,9 @@ public class BinaryTreeTraversal {
         System.out.print("\n");
         processor.inOrder_Morris(root);
         System.out.print("\n");
+        processor.inOrderTraverse_2024(root);
+        System.out.print("\n");
+
 
         System.out.println("Pre-order: ");
         processor.preOrder_df_recursion(root);
@@ -454,6 +534,9 @@ public class BinaryTreeTraversal {
         System.out.print("\n");
         processor.preOrder_Morris(root);
         System.out.print("\n");
+        processor.preOrderTraverse_2024(root);
+        System.out.print("\n");
+
 
         System.out.println("Post-order: ");
         processor.postOrder_df_recursion(root);
@@ -463,6 +546,8 @@ public class BinaryTreeTraversal {
         processor.postOrder_df_stack_v2(root);
         System.out.print("\n");
         processor.postOrder_Morris(root);
+        System.out.print("\n");
+        processor.postOrderTraverse_2024(root);
         System.out.print("\n");
 
         System.out.println("Test");

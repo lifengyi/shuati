@@ -13,6 +13,8 @@ public class test1 {
         proc.inc("c");
         proc.dec("b");
         proc.dec("b");
+
+
     }
 
     class Node {

@@ -148,7 +148,41 @@ class L39_Combination_Sum {
     }
 }
 
+// tips: 关注数组作为输入时要注意的问题：
+// 1.元素是否会重复出现； no
+// 2.元素取值范围，是否正负0都有 : all positive
+// 3.元素是否可以重复选取: yes
+//
+// 本题因为都是元素都是正数取值，且不重复，但可以重复选取，故上面的算法可以简化如下：
+class L39_Combination_Sum_II {
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> result = new ArrayList<>();
+        LinkedList<Integer> buffer = new LinkedList<>();
+        dfs(candidates, 0, target, buffer, result);
+        return result;
+    }
 
+    private void dfs(int[] candidates, int index, int remaining, LinkedList<Integer> buffer, List<List<Integer>> result) {
+        if(remaining == 0) {
+            result.add(new ArrayList<>(buffer));
+            return;
+        } else if(remaining < 0) {
+            return;
+        }
+
+        for(int i = index; i < candidates.length; ++i) {
+            buffer.addLast(candidates[i]);
+            dfs(candidates, i, remaining - candidates[i], buffer, result);
+            buffer.removeLast();
+        }
+    }
+}
+
+
+// tips: 关注数组作为输入时要注意的问题：
+// 1.元素是否会重复出现； yes
+// 2.元素取值范围，是否正负0都有 : all positive
+// 3.元素是否可以重复选取: no
 /**
  * 要求： 求子集中满足特殊条件，即子集和满足特殊值的所有子集
  *
@@ -203,6 +237,11 @@ class L40_Combination_Sum_II {
     }
 }
 
+// tips: 关注数组作为输入时要注意的问题：
+// 1.元素是否会重复出现； no
+// 2.元素取值范围，是否正负0都有 : all positive
+// 3.元素是否可以重复选取: no
+// 多一个附加条件，元素个数的限制
 /**
  * 和I类似，输入为1-9，检测条件为两项：
  * 1. 和为n
@@ -211,6 +250,29 @@ class L40_Combination_Sum_II {
  * 输入数据集没有重复项，但只能用1次
  */
 class L216_Combination_Sum_III {
+    public List<List<Integer>> combinationSum3_v2(int k, int n) {
+        List<List<Integer>> results = new ArrayList<>();
+        LinkedList<Integer> combination = new LinkedList<>();
+        findCombination(10, 1, k, n, combination, results);
+        return results;
+    }
+
+    private void findCombination(int max, int idx, int count, int remaining, LinkedList<Integer> combination, List<List<Integer>> results) {
+        if(remaining == 0 && combination.size() == count) {
+            results.add(new ArrayList<>(combination));
+            return;
+        }
+        if(remaining < 0 || combination.size() > count) {
+            return;
+        }
+
+        for(int i = idx; i < max; ++i) {
+            combination.addLast(i);
+            findCombination(max, i + 1, count, remaining - i, combination, results);
+            combination.removeLast();
+        }
+    }
+
     public List<List<Integer>> combinationSum3(int k, int n) {
         List<List<Integer>> result = new ArrayList<>();
         if(k <= 0 || n <= 0 || k > n || (k != 1 && k == n)) {
@@ -245,6 +307,7 @@ class L216_Combination_Sum_III {
     }
 }
 
+// tips: 所有切割问题都是 combination 问题
 class L131_Palindrome_Partitioning {
     public List<List<String>> partition(String s) {
         List<List<String>> result = new ArrayList<>();
@@ -354,6 +417,110 @@ class L47_Permutations_II {
             visited[i] = 0;
             list.remove(list.size() - 1);
         }
+    }
+}
+
+class L257_Binary_Tree_Path {
+    public List<String> binaryTreePaths(TreeNode root) {
+        StringBuilder sb = new StringBuilder();
+        List<String> results = new ArrayList<>();
+
+        if(root != null) {
+            dfs(root, sb, results);
+        }
+
+        return results;
+    }
+
+    // add node into buffer
+    // if it's a leaf node: add to results,
+    // else:  append "->"  and exec dfs
+    // remove the node from the buffer
+    private void dfs(TreeNode node, StringBuilder sb, List<String> results) {
+        if(node == null) {
+            return;
+        }
+
+        int len = sb.length();
+
+        sb.append(node.val);
+        if(node.left == null && node.right == null) {
+            results.add(sb.toString());
+        } else {
+            sb.append("->");
+            dfs(node.left, sb, results);
+            dfs(node.right, sb, results);
+        }
+
+        sb.setLength(len);
+    }
+}
+
+// tips: the difference between minimum_depth and maximum_depth
+//  maximum_depth: just Math.max
+//  minimum_depth: 0 height means empty sub-tree, minimum height should be a valid height
+class L111_Minimum_Depth_of_Binary_Tree {
+    public int minDepth(TreeNode root) {
+        if(root == null) {
+            return 0;
+        }
+
+        return helper(root);
+    }
+
+    private int helper(TreeNode node) {
+        if(node == null) {
+            return 0;
+        }
+
+        int leftHeight = helper(node.left);
+        int rightHeight = helper(node.right);
+        if(leftHeight == 0 || rightHeight == 0) {
+            return Math.max(leftHeight, rightHeight) + 1;
+        } else {
+            return Math.min(leftHeight, rightHeight) + 1;
+        }
+    }
+}
+
+class L110_Balanced_Binary_Tree {
+    class TreeInfo {
+        boolean isBalanced;
+        int height;
+
+        public TreeInfo (boolean isBalanced, int height) {
+            this.isBalanced = isBalanced;
+            this.height = height;
+        }
+
+    }
+
+    public boolean isBalanced(TreeNode root) {
+        if(root == null) {
+            return true;
+        }
+
+        TreeInfo info = helper(root);
+        return info.isBalanced;
+    }
+
+    // if node is null: return info(true, 0)
+    // else:  dfs left and right
+    //        check isBalance and height for left and right
+    //  return info: isBalanced = (left and right are balanced and height difference is leanss than 1)
+    //                height = max(left, right) + 1
+    private TreeInfo helper(TreeNode node) {
+        if(node == null) {
+            return new TreeInfo(true, 0);
+        }
+
+        TreeInfo leftInfo = helper(node.left);
+        TreeInfo rightInfo = helper(node.right);
+        boolean isBalanced = leftInfo.isBalanced &
+                rightInfo.isBalanced &
+                Math.abs(leftInfo.height - rightInfo.height) <= 1;
+        int height = Math.max(leftInfo.height, rightInfo.height) + 1;
+        return new TreeInfo(isBalanced, height);
     }
 }
 
@@ -694,6 +861,89 @@ class L282_Expression_Add_Operators {
                         returnBack * curVal, target, expr + "*" + curVal, result);
             }
         }
+    }
+}
+
+class L113_Path_Sum_II {
+    public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
+        List<List<Integer>> results = new ArrayList<>();
+        LinkedList<Integer> buffer = new LinkedList<>();
+
+        if(root == null) {
+            return results;
+        }
+
+        dfs(root, targetSum, buffer, results);
+        return results;
+    }
+
+    // tips: 出口的定义： 有2个， 出口和拆解都需要维护临时结果集
+    private void dfs(TreeNode node, int remains, LinkedList<Integer> buffer, List<List<Integer>> results) {
+        // tips: check null node, a node with only 1 child will hit this logic
+        if(node == null) {
+            return;
+        }
+
+        // tips: check leaf node
+        if(node.left == null && node.right == null) {
+            if(remains - node.val == 0) {
+                buffer.add(node.val);
+                results.add(new ArrayList<>(buffer));
+                buffer.removeLast();            // tips: maintain the temporarily buffer
+            }
+            return;
+        }
+
+        buffer.add(node.val);
+        dfs(node.left, remains - node.val, buffer, results);
+        dfs(node.right, remains - node.val, buffer, results);
+        buffer.removeLast();            // tips: maintain the temporarily buffer
+    }
+}
+
+class L1120_Maximum_Average_Subtree {
+    class TreeInfo {
+        int sum;
+        int count;
+        public TreeInfo(int sum, int count){
+            this.sum = sum;
+            this.count = count;
+        }
+    }
+
+    double max = 0;
+
+    public double maximumAverageSubtree(TreeNode root) {
+        if(root == null) {
+            return 0;
+        }
+
+        TreeInfo info = helper(root);
+        return Math.max(max, (double)info.sum/info.count);
+    }
+
+    private TreeInfo helper(TreeNode node) {
+        if(node == null) {
+            return new TreeInfo(0, 0);
+        }
+
+        TreeInfo left = helper(node.left);
+        TreeInfo right = helper(node.right);
+
+        // compare and save the max avg value
+        double lmax = left.count == 0 ? 0 : (double)left.sum/left.count;
+        double rmax = right.count == 0 ? 0 : (double)right.sum/right.count;
+        max = Math.max(max, Math.max(lmax, rmax));
+
+        // tips: 错，这个逻辑求的是 maximum average path (node -> leaf)
+        //if(left.sum * right.count > right.sum * left.count) {
+        //    return new TreeInfo(left.sum + node.val, left.count + 1);
+        //} else {
+        //    return new TreeInfo(right.sum + node.val, right.count + 1);
+        //}
+
+        // subtree
+        return new TreeInfo(right.sum + left.sum + node.val, right.count + left.count + 1);
     }
 }
 

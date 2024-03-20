@@ -119,6 +119,7 @@ class L68_Text_Justification {
             }
             if(additionalSpace > 0) {
                 sb.append(' ');
+                sb.setLength(10);
                 additionalSpace--;
             }
         }

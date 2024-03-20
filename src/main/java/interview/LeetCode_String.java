@@ -271,6 +271,34 @@ class L14_Longest_Common_Prefix {
 
         return prefix;
     }
+
+    public String longestCommonPrefix_v2(String[] strs) {
+        if(strs.length == 1) {
+            return strs[0];
+        }
+
+        String prefix = strs[0];
+        for(int i = 1; i < strs.length; ++i) {
+            prefix = compare(prefix, strs[i]);
+            if(prefix.equals("")) {
+                break;
+            }
+        }
+
+        return prefix;
+    }
+
+    private String compare(String s1, String s2) {
+        int i1 = 0, i2 = 0;
+        while(i1 < s1.length() && i2 < s2.length()) {
+            if(s1.charAt(i1) != s2.charAt(i2)) {
+                break;
+            }
+            i1++;
+            i2++;
+        }
+        return s1.substring(0, i1);
+    }
 }
 
 
@@ -403,6 +431,30 @@ class L13_Roman_to_Integer {
             }
         }
         return totalVal;
+    }
+
+    public int romanToInt_v2(String s) {
+
+                Map<Character, Integer> map = new HashMap<>();
+                map.put('M', 1000);
+                map.put('D', 500);
+                map.put('C', 100);
+                map.put('L', 50);
+                map.put('X', 10);
+                map.put('V', 5);
+                map.put('I', 1);
+
+                int ret = 0, prevMax = 0;
+                for(int i = s.length() - 1; i >= 0; --i) {
+                    char c = s.charAt(i);
+                    if(map.get(c) < prevMax) {
+                        ret -= map.get(c);
+                    } else {
+                        ret += map.get(c);
+                        prevMax = map.get(c);
+                    }
+                }
+                return ret;
     }
 }
 
